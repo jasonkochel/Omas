@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="cc716ada4fa94a2abf6309380066829b" Name="Diagram1">
+        <EntityTypeShape EntityType="OmasModel.Catalog" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="OmasModel.OrderBatch" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="OmasModel.Order" Width="1.5" PointX="7.25" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="OmasModel.User" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="OmasModel.CatalogOrderBatch" />
+        <AssociationConnector Association="OmasModel.CatalogOrder" />
+        <AssociationConnector Association="OmasModel.UserOrder" />
+        <AssociationConnector Association="OmasModel.OrderBatchOrder" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

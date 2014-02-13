@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="OmasModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Catalog">
+          <Key>
+            <PropertyRef Name="CatalogID" />
+          </Key>
+          <Property Name="CatalogID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BatchID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="SKU" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="OrderPer" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="PricePer" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Price" Type="decimal" Precision="9" Scale="2" Nullable="false" />
+          <Property Name="Multiplier" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="Weight" Type="decimal" Precision="7" Scale="2" Nullable="false" />
+          <Property Name="Sequence" Type="decimal" Precision="7" Scale="2" />
+        </EntityType>
+        <EntityType Name="OrderBatches">
+          <Key>
+            <PropertyRef Name="BatchID" />
+          </Key>
+          <Property Name="BatchID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderDate" Type="datetime" />
+          <Property Name="DeliveryDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Orders">
+          <Key>
+            <PropertyRef Name="OrderID" />
+          </Key>
+          <Property Name="OrderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BatchID" Type="int" Nullable="false" />
+          <Property Name="UserID" Type="int" Nullable="false" />
+          <Property Name="CatalogID" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="decimal" Precision="7" Scale="2" Nullable="false" />
+          <Property Name="AddDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Password" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Admin" Type="bit" Nullable="false" />
+          <Property Name="FName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Phone" Type="varchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityContainer Name="OmasModelStoreContainer">
+          <EntitySet Name="Catalog" EntityType="Self.Catalog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderBatches" EntityType="Self.OrderBatches" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="OmasModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Catalog">
+          <Key>
+            <PropertyRef Name="CatalogID" />
+          </Key>
+          <Property Name="CatalogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BatchID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="SKU" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="OrderPer" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PricePer" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Precision="9" Scale="2" Nullable="false" />
+          <Property Name="Multiplier" Type="Decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="Weight" Type="Decimal" Precision="7" Scale="2" Nullable="false" />
+          <Property Name="Sequence" Type="Decimal" Precision="7" Scale="2" />
+          <NavigationProperty Name="OrderBatch" Relationship="OmasModel.CatalogOrderBatch" FromRole="Catalog" ToRole="OrderBatch" />
+          <NavigationProperty Name="Orders" Relationship="OmasModel.CatalogOrder" FromRole="Catalog" ToRole="Order" />
+        </EntityType>
+        <EntityType Name="OrderBatch">
+          <Key>
+            <PropertyRef Name="BatchID" />
+          </Key>
+          <Property Name="BatchID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderDate" Type="DateTime" Precision="3" />
+          <Property Name="DeliveryDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Catalogs" Relationship="OmasModel.CatalogOrderBatch" FromRole="OrderBatch" ToRole="Catalog" />
+          <NavigationProperty Name="Orders" Relationship="OmasModel.OrderBatchOrder" FromRole="OrderBatch" ToRole="Order" />
+        </EntityType>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="OrderID" />
+          </Key>
+          <Property Name="OrderID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BatchID" Type="Int32" Nullable="false" />
+          <Property Name="UserID" Type="Int32" Nullable="false" />
+          <Property Name="CatalogID" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Decimal" Precision="7" Scale="2" Nullable="false" />
+          <Property Name="AddDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Catalog" Relationship="OmasModel.CatalogOrder" FromRole="Order" ToRole="Catalog" />
+          <NavigationProperty Name="User" Relationship="OmasModel.UserOrder" FromRole="Order" ToRole="User" />
+          <NavigationProperty Name="OrderBatch" Relationship="OmasModel.OrderBatchOrder" FromRole="Order" ToRole="OrderBatch" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Admin" Type="Boolean" Nullable="false" />
+          <Property Name="FName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Phone" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Orders" Relationship="OmasModel.UserOrder" FromRole="User" ToRole="Order" />
+        </EntityType>
+        <EntityContainer Name="OmasDbContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Catalogs" EntityType="Self.Catalog" />
+          <EntitySet Name="OrderBatches" EntityType="Self.OrderBatch" />
+          <EntitySet Name="Orders" EntityType="Self.Order" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <AssociationSet Name="CatalogOrderBatch" Association="OmasModel.CatalogOrderBatch">
+            <End Role="Catalog" EntitySet="Catalogs" />
+            <End Role="OrderBatch" EntitySet="OrderBatches" />
+          </AssociationSet>
+          <AssociationSet Name="CatalogOrder" Association="OmasModel.CatalogOrder">
+            <End Role="Catalog" EntitySet="Catalogs" />
+            <End Role="Order" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="UserOrder" Association="OmasModel.UserOrder">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Order" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="OrderBatchOrder" Association="OmasModel.OrderBatchOrder">
+            <End Role="OrderBatch" EntitySet="OrderBatches" />
+            <End Role="Order" EntitySet="Orders" />
+          </AssociationSet>
+        </EntityContainer>
+        <Association Name="CatalogOrderBatch">
+          <End Type="OmasModel.Catalog" Role="Catalog" Multiplicity="*" />
+          <End Type="OmasModel.OrderBatch" Role="OrderBatch" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="OrderBatch">
+              <PropertyRef Name="BatchID" />
+            </Principal>
+            <Dependent Role="Catalog">
+              <PropertyRef Name="BatchID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="CatalogOrder">
+          <End Type="OmasModel.Catalog" Role="Catalog" Multiplicity="1" />
+          <End Type="OmasModel.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Catalog">
+              <PropertyRef Name="CatalogID" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="CatalogID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UserOrder">
+          <End Type="OmasModel.User" Role="User" Multiplicity="1" />
+          <End Type="OmasModel.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="OrderBatchOrder">
+          <End Type="OmasModel.OrderBatch" Role="OrderBatch" Multiplicity="1" />
+          <End Type="OmasModel.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrderBatch">
+              <PropertyRef Name="BatchID" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="BatchID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="OmasModelStoreContainer" CdmEntityContainer="OmasDbContext">
+          <EntitySetMapping Name="Catalogs">
+            <EntityTypeMapping TypeName="OmasModel.Catalog">
+              <MappingFragment StoreEntitySet="Catalog">
+                <ScalarProperty Name="CatalogID" ColumnName="CatalogID" />
+                <ScalarProperty Name="BatchID" ColumnName="BatchID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="SKU" ColumnName="SKU" />
+                <ScalarProperty Name="OrderPer" ColumnName="OrderPer" />
+                <ScalarProperty Name="PricePer" ColumnName="PricePer" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Multiplier" ColumnName="Multiplier" />
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderBatches">
+            <EntityTypeMapping TypeName="OmasModel.OrderBatch">
+              <MappingFragment StoreEntitySet="OrderBatches">
+                <ScalarProperty Name="BatchID" ColumnName="BatchID" />
+                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
+                <ScalarProperty Name="DeliveryDate" ColumnName="DeliveryDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Orders">
+            <EntityTypeMapping TypeName="OmasModel.Order">
+              <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
+                <ScalarProperty Name="BatchID" ColumnName="BatchID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="CatalogID" ColumnName="CatalogID" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="AddDate" ColumnName="AddDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="OmasModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Admin" ColumnName="Admin" />
+                <ScalarProperty Name="FName" ColumnName="FName" />
+                <ScalarProperty Name="LName" ColumnName="LName" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

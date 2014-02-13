@@ -1,0 +1,7 @@
+[ODBC]
+DRIVER=SQL Server
+UID=sa
+PWD=mds
+DATABASE=Omas
+APP=Microsoft Open Database Connectivity
+SERVER=(local)

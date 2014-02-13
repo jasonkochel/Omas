@@ -1,0 +1,190 @@
+.Hidden
+{
+	DISPLAY: none;
+	VISIBILITY: hidden;
+}
+.Visible
+{
+	VISIBILITY: visible;
+}
+/*Used to replace images for page titles - rmv*/
+
+td {
+	vertical-align: top;
+}
+
+@media screen{
+            .hideprint{visibility: display;}
+}
+@media print{
+            .hideprint{visibility: hidden;}
+}
+
+
+.printout-header{ font-size : 14;
+	font-weight: 900;
+	}
+.printout-body{ font-size : 14;
+}
+
+.headerlargeblue{font-family: verdana, Geneva, Arial, Helvetica, sans-serif; font-size : 17px; color: #196BAC;}
+.headerlargegreen{font-family: verdana, Geneva, Arial, Helvetica, sans-serif; font-size : 17px; color: #5A8F29;}
+
+.headermediumblue{font-family: verdana, Geneva, Arial, Helvetica, sans-serif; font-size : 14px; color: #196BAC; font-weight: 900; Padding-bottom: 8px;}
+.headermediumgreen{font-family: verdana, Geneva, Arial, Helvetica, sans-serif; font-size : 14px; color: #5A8F29;}
+.headermediumred{font-family: verdana, Geneva, Arial, Helvetica, sans-serif; font-size : 14px; color: red;}
+
+.headersmallblue{font-family: verdana, Geneva, Arial, Helvetica, sans-serif; font-size : 13px; color: #196BAC; font-weight: 900;}
+.headersmallgreen{font-family: verdana, Geneva, Arial, Helvetica, sans-serif; font-size : 13px; color: #5A8F29;}
+
+.nolink:link  {text-decoration: none;}
+.nolink:visited {text-decoration: none;}
+.nolink:hover {text-decoration: none;}
+.nolink:active {text-decoration: none;}
+/*-rmv*/
+.aceTextField {
+	background-color: FFFFFF;
+	border-color: 196BAC;
+	border-style: solid;
+	border-width: 1;
+	font-size: 8pt;
+	font-family: verdana;
+}
+
+.font-content {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	color:black;	
+}
+.font-contentblue {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	color: #196BAC;
+}
+.font-contentbluebold {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	color: #196BAC;
+	font-weight: bold;
+}
+.font-contentlargebold {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color:black;	
+}
+.font-contentlarge2boldblue {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 18 px;
+	font-weight: bold;
+	color:#196BAC;	
+}
+.font-contentlargeboldblue {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color:#196BAC;	
+}
+.font-contentlarge {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	color:black;	
+}
+.faqquestions {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color:black;
+	
+}
+.faqheaderalign {
+	font-family: Helvetica, Arial, sans-serif;
+	margin:0 0 0 -40;
+	font-weight: bold;
+	color:black;	
+}
+.font-contentsmaller {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	color:black;	
+}
+.font-header {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+	color:black;	
+}
+.font-header2 {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 18px;
+	font-weight: 600;
+	color:black;	
+}
+.font-subheader {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 16px;
+	font-weight: 500;
+	color:black;	
+}
+
+.button{
+	CURSOR: hand;
+}
+
+#topConfImage{
+	position: absolute;
+	left: 248px;
+	top: 244px;
+}
+
+#registerLink{
+	position: absolute;
+	left: 485px;
+	top: 244px;
+}
+
+.pocketbg {
+	background-image:url("/images/contestbg.gif");
+	background-repeat:no-repeat;
+	background-position: right center;
+}
+body
+{ 
+background-image: url('/images/watermark.gif');
+background-repeat: no-repeat;
+background-position: 360px 160px;
+}
+
+
+TR.Shaded
+{
+	BACKGROUND-COLOR: #eeeeee
+}
+a.headerlinks:link  {color: #196BAC; text-decoration: underline;}
+a.headerlinks:visited { color: #196BAC; text-decoration: underline; }
+a.headerlinks:hover { color: #196BAC; text-decoration: underline;}
+a.bluelinks:link  {color: #196BAC; text-decoration: none;}
+a.bluelinks:visited { color: #196BAC; text-decoration: none; }
+a.bluelinks:hover { color: #196BAC; text-decoration: underline;}
+a.footerlinks:link  {color: #666666; text-decoration: none;}
+a.footerlinks:visited { color: #666666; text-decoration: none; }
+a.footerlinks:hover { color: #333333; text-decoration: underline;}
+a.faqlinks:link  {color: #000000; text-decoration: none;}
+a.faqlinks:visited { color: #000000; text-decoration: none; }
+a.faqlinks:hover { color: #000000; text-decoration: underline;}
+a.sidelinks:link  { font-size: 12px; padding:0 8 0 8; color: #000000; text-decoration: none;}
+a.sidelinks:visited { font-size: 12px; padding:0 8 0 8; color: #000000; text-decoration: none; }
+a.sidelinks:hover { font-size: 12px; padding:0 8 0 8; color: #000000; text-decoration: underline;}
+a.registerlinks:link  {color: #000000; text-decoration: underline;}
+a.registerlinks:visited { color: #000000; text-decoration: underline; }
+a.registerlinks:hover { color: #000000; text-decoration: none;}
+a.namelinks:link  { font-size: 14 px; color: #000000; text-decoration: underline;}
+a.namelinks:visited { font-size: 14 px; color: #000000; text-decoration: underline; }
+a.namelinks:hover { font-size: 14 px; color: #000000; text-decoration: underline;}
+
+.itemBorder { border-right: 0px dotted #5A595A; }
+.itemText { text-decoration: none; color: black; font: 10px Verdana, Arial, Helvetica; font-weight:500;}
+
+.itemBorder2 {border-right: 1px solid #5A595A;}
+.itemText2 { padding: 0 0 0 10; text-decoration: none; color: black; font: 9px Verdana, Arial, Helvetica; font-weight:500;}
+.formField { border: 1px solid #AAAAAA;}

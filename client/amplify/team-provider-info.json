@@ -1,0 +1,22 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-omas-dev-202159-authRole",
+            "UnauthRoleArn": "arn:aws:iam::016551291133:role/amplify-omas-dev-202159-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::016551291133:role/amplify-omas-dev-202159-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-omas-dev-202159-deployment",
+            "UnauthRoleName": "amplify-omas-dev-202159-unauthRole",
+            "StackName": "amplify-omas-dev-202159",
+            "StackId": "arn:aws:cloudformation:us-east-1:016551291133:stack/amplify-omas-dev-202159/703e2230-8e66-11ea-b862-12d8771823f5",
+            "AmplifyAppId": "d1jjwbvyz8jp3b"
+        },
+        "categories": {
+            "auth": {
+                "omas": {
+                    "hostedUIProviderCreds": "[{\"ProviderName\":\"Google\",\"client_id\":\"680505659724-s8477ti68punrr4smilrmijssjab4brc.apps.googleusercontent.com\",\"client_secret\":\"CAu6leXnWwZYXvm6zxSadb2T\"}]"
+                }
+            }
+        }
+    }
+}

@@ -1,17 +1,22 @@
-import { CssBaseline } from "@material-ui/core";
-import { ThemeProvider } from "@material-ui/styles";
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
-import { UserProvider } from "./context/UserContext";
-import Theme from "./Theme";
+import '@aws-amplify/ui/dist/style.css';
+import Amplify from 'aws-amplify';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import awsconfig from './aws-exports';
+import './index.css';
+import * as serviceWorker from './serviceWorker';
+
+Amplify.configure(awsconfig);
 
 ReactDOM.render(
-  <UserProvider>
-    <ThemeProvider theme={Theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  </UserProvider>,
-  document.getElementById("root")
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
 );
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
+serviceWorker.unregister();

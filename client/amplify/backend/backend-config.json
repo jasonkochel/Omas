@@ -1,0 +1,9 @@
+{
+	"auth": {
+		"omas": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": []
+		}
+	}
+}

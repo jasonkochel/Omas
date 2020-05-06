@@ -11,19 +11,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import MailIcon from '@material-ui/icons/Mail';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
-import { Auth } from 'aws-amplify';
-import {
-  ConfirmSignIn,
-  ConfirmSignUp,
-  ForgotPassword,
-  RequireNewPassword,
-  SignUp,
-  VerifyContact,
-  withAuthenticator,
-} from 'aws-amplify-react';
-import React, { useState } from 'react';
-import './App.css';
-import CustomSignIn from './components/CustomSignIn';
+import React from 'react';
 
 const drawerWidth = 240;
 
@@ -50,8 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function App() {
-  const [user, setUser] = useState(null);
+export default function ClippedDrawer() {
   const classes = useStyles();
 
   return (
@@ -94,16 +81,6 @@ function App() {
       </Drawer>
       <main className={classes.content}>
         <Toolbar />
-        <button
-          onClick={async () => {
-            const user = await Auth.currentAuthenticatedUser();
-            setUser(user);
-          }}
-        >
-          Get User Info
-        </button>
-        <pre style={{ textAlign: 'left' }}>{JSON.stringify(user?.attributes, null, 2)}</pre>
-
         <Typography paragraph>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
           magna aliqua. Rhoncus dolor purus non enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
@@ -128,13 +105,3 @@ function App() {
     </div>
   );
 }
-
-export default withAuthenticator(App, false, [
-  <CustomSignIn />,
-  <ConfirmSignIn />,
-  <VerifyContact />,
-  <SignUp />,
-  <ConfirmSignUp />,
-  <ForgotPassword />,
-  <RequireNewPassword />,
-]);

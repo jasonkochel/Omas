@@ -157,10 +157,10 @@ class CustomSignIn extends SignIn {
           <form>
             <div className={classes.sectionBody}>
               <div className={classes.formField}>
-                <div className={classes.inputLabel}>Username *</div>
+                <div className={classes.inputLabel}>Email *</div>
                 <input
                   onChange={this.handleInputChange}
-                  placeholder="Enter your username"
+                  placeholder="Your email address is your username"
                   name="username"
                   type="text"
                   className={classes.input}

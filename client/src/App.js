@@ -1,21 +1,10 @@
 import { CssBaseline, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Auth } from 'aws-amplify';
-import {
-  ConfirmSignIn,
-  ConfirmSignUp,
-  ForgotPassword,
-  RequireNewPassword,
-  SignUp,
-  VerifyContact,
-  withAuthenticator,
-} from 'aws-amplify-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
-import CustomSignIn from './components/CustomSignIn';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -27,68 +16,43 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const App = () => {
-  const [user, setUser] = useState(null);
+const Order = () => <div>Place an Order</div>;
+const History = () => <div>Order History</div>;
+const Admin = () => <div>Admin Section</div>;
+
+const App = ({ authState, authData }) => {
   const classes = useStyles();
+  const [auth, setAuth] = useState(null);
+
+  useEffect(() => {
+    setAuth(authData);
+  }, [authState, authData]);
 
   return (
     <div className={classes.root}>
-      <CssBaseline />
-      <Header />
-      <Sidebar />
-      <main className={classes.content}>
-        <button
-          onClick={async () => {
-            const user = await Auth.currentAuthenticatedUser();
-            setUser(user);
-          }}
-        >
-          Get User Info
-        </button>
-        <pre style={{ textAlign: 'left' }}>{JSON.stringify(user?.attributes, null, 2)}</pre>
-
-        <Typography paragraph>Lorem ipsum dolor sit amet</Typography>
-      </main>
+      <Router>
+        <CssBaseline />
+        <Header auth={auth} />
+        <Sidebar />
+        <main className={classes.content}>
+          <Switch>
+            <Route path="/order">
+              <Order />
+            </Route>
+            <Route path="/history">
+              <History />
+            </Route>
+            <Route path="/admin">
+              <Admin />
+            </Route>
+            <Route path="*">
+              <Typography paragraph>Make a selection on the left</Typography>
+            </Route>
+          </Switch>
+        </main>
+      </Router>
     </div>
   );
 };
 
-const signUpConfig = {
-  hiddenDefaults: ['username', 'email'],
-  signUpFields: [
-    {
-      label: 'Email',
-      key: 'username', // needed for email-as-username
-      required: true,
-      displayOrder: 1,
-      type: 'string',
-      custom: false,
-    },
-    {
-      label: 'Password',
-      key: 'password',
-      required: true,
-      displayOrder: 2,
-      type: 'password',
-      custom: false,
-    },
-    {
-      label: 'Phone Number',
-      key: 'phone_number',
-      required: true,
-      displayOrder: 3,
-      type: 'tel',
-      custom: false,
-    },
-  ],
-};
-
-export default withAuthenticator(App, false, [
-  <CustomSignIn />,
-  <ConfirmSignIn />,
-  <VerifyContact />,
-  <SignUp signUpConfig={signUpConfig} />,
-  <ConfirmSignUp />,
-  <ForgotPassword usernameAttributes="Email" />,
-  <RequireNewPassword />,
-]);
+export default App;

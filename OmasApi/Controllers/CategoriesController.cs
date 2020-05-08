@@ -73,6 +73,8 @@ namespace OmasApi.Controllers
         [HttpPost]
         public async Task<Category> Post([FromBody] Category category)
         {
+            // TODO model validation necessary?
+
             _db.Categories.Add(category);
             await _db.SaveChangesAsync();
 
@@ -80,7 +82,7 @@ namespace OmasApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task DeleteCatalog(int id)
+        public async Task Delete(int id)
         {
             var category = await Get(id);
 

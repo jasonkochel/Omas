@@ -2,7 +2,7 @@ import '@aws-amplify/ui/dist/style.css';
 import Amplify from 'aws-amplify';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import AuthenticatedApp from './AuthenticatedApp';
 import awsconfig from './aws-exports';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
@@ -11,7 +11,7 @@ Amplify.configure(awsconfig);
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AuthenticatedApp />
   </React.StrictMode>,
   document.getElementById('root')
 );

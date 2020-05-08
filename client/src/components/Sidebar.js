@@ -1,8 +1,8 @@
-import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar } from '@material-ui/core';
+import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import MailIcon from '@material-ui/icons/Mail';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
+import { AddShoppingCart, Category, DateRange, History, LocalOffer, PlaylistAddCheck } from '@material-ui/icons';
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -16,8 +16,27 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerContainer: {
     overflow: 'auto',
+    marginTop: 64,
   },
 }));
+
+function ListItemLink(props) {
+  const { icon, primary, to } = props;
+
+  const renderLink = React.useMemo(
+    () => React.forwardRef((itemProps, ref) => <RouterLink to={to} ref={ref} {...itemProps} />),
+    [to]
+  );
+
+  return (
+    <li>
+      <ListItem button component={renderLink}>
+        {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
+        <ListItemText primary={primary} />
+      </ListItem>
+    </li>
+  );
+}
 
 const Sidebar = () => {
   const classes = useStyles();
@@ -30,24 +49,18 @@ const Sidebar = () => {
         paper: classes.drawerPaper,
       }}
     >
-      <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItemLink to="/order" primary="Place an Order" icon={<AddShoppingCart />} />
+          <ListItemLink to="/history" primary="View Order History" icon={<History />} />
         </List>
         <Divider />
         <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListSubheader>Administration</ListSubheader>
+          <ListItemLink to="/admin" primary="Order Cycles" icon={<DateRange />} />
+          <ListItemLink to="/admin" primary="View Orders" icon={<PlaylistAddCheck />} />
+          <ListItemLink to="/admin" primary="Manage Items" icon={<LocalOffer />} />
+          <ListItemLink to="/admin" primary="Manage Categories" icon={<Category />} />
         </List>
       </div>
     </Drawer>

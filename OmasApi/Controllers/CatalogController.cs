@@ -65,7 +65,7 @@ namespace OmasApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task DeleteCatalog(int id)
+        public async Task Delete(int id)
         {
             var catalog = await Get(id);
 

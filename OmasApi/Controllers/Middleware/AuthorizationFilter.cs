@@ -18,6 +18,7 @@ namespace OmasApi.Controllers.Middleware
             {
                 var controllerAttributes = actionDescriptor.ControllerTypeInfo.GetCustomAttributes(inherit: true);
                 var actionAttributes = actionDescriptor.MethodInfo.GetCustomAttributes(inherit: true);
+
                 if (actionAttributes.Any(a => a.GetType() == typeof(AllowAnonymousAttribute)) || 
                     controllerAttributes.Any(a => a.GetType() == typeof(AllowAnonymousAttribute)))
                 {

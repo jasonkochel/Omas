@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmasOrders", "OmasOrders\OmasOrders.csproj", "{26B8177F-69D2-4025-AB6F-4EF1A20A2757}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmasApi", "OmasApi\OmasApi.csproj", "{420D5AE3-A009-4DEB-AE8A-374BD700CEDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OmasApi", "OmasApi\OmasApi.csproj", "{420D5AE3-A009-4DEB-AE8A-374BD700CEDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmasConsole", "OmasConsole\OmasConsole.csproj", "{73F3A2A2-A398-4AE1-893E-40460974AF54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{420D5AE3-A009-4DEB-AE8A-374BD700CEDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{420D5AE3-A009-4DEB-AE8A-374BD700CEDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{420D5AE3-A009-4DEB-AE8A-374BD700CEDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73F3A2A2-A398-4AE1-893E-40460974AF54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73F3A2A2-A398-4AE1-893E-40460974AF54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73F3A2A2-A398-4AE1-893E-40460974AF54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73F3A2A2-A398-4AE1-893E-40460974AF54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import Categories from './components/Categories';
 import Header from './components/Header';
+import Order from "./components/Order";
 import Sidebar from './components/Sidebar';
 
 const useStyles = makeStyles(theme => ({
@@ -24,7 +25,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Order = () => <div>Place an Order</div>;
 const History = () => <div>Order History</div>;
 const Admin = () => <div>Admin Section</div>;
 

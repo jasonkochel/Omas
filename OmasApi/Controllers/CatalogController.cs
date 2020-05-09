@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,6 @@ using OmasApi.Data;
 namespace OmasApi.Controllers
 {
     [ApiController]
-    [AllowAnonymous]
     [Route("[controller]")]
     public class CatalogController : ControllerBase
     {
@@ -21,13 +21,36 @@ namespace OmasApi.Controllers
         }
 
         [HttpGet]
-        public IQueryable<CatalogItem> GetTemplate()
+        public List<Category> GetCatalog([FromQuery] CatalogQueryType queryType)
         {
-            return _db.CatalogItems
-                .Include(c => c.Category)
-                .Where(c => c.BatchId == 0)
-                .OrderBy(c => c.Sequence);
+            var batchId = 0;
+
+            if (queryType == CatalogQueryType.Current)
+            {
+                var batch = _db.OrderBatches.OrderByDescending(ob => ob.DeliveryDate).FirstOrDefault(ob => ob.IsOpen);
+                if (batch == null)
+                {
+                    throw new NotFoundException("There is no open ordering batch");
+                }
+
+                batchId = batch.BatchId;
+            }
+
+            var results = _db.Categories
+                .AsNoTracking()
+                .OrderBy(c => c.Sequence)
+                .Select(c => new Category
+                {
+                    CategoryId = c.CategoryId,
+                    Name = c.Name,
+                    Description = c.Description,
+                    CatalogItems = c.CatalogItems.OrderBy(i => i.Sequence).Where(i => i.BatchId == batchId).Select(i => i).ToList()
+                })
+                .ToList();
+            
+            return results;
         }
+
 
         [HttpGet("{id}")]
         public async Task<CatalogItem> Get(int id)
@@ -72,5 +95,11 @@ namespace OmasApi.Controllers
             _db.CatalogItems.Remove(catalog);
             await _db.SaveChangesAsync();
         }
+    }
+
+    public enum CatalogQueryType
+    {
+        Base,
+        Current
     }
 }

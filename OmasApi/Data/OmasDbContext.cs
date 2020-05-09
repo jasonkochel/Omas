@@ -31,7 +31,6 @@ namespace OmasApi.Data
                 .WithOne(o => o.OrderBatch)
                 .HasPrincipalKey(b => b.BatchId)
                 .HasForeignKey(o => o.BatchId);
-
         }
     }
 }

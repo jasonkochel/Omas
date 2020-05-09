@@ -18,6 +18,6 @@ namespace OmasApi.Data
 
         public int Sequence { get; set; }
 
-        public virtual ICollection<CatalogItem> CatalogItems { get; set; }
+        public virtual IEnumerable<CatalogItem> CatalogItems { get; set; }
     }
 }

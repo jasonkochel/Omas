@@ -85,7 +85,17 @@ namespace OmasApi.Controllers
         [HttpDelete("{id}")]
         public async Task Delete(int id)
         {
+            if (_db.CatalogItems.Any(i => i.CategoryId == id))
+            {
+                throw new ReferentialIntegrityException("This category is in use and cannot be deleted");
+            }
+
             var category = await Get(id);
+
+            if (category == null)
+            {
+                throw new NotFoundException($"Category ID {id} does not exist");
+            }
 
             _db.Categories.Remove(category);
             await _db.SaveChangesAsync();

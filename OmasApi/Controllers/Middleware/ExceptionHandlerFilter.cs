@@ -51,4 +51,13 @@ namespace OmasApi.Controllers.Middleware
             StatusCode = HttpStatusCode.NotFound;
         }
     }
+
+    public class ReferentialIntegrityException : ApiException
+    {
+        public ReferentialIntegrityException(string message) : base(message)
+        {
+            StatusCode = HttpStatusCode.BadRequest;
+        }
+    }
+
 }

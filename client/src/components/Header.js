@@ -12,8 +12,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Header = ({ auth }) => {
+const Header = ({ authData }) => {
   const classes = useStyles();
+  const name = authData?.payload?.name ?? authData?.payload?.email;
 
   return (
     <AppBar position="fixed" className={classes.appBar}>
@@ -21,9 +22,9 @@ const Header = ({ auth }) => {
         <Typography variant="h6" className={classes.title}>
           Omas Pride Raw Food Ordering
         </Typography>
-        {auth && (
+        {name && (
           <Typography variant="h6" className={classes.title}>
-            Welcome, {auth.signInUserSession?.idToken?.payload?.name}
+            Welcome, {name}
           </Typography>
         )}
         <Button type="button" color="inherit" onClick={() => Auth.signOut()}>

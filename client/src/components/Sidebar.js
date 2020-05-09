@@ -60,7 +60,7 @@ const Sidebar = () => {
           <ListItemLink to="/admin" primary="Order Cycles" icon={<DateRange />} />
           <ListItemLink to="/admin" primary="View Orders" icon={<PlaylistAddCheck />} />
           <ListItemLink to="/admin" primary="Manage Items" icon={<LocalOffer />} />
-          <ListItemLink to="/admin" primary="Manage Categories" icon={<Category />} />
+          <ListItemLink to="/categories" primary="Manage Categories" icon={<Category />} />
         </List>
       </div>
     </Drawer>

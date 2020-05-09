@@ -19,7 +19,6 @@ namespace OmasApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services
@@ -34,13 +33,24 @@ namespace OmasApi
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 });
 
+            services.Configure<AppSettings>(Configuration);
+            services.AddSingleton<UserIdentity, UserIdentity>();
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                    });
+            });
+
             services.AddControllers();
 
             services.AddDbContextPool<OmasDbContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -49,10 +59,9 @@ namespace OmasApi
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
-            app.UseAuthorization();
+            //app.UseAuthorization();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {

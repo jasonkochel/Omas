@@ -6,7 +6,7 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use(
-  (config) => {
+  config => {
     if (!config.headers.Authorization) {
       const token = JSON.parse(localStorage.getItem('auth') ?? '{}').jwtToken;
 
@@ -17,15 +17,19 @@ instance.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  error => Promise.reject(error)
 );
 
 instance.interceptors.response.use(
   // Any 2xx
-  (response) => response,
+  response => response,
   // Any non-2xx
-  (error) => {
-    toast.error(error.response.data.Message);
+  error => {
+    const message =
+      error.response.data.Message ??
+      error.response.data.title + ' - ' + error.response.data.errors?.Name.toString();
+
+    toast.error(message);
     return Promise.reject({ ...error });
   }
 );

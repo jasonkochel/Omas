@@ -6,7 +6,7 @@ const Order = () => {
 
   useEffect(() => {
     api
-      .getCatalog(api.catalogQueryType.CURRENT)
+      .getCatalog()
       .then(data => setCatalog(data))
       .catch(() => setCatalog([]));
   }, []);

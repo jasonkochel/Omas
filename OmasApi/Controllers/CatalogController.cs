@@ -21,30 +21,23 @@ namespace OmasApi.Controllers
         }
 
         [HttpGet]
-        public List<Category> GetCatalog([FromQuery] CatalogQueryType queryType)
+        public List<Category> GetCatalog([FromQuery] int? categoryId)
         {
-            var batchId = 0;
+            var query = _db.Categories.AsNoTracking();
 
-            if (queryType == CatalogQueryType.Current)
+            if (categoryId != null)
             {
-                var batch = _db.OrderBatches.OrderByDescending(ob => ob.DeliveryDate).FirstOrDefault(ob => ob.IsOpen);
-                if (batch == null)
-                {
-                    throw new NotFoundException("There is no open ordering batch");
-                }
-
-                batchId = batch.BatchId;
+                query = query.Where(c => c.CategoryId == categoryId);
             }
 
-            var results = _db.Categories
-                .AsNoTracking()
+            var results = query
                 .OrderBy(c => c.Sequence)
                 .Select(c => new Category
                 {
                     CategoryId = c.CategoryId,
                     Name = c.Name,
                     Description = c.Description,
-                    CatalogItems = c.CatalogItems.OrderBy(i => i.Sequence).Where(i => i.BatchId == batchId).Select(i => i).ToList()
+                    CatalogItems = c.CatalogItems.OrderBy(i => i.Sequence).Select(i => i).ToList()
                 })
                 .ToList();
             
@@ -95,11 +88,5 @@ namespace OmasApi.Controllers
             _db.CatalogItems.Remove(catalog);
             await _db.SaveChangesAsync();
         }
-    }
-
-    public enum CatalogQueryType
-    {
-        Base,
-        Current
     }
 }

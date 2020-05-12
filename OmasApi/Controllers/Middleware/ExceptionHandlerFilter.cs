@@ -12,7 +12,7 @@ namespace OmasApi.Controllers.Middleware
         {
             context.Result = new ContentResult
             {
-                Content = JsonConvert.SerializeObject(new { context.Exception.Message }),
+                Content = JsonConvert.SerializeObject(new { title = context.Exception.Message }),
                 ContentType = "application/json; charset=UTF-8",
                 StatusCode = context.Exception is ApiException e
                     ? (int)e.StatusCode

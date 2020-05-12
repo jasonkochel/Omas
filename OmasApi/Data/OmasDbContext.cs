@@ -21,12 +21,6 @@ namespace OmasApi.Data
                 .HasForeignKey(ci => ci.CategoryId);
 
             builder.Entity<OrderBatch>()
-                .HasMany(b => b.CatalogItems)
-                .WithOne(c => c.OrderBatch)
-                .HasPrincipalKey(b => b.BatchId)
-                .HasForeignKey(c => c.BatchId);
-
-            builder.Entity<OrderBatch>()
                 .HasMany(b => b.OrderItems)
                 .WithOne(o => o.OrderBatch)
                 .HasPrincipalKey(b => b.BatchId)

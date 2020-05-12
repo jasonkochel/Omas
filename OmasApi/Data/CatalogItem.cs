@@ -10,9 +10,6 @@ namespace OmasApi.Data
         [Key]
         public int CatalogId { get; set; }
 
-        public int BatchId { get; set; }
-        public virtual OrderBatch OrderBatch { get; set; }
-
         [MaxLength(200)]
         public string Name { get; set; }
 
@@ -34,12 +31,9 @@ namespace OmasApi.Data
         [Column(TypeName = "decimal(7,2)")]
         public decimal Weight { get; set; }
 
-        [Column(TypeName = "decimal(7,2)")]
-        public decimal? Sequence { get; set; }
+        public int Sequence { get; set; }
 
         public int CategoryId { get; set; }
         public virtual Category Category { get; set; }
-
-        public virtual ICollection<Order> Orders { get; set; }
     }
 }

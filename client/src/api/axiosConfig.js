@@ -25,9 +25,8 @@ instance.interceptors.response.use(
   response => response,
   // Any non-2xx
   error => {
-    const message =
-      error.response.data.Message ??
-      error.response.data.title + ' - ' + error.response.data.errors?.Name.toString();
+    const data = error.response.data;
+    const message = data.title; // + (data.errors?.Name ? ' - ' + error.response.data.errors?.Name.toString() : '');
 
     toast.error(message);
     return Promise.reject({ ...error });

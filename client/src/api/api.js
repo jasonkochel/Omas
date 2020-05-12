@@ -1,14 +1,11 @@
 import axios from './axiosConfig';
 
-const catalogQueryType = {
-  BASE: 'Base',
-  CURRENT: 'Current',
-};
-
 const getCategories = async () => axios.get('/categories').then(res => res.data);
 
-const getCatalog = async queryType =>
-  axios.get(`/catalog?queryType=${queryType}`).then(res => res.data);
+const getCatalog = async categoryId => {
+  const qs = categoryId ? `?categoryId=${categoryId}` : '';
+  return axios.get('/catalog' + qs).then(res => res.data);
+};
 
 const addCategory = async category => axios.post('/categories', category).then(res => res.data);
 
@@ -21,13 +18,23 @@ const moveCategoryUp = async id => axios.patch(`/categories/${id}/up`);
 
 const moveCategoryDown = async id => axios.patch(`/categories/${id}/down`);
 
+const addItem = () => {};
+const updateItem = () => {};
+const deleteItem = () => {};
+const moveItemup = () => {};
+const moveItemDown = () => {};
+
 export default {
   addCategory,
-  catalogQueryType,
+  addItem,
   deleteCategory,
+  deleteItem,
   getCatalog,
   getCategories,
   moveCategoryDown,
   moveCategoryUp,
+  moveItemDown,
+  moveItemup,
   updateCategory,
+  updateItem,
 };

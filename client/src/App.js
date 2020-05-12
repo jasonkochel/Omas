@@ -5,10 +5,10 @@ import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './App.css';
+import CatalogItems from './components/CatalogItems';
 import Categories from './components/Categories';
 import Header from './components/Header';
-import Order from "./components/Order";
+import Order from './components/Order';
 import Sidebar from './components/Sidebar';
 
 const useStyles = makeStyles(theme => ({
@@ -57,6 +57,9 @@ const App = ({ authState }) => {
             </Route>
             <Route path="/admin">
               <Admin />
+            </Route>
+            <Route path="/catalog">
+              <CatalogItems />
             </Route>
             <Route path="/categories">
               <Categories />

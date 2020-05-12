@@ -1,12 +1,27 @@
-import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core';
+import {
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListSubheader,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { AddShoppingCart, Category, DateRange, History, LocalOffer, PlaylistAddCheck } from '@material-ui/icons';
+import {
+  AddShoppingCart,
+  Category,
+  DateRange,
+  History,
+  LocalOffer,
+  PlaylistAddCheck,
+} from '@material-ui/icons';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
@@ -59,7 +74,7 @@ const Sidebar = () => {
           <ListSubheader>Administration</ListSubheader>
           <ListItemLink to="/admin" primary="Order Cycles" icon={<DateRange />} />
           <ListItemLink to="/admin" primary="View Orders" icon={<PlaylistAddCheck />} />
-          <ListItemLink to="/admin" primary="Manage Items" icon={<LocalOffer />} />
+          <ListItemLink to="/catalog" primary="Manage Items" icon={<LocalOffer />} />
           <ListItemLink to="/categories" primary="Manage Categories" icon={<Category />} />
         </List>
       </div>

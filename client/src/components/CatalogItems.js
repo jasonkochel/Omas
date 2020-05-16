@@ -9,7 +9,8 @@ const CatalogItems = () => {
   useEffect(() => {
     api
       .getCategories()
-      .then(data => setCategories(data))
+      .then(data => setCategories(data.slice(0, 2)))
+      //.then(data => setCategories(data))
       .catch(() => setCategories([]));
   }, []);
 
@@ -31,13 +32,13 @@ const CatalogItems = () => {
               field: 'price',
               render: rowData => (
                 <span>
-                  {rowData.price.toFixed(2)} per {rowData.pricePer.toLowerCase()}
+                  {Number(rowData.price).toFixed(2)} per {rowData.pricePer.toLowerCase()}
                 </span>
               ),
             },
           ]}
           idField="catalogId"
-          getData={() => api.getCatalog(cat.categoryId).then(res => res[0].catalogItems)}
+          getData={() => api.getCatalog(cat.categoryId).then(res => res[0].catalogItems)} // TODO: refactor API to support "get _items_ by [optional] categoryid" rather than returning singleton array of categories
           onAdd={api.addItem}
           onUpdate={api.updateItem}
           onDelete={api.deleteItem}

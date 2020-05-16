@@ -11,6 +11,8 @@ import React from 'react';
 import App from './App';
 import CustomSignIn from './components/CustomSignIn';
 
+// TODO: vet this fully
+// TODO: create users in local database too
 const signUpConfig = {
   hiddenDefaults: ['username', 'email'],
   signUpFields: [

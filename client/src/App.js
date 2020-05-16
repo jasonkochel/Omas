@@ -33,6 +33,7 @@ const App = ({ authState }) => {
   const [authData, setAuthData] = useState();
 
   useEffect(() => {
+    // TODO: handle expired token before it gets to the API
     Auth.currentAuthenticatedUser()
       .then(user => user.signInUserSession.idToken)
       .then(idToken => {

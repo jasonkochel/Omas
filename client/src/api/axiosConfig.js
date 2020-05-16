@@ -26,7 +26,7 @@ instance.interceptors.response.use(
   // Any non-2xx
   error => {
     const data = error.response.data;
-    const message = data.title; // + (data.errors?.Name ? ' - ' + error.response.data.errors?.Name.toString() : '');
+    const message = data.title; // TODO: for model validation errors, loop over "errors" property to display details
 
     toast.error(message);
     return Promise.reject({ ...error });

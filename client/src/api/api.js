@@ -18,11 +18,21 @@ const moveCategoryUp = async id => axios.patch(`/categories/${id}/up`);
 
 const moveCategoryDown = async id => axios.patch(`/categories/${id}/down`);
 
-const addItem = () => {};
-const updateItem = () => {};
-const deleteItem = () => {};
-const moveItemUp = () => {};
-const moveItemDown = () => {};
+const addItem = data => {
+  return Promise.resolve(data);
+};
+const updateItem = data => {
+  return Promise.resolve(data);
+};
+const deleteItem = data => {
+  return Promise.resolve(data);
+};
+const moveItemUp = data => {
+  return Promise.resolve(data);
+};
+const moveItemDown = data => {
+  return Promise.resolve(data);
+};
 
 export default {
   addCategory,

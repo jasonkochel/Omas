@@ -1,31 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
 import EditableTable from './EditableTable';
+import EditItemModal from './EditItemModal';
 
 const CatalogItems = () => {
-  const [catalog, setCatalog] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     api
-      .getCatalog()
-      .then(data => setCatalog(data))
-      .catch(() => setCatalog([]));
+      .getCategories()
+      .then(data => setCategories(data))
+      .catch(() => setCategories([]));
   }, []);
 
   return (
     <>
-      {catalog.map(cat => (
+      {categories.map(cat => (
         <EditableTable
           key={cat.categoryId}
           title={cat.name}
+          EditComponent={EditItemModal}
           columns={[
             {
               title: 'SKU',
               field: 'sku',
-              width: '20%',
             },
-            { title: 'Name', field: 'name', width: '60%' },
-            { title: 'Price', field: 'price', type: 'currency', width: '5%' },
+            { title: 'Name', field: 'name' },
+            {
+              title: 'Price',
+              field: 'price',
+              render: rowData => (
+                <span>
+                  {rowData.price.toFixed(2)} per {rowData.pricePer.toLowerCase()}
+                </span>
+              ),
+            },
           ]}
           idField="catalogId"
           getData={() => api.getCatalog(cat.categoryId).then(res => res[0].catalogItems)}

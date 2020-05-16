@@ -21,7 +21,7 @@ const moveCategoryDown = async id => axios.patch(`/categories/${id}/down`);
 const addItem = () => {};
 const updateItem = () => {};
 const deleteItem = () => {};
-const moveItemup = () => {};
+const moveItemUp = () => {};
 const moveItemDown = () => {};
 
 export default {
@@ -34,7 +34,7 @@ export default {
   moveCategoryDown,
   moveCategoryUp,
   moveItemDown,
-  moveItemup,
+  moveItemUp,
   updateCategory,
   updateItem,
 };

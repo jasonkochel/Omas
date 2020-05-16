@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OmasApi.Controllers.Middleware;
@@ -24,26 +22,9 @@ namespace OmasApi.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Category> GetAll([FromQuery] bool includeItems = false)
+        public IEnumerable<Category> GetAll()
         {
-            var query = _db.Categories.AsQueryable();
-
-            if (includeItems)
-            {
-                query = query.Include(c => c.CatalogItems);
-            }
-
-            var results = query.OrderBy(c => c.Sequence).ToList();
-
-            if (includeItems)
-            {
-                foreach (var r in results)
-                {
-                    r.CatalogItems = r.CatalogItems.OrderBy(ci => ci.Sequence).ToList();
-                }
-            }
-
-            return results;
+            return _db.Categories.OrderBy(c => c.Sequence).ToList();
         }
 
         [HttpGet("{id}")]

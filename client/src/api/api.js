@@ -19,12 +19,15 @@ const moveCategoryUp = async id => axios.patch(`/categories/${id}/up`);
 const moveCategoryDown = async id => axios.patch(`/categories/${id}/down`);
 
 const addItem = data => {
+  console.log('addItem API', data);
   return Promise.resolve(data);
 };
 const updateItem = data => {
+  console.log('updateItem API', data);
   return Promise.resolve(data);
 };
 const deleteItem = data => {
+  console.log('deleteItem API', data);
   return Promise.resolve(data);
 };
 const moveItemUp = data => {

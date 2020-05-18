@@ -1,10 +1,13 @@
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  FormControlLabel,
+  Grid,
   TextField,
 } from '@material-ui/core';
 import React, { useState } from 'react';
@@ -12,8 +15,15 @@ import { useForm } from 'react-hook-form';
 
 const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => {
   const [open, setOpen] = useState(true);
+
+  const defaultValues = data
+    ? { ...data, price: Number(data.price).toFixed(2) }
+    : { price: '0.00', multiplier: 1.0 };
+
+  const [useMultiplier, setUseMultiplier] = useState(defaultValues.multiplier !== 1.0);
+
   const { register, handleSubmit } = useForm({
-    defaultValues: { ...data, price: Number(data.price).toFixed(2) },
+    defaultValues: defaultValues,
   });
 
   const handleCancel = () => {
@@ -24,7 +34,7 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
   // TODO: combine these into a single success handler
 
   const handleUpdate = formData => {
-    const newData = { ...formData, catalogId: data.catalogId };
+    const newData = { ...formData, catalogId: data?.catalogId };
     setOpen(false);
     onEditingApproved(mode, newData, data);
   };
@@ -37,56 +47,100 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
   const dialogTitle = mode === 'delete' ? 'Delete Item?' : 'Enter Item Details';
 
   return (
-    <Dialog open={open} onClose={handleCancel} aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title">{dialogTitle}</DialogTitle>
+    <Dialog open={open} onClose={handleCancel} maxWidth="md">
+      <DialogTitle>{dialogTitle}</DialogTitle>
       <DialogContent>
         {mode === 'delete' ? (
           <DialogContentText>Are you sure you want to delete {data.name}?</DialogContentText>
         ) : (
           <form>
-            <TextField
-              type="text"
-              name="sku"
-              label="SKU"
-              inputRef={register({ required: true, maxLength: 10 })}
-            />
-            <TextField
-              type="text"
-              name="name"
-              label="Name"
-              inputRef={register({ required: true, maxLength: 200 })}
-            />
-            <TextField
-              type="number"
-              name="price"
-              label="Price"
-              defaultValue={Number(data.price).toFixed(2)}
-              inputRef={register({ required: true, maxLength: 9 })}
-            />
-            <TextField
-              type="text"
-              name="pricePer"
-              label="Price Per"
-              inputRef={register({ required: true })}
-            />
-            <TextField
-              type="text"
-              name="orderPer"
-              label="Order Per"
-              inputRef={register({ required: true })}
-            />
-            <TextField
-              type="number"
-              name="weight"
-              label="Weight"
-              inputRef={register({ required: true })}
-            />
-            <TextField
-              type="number"
-              name="multiplier"
-              label="Multiplier"
-              inputRef={register({ required: true })}
-            />
+            <Grid container spacing={0}>
+              <Grid item xs={4}>
+                <TextField
+                  type="text"
+                  name="sku"
+                  label="SKU"
+                  variant="filled"
+                  margin="normal"
+                  inputRef={register({ required: true, maxLength: 10 })}
+                />
+              </Grid>
+              <Grid item xs={8}>
+                <TextField
+                  type="text"
+                  name="name"
+                  label="Name"
+                  margin="normal"
+                  variant="filled"
+                  fullWidth={true}
+                  inputRef={register({ required: true, maxLength: 200 })}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  type="number"
+                  name="price"
+                  label="Price"
+                  margin="normal"
+                  variant="filled"
+                  inputRef={register({ required: true, maxLength: 9 })}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  type="text"
+                  name="pricePer"
+                  label="Per"
+                  helperText="(each, case, etc)"
+                  margin="normal"
+                  variant="filled"
+                  inputRef={register({ required: true })}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  type="number"
+                  name="weight"
+                  label="Weight (lbs)"
+                  margin="normal"
+                  variant="filled"
+                  inputRef={register({ required: true })}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Checkbox checked={useMultiplier} onChange={() => setUseMultiplier(x => !x)} />
+                  }
+                  label="This item is priced by one unit (e.g. lbs) but ordered by another (e.g. each)"
+                />
+              </Grid>
+              {useMultiplier && (
+                <Grid item xs={4}>
+                  <TextField
+                    type="text"
+                    name="orderPer"
+                    label="Ordered in Units Of"
+                    margin="normal"
+                    variant="filled"
+                    inputRef={register({ required: true })}
+                  />
+                </Grid>
+              )}
+              {useMultiplier && (
+                <Grid item xs={8}>
+                  <TextField
+                    type="number"
+                    name="multiplier"
+                    label="Multiplier"
+                    helperText="(The amount to multiply the price by, for each 'order-per' unit)"
+                    margin="normal"
+                    variant="filled"
+                    inputRef={register({ required: true })}
+                  />
+                </Grid>
+              )}
+            </Grid>
           </form>
         )}
       </DialogContent>

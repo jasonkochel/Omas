@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OmasApi.Data
 {
+    [Table("Orders")]
     public class Order
     {
         [Key]

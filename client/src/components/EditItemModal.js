@@ -22,7 +22,7 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
 
   const [useMultiplier, setUseMultiplier] = useState(defaultValues.multiplier !== 1.0);
 
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, errors } = useForm({
     defaultValues: defaultValues,
   });
 
@@ -31,9 +31,11 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
     onEditingCanceled(mode, data);
   };
 
-  // TODO: combine these into a single success handler
+  const handleAddOrUpdate = formData => {
+    if (Object.keys(errors).length > 0) {
+      // TODO: check form errors (form will not submit if there are errors)
+    }
 
-  const handleUpdate = formData => {
     const newData = { ...formData, catalogId: data?.catalogId };
     setOpen(false);
     onEditingApproved(mode, newData, data);
@@ -145,16 +147,16 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel} color="primary">
+        <Button onClick={handleCancel} color="secondary">
           Cancel
         </Button>
         {(mode === 'update' || mode === 'add') && (
-          <Button onClick={handleSubmit(handleUpdate)} color="primary">
+          <Button onClick={handleSubmit(handleAddOrUpdate)} variant="contained" color="primary">
             Save
           </Button>
         )}
         {mode === 'delete' && (
-          <Button onClick={handleDelete} color="primary">
+          <Button onClick={handleDelete} variant="contained" color="primary">
             Delete
           </Button>
         )}

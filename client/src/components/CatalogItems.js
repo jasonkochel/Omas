@@ -9,7 +9,7 @@ const CatalogItems = () => {
   useEffect(() => {
     api
       .getCategories()
-      .then(data => setCategories(data.slice(0, 2)))
+      .then(data => setCategories(data.slice(0, 4))) // TODO: this is for dev speed only - remove for prod!
       //.then(data => setCategories(data))
       .catch(() => setCategories([]));
   }, []);
@@ -25,20 +25,25 @@ const CatalogItems = () => {
             {
               title: 'SKU',
               field: 'sku',
+              width: '20%',
             },
-            { title: 'Name', field: 'name' },
+            { title: 'Name', field: 'name', width: '40%' },
             {
               title: 'Price',
               field: 'price',
-              render: rowData => (
-                <span>
-                  {Number(rowData.price).toFixed(2)} per {rowData.pricePer.toLowerCase()}
-                </span>
-              ),
+              render: rowData =>
+                Number(rowData.price).toFixed(2) + ' per ' + rowData.pricePer.toLowerCase(),
+              width: '20%',
+            },
+            {
+              title: 'Weight',
+              field: 'weight',
+              render: rowData => Number(rowData.weight).toFixed(2) + ' lbs',
+              width: '20%',
             },
           ]}
           idField="catalogId"
-          getData={() => api.getCatalog(cat.categoryId).then(res => res[0].catalogItems)} // TODO: refactor API to support "get _items_ by [optional] categoryid" rather than returning singleton array of categories
+          getData={() => api.getItemsByCategoryId(cat.categoryId)}
           onAdd={api.addItem}
           onUpdate={api.updateItem}
           onDelete={api.deleteItem}

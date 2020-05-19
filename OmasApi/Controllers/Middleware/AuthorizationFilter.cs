@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using OmasApi.Data;
 
 namespace OmasApi.Controllers.Middleware
 {
@@ -31,8 +32,10 @@ namespace OmasApi.Controllers.Middleware
             var token = ValidateJwt(jwt);
 
             var userIdentity = (UserIdentity)context.HttpContext.RequestServices.GetService(typeof(UserIdentity));
-            userIdentity.UserId = token.Payload.Sub;
+            userIdentity.CognitoId = Guid.Parse(token.Payload.Sub);
             userIdentity.Email = token.Claims.SingleOrDefault(c => c.Type == "email")?.Value;
+            userIdentity.Name = token.Claims.SingleOrDefault(c => c.Type == "name")?.Value ?? "";
+            userIdentity.Phone = token.Claims.SingleOrDefault(c => c.Type == "phone_number")?.Value ?? "";
             userIdentity.Admin = token.Claims.Any(c => c.Type == "cognito:groups" && c.Value == "administrators");
 
             if (RequiresAdmin(context) && !userIdentity.Admin)

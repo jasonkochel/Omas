@@ -1,8 +1,12 @@
 import axios from './axiosConfig';
 
+// the "body" of this post is just the JWT which Axios puts in the Auth header,
+// but which the caller expects to be returned by the promise
+const createUser = async idToken => axios.post('/users').then(() => idToken);
+
 const getCategories = async () => axios.get('/categories').then(res => res.data);
 
-const getCatalog = async categoryId => {
+const getItemsByCategoryId = async categoryId => {
   const qs = categoryId ? `?categoryId=${categoryId}` : '';
   return axios.get('/catalog' + qs).then(res => res.data);
 };
@@ -37,13 +41,17 @@ const moveItemDown = data => {
   return Promise.resolve(data);
 };
 
+const getOrderHistory = () => axios.get('/orders').then(res => res.data);
+
 export default {
   addCategory,
   addItem,
+  createUser,
   deleteCategory,
   deleteItem,
-  getCatalog,
+  getItemsByCategoryId,
   getCategories,
+  getOrderHistory,
   moveCategoryDown,
   moveCategoryUp,
   moveItemDown,

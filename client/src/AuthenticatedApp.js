@@ -11,8 +11,6 @@ import React from 'react';
 import App from './App';
 import CustomSignIn from './components/CustomSignIn';
 
-// TODO: vet this fully
-// TODO: create users in local database too
 const signUpConfig = {
   hiddenDefaults: ['username', 'email'],
   signUpFields: [
@@ -22,15 +20,12 @@ const signUpConfig = {
       required: true,
       displayOrder: 1,
       type: 'string',
-      custom: false,
     },
     {
-      label: 'Password',
-      key: 'password',
+      label: 'Full Name',
+      key: 'name',
       required: true,
       displayOrder: 2,
-      type: 'password',
-      custom: false,
     },
     {
       label: 'Phone Number',
@@ -38,7 +33,13 @@ const signUpConfig = {
       required: true,
       displayOrder: 3,
       type: 'tel',
-      custom: false,
+    },
+    {
+      label: 'Create a Password',
+      key: 'password',
+      required: true,
+      displayOrder: 4,
+      type: 'password',
     },
   ],
 };

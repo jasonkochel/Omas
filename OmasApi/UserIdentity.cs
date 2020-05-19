@@ -1,9 +1,13 @@
-﻿namespace OmasApi
+﻿using System;
+
+namespace OmasApi
 {
     public class UserIdentity
     {
-        public string UserId { get; set; }
+        public Guid CognitoId { get; set; }
         public string Email { get; set; }
+        public string Name { get; set; }
+        public string Phone { get; set; }
         public bool Admin { get; set; }
     }
 }

@@ -5,8 +5,10 @@ import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from './api/api';
 import CatalogItems from './components/CatalogItems';
 import Categories from './components/Categories';
+import EditableTable from './components/EditableTable';
 import Header from './components/Header';
 import Order from './components/Order';
 import Sidebar from './components/Sidebar';
@@ -21,11 +23,30 @@ const useStyles = makeStyles(theme => ({
     marginTop: 64,
   },
   toast: {
-    fontFamily: 'serif',
+    textAlign: 'center',
   },
 }));
 
-const History = () => <div>Order History</div>;
+const History = () => (
+  <EditableTable
+    title="History"
+    columns={[
+      { title: 'Delivery Date', field: 'deliveryDate' },
+      {
+        title: 'Order Total',
+        field: 'total',
+      },
+    ]}
+    idField="deliveryDate"
+    getData={api.getOrderHistory}
+    onAdd={api.addCategory}
+    onUpdate={api.updateCategory}
+    onDelete={api.deleteCategory}
+    onMoveUp={api.moveCategoryUp}
+    onMoveDown={api.moveCategoryDown}
+  />
+);
+
 const Admin = () => <div>Admin Section</div>;
 
 const App = ({ authState }) => {
@@ -33,13 +54,10 @@ const App = ({ authState }) => {
   const [authData, setAuthData] = useState();
 
   useEffect(() => {
-    // TODO: handle expired token before it gets to the API
     Auth.currentAuthenticatedUser()
       .then(user => user.signInUserSession.idToken)
-      .then(idToken => {
-        localStorage.setItem('auth', JSON.stringify(idToken));
-        setAuthData(idToken);
-      });
+      .then(idToken => api.createUser(idToken))
+      .then(idToken => setAuthData(idToken));
   }, [authState]);
 
   return (

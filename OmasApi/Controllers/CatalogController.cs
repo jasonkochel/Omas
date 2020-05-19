@@ -20,27 +20,16 @@ namespace OmasApi.Controllers
         }
 
         [HttpGet]
-        public List<Category> GetCatalog([FromQuery] int? categoryId)
+        public Task<List<CatalogItem>> GetCatalog([FromQuery] int? categoryId)
         {
-            var query = _db.Categories.AsNoTracking();
+            var query = _db.CatalogItems.AsNoTracking();
 
             if (categoryId != null)
             {
                 query = query.Where(c => c.CategoryId == categoryId);
             }
 
-            var results = query
-                .OrderBy(c => c.Sequence)
-                .Select(c => new Category
-                {
-                    CategoryId = c.CategoryId,
-                    Name = c.Name,
-                    Description = c.Description,
-                    CatalogItems = c.CatalogItems.OrderBy(i => i.Sequence).Select(i => i).ToList()
-                })
-                .ToList();
-            
-            return results;
+            return query.OrderBy(c => c.Sequence).ToListAsync();
         }
 
 

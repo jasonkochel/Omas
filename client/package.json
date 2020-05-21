@@ -7,6 +7,7 @@
     "@material-ui/icons": "^4.9.1",
     "aws-amplify": "^3.0.10",
     "aws-amplify-react": "^4.1.9",
+    "date-fns": "^2.14.0",
     "material-table": "^1.57.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

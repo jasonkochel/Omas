@@ -8,9 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import api from './api/api';
 import CatalogItems from './components/CatalogItems';
 import Categories from './components/Categories';
-import EditableTable from './components/EditableTable';
 import Header from './components/Header';
 import Order from './components/Order';
+import OrderHistory from './components/OrderHistory';
 import Sidebar from './components/Sidebar';
 
 const useStyles = makeStyles(theme => ({
@@ -26,26 +26,6 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
   },
 }));
-
-const History = () => (
-  <EditableTable
-    title="History"
-    columns={[
-      { title: 'Delivery Date', field: 'deliveryDate' },
-      {
-        title: 'Order Total',
-        field: 'total',
-      },
-    ]}
-    idField="deliveryDate"
-    getData={api.getOrderHistory}
-    onAdd={api.addCategory}
-    onUpdate={api.updateCategory}
-    onDelete={api.deleteCategory}
-    onMoveUp={api.moveCategoryUp}
-    onMoveDown={api.moveCategoryDown}
-  />
-);
 
 const Admin = () => <div>Admin Section</div>;
 
@@ -72,7 +52,7 @@ const App = ({ authState }) => {
               <Order />
             </Route>
             <Route path="/history">
-              <History />
+              <OrderHistory />
             </Route>
             <Route path="/admin">
               <Admin />

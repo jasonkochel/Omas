@@ -43,6 +43,8 @@ const moveItemDown = data => {
 
 const getOrderHistory = () => axios.get('/orders').then(res => res.data);
 
+const getOrder = batchId => axios.get(`/orders/${batchId}`).then(res => res.data);
+
 export default {
   addCategory,
   addItem,
@@ -51,6 +53,7 @@ export default {
   deleteItem,
   getItemsByCategoryId,
   getCategories,
+  getOrder,
   getOrderHistory,
   moveCategoryDown,
   moveCategoryUp,

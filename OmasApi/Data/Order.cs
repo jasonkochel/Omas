@@ -14,7 +14,7 @@ namespace OmasApi.Data
         public virtual OrderBatch OrderBatch { get; set; }
 
         public int UserId { get; set; }
-        public virtual User User { get; set; }
+        //public virtual User User { get; set; }
 
         [MaxLength(200)]
         public string Name { get; set; }

@@ -6,6 +6,7 @@ import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import api from './api/api';
+import BatchHistory from './components/BatchHistory';
 import CatalogItems from './components/CatalogItems';
 import Categories from './components/Categories';
 import Header from './components/Header';
@@ -26,8 +27,6 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
   },
 }));
-
-const Admin = () => <div>Admin Section</div>;
 
 const App = ({ authState }) => {
   const classes = useStyles();
@@ -54,8 +53,8 @@ const App = ({ authState }) => {
             <Route path="/history">
               <OrderHistory />
             </Route>
-            <Route path="/admin">
-              <Admin />
+            <Route path="/batches">
+              <BatchHistory />
             </Route>
             <Route path="/catalog">
               <CatalogItems />

@@ -19,6 +19,8 @@ import {
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
+// TODO: make responsive (https://material-ui.com/components/drawers/#responsive-drawer)
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -72,7 +74,7 @@ const Sidebar = () => {
         <Divider />
         <List>
           <ListSubheader>Administration</ListSubheader>
-          <ListItemLink to="/admin" primary="Order Cycles" icon={<DateRange />} />
+          <ListItemLink to="/batches" primary="Order Cycles" icon={<DateRange />} />
           <ListItemLink to="/admin" primary="View Orders" icon={<PlaylistAddCheck />} />
           <ListItemLink to="/catalog" primary="Manage Items" icon={<LocalOffer />} />
           <ListItemLink to="/categories" primary="Manage Categories" icon={<Category />} />

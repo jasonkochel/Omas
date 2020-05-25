@@ -45,14 +45,17 @@ const getOrderHistory = () => axios.get('/orders').then(res => res.data);
 
 const getOrder = batchId => axios.get(`/orders/${batchId}`).then(res => res.data);
 
+const getBatches = () => axios.get('/orderBatches').then(res => res.data);
+
 export default {
   addCategory,
   addItem,
   createUser,
   deleteCategory,
   deleteItem,
-  getItemsByCategoryId,
+  getBatches,
   getCategories,
+  getItemsByCategoryId,
   getOrder,
   getOrderHistory,
   moveCategoryDown,

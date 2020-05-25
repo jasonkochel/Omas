@@ -6,7 +6,7 @@ const Order = () => {
 
   useEffect(() => {
     api
-      .getCatalog()
+      .getItemsByCategoryId(null)
       .then(data => setCatalog(data))
       .catch(() => setCatalog([]));
   }, []);

@@ -36,7 +36,15 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
       // TODO: check form errors (form will not submit if there are errors)
     }
 
-    const newData = { ...formData, catalogId: data?.catalogId };
+    // "defaultValues" contains entire record, not just form fields, so include
+    // all of those fields and overwrite the applicable ones with "formData"
+    const newData = { ...defaultValues, ...formData };
+
+    if (!useMultiplier) {
+      newData.multiplier = 1.0;
+      newData.orderPer = newData.pricePer;
+    }
+
     setOpen(false);
     onEditingApproved(mode, newData, data);
   };

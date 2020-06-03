@@ -44,7 +44,7 @@ const CatalogItems = () => {
           ]}
           idField="catalogId"
           getData={() => api.getItemsByCategoryId(cat.categoryId)}
-          onAdd={api.addItem}
+          onAdd={data => api.addItem(cat.categoryId, data)}
           onUpdate={api.updateItem}
           onDelete={api.deleteItem}
           onMoveUp={api.moveItemUp}

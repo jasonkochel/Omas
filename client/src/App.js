@@ -6,7 +6,7 @@ import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import api from './api/api';
-import BatchHistory from './components/BatchHistory';
+import BatchAdmin from './components/BatchAdmin';
 import CatalogItems from './components/CatalogItems';
 import Categories from './components/Categories';
 import Header from './components/Header';
@@ -54,7 +54,7 @@ const App = ({ authState }) => {
               <OrderHistory />
             </Route>
             <Route path="/batches">
-              <BatchHistory />
+              <BatchAdmin />
             </Route>
             <Route path="/catalog">
               <CatalogItems />

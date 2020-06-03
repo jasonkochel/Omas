@@ -4,6 +4,8 @@ import axios from './axiosConfig';
 // but which the caller expects to be returned by the promise
 const createUser = async idToken => axios.post('/users').then(() => idToken);
 
+// CATEGORIES
+
 const getCategories = async () => axios.get('/categories').then(res => res.data);
 
 const getItemsByCategoryId = async categoryId => {
@@ -22,28 +24,29 @@ const moveCategoryUp = async id => axios.patch(`/categories/${id}/up`);
 
 const moveCategoryDown = async id => axios.patch(`/categories/${id}/down`);
 
-const addItem = data => {
-  console.log('addItem API', data);
-  return Promise.resolve(data);
+// ITEMS
+
+const addItem = async (categoryId, item) => {
+  const data = { categoryId, ...item };
+  return axios.post('/catalog', data).then(res => res.data);
 };
-const updateItem = data => {
-  console.log('updateItem API', data);
-  return Promise.resolve(data);
-};
-const deleteItem = data => {
-  console.log('deleteItem API', data);
-  return Promise.resolve(data);
-};
-const moveItemUp = data => {
-  return Promise.resolve(data);
-};
-const moveItemDown = data => {
-  return Promise.resolve(data);
-};
+
+const updateItem = async item =>
+  axios.put(`/catalog/${item.catalogId}`, item).then(res => res.data);
+
+const deleteItem = async id => axios.delete(`/catalog/${id}`);
+
+const moveItemUp = async id => axios.patch(`/catalog/${id}/up`);
+
+const moveItemDown = async id => axios.patch(`/catalog/${id}/down`);
+
+// ORDERS
 
 const getOrderHistory = () => axios.get('/orders').then(res => res.data);
 
 const getOrder = batchId => axios.get(`/orders/${batchId}`).then(res => res.data);
+
+// BATCHES
 
 const getBatches = () => axios.get('/orderBatches').then(res => res.data);
 

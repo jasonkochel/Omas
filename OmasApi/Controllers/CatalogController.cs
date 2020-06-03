@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -45,6 +46,30 @@ namespace OmasApi.Controllers
             return catalog;
         }
 
+        [HttpPost]
+        public async Task<CatalogItem> Post([FromBody] CatalogItem catalogItem)
+        {
+            // Make sequence of new item equal to sequence of first item in category
+            var firstInCategory = _db.CatalogItems.OrderBy(i => i.Sequence)
+                .FirstOrDefault(i => i.CategoryId == catalogItem.CategoryId);
+
+            catalogItem.Sequence = firstInCategory?.Sequence ?? 0;
+
+            _db.CatalogItems.Add(catalogItem);
+            await _db.SaveChangesAsync();
+
+            // Then increment sequence of the former-first item and everything below it
+            var sql = (FormattableString)$@"
+                UPDATE Catalog 
+                SET Sequence = Sequence + 1 
+                WHERE Sequence >= {catalogItem.Sequence} 
+                AND CatalogID <> {catalogItem.CatalogId}
+            ";
+            await _db.Database.ExecuteSqlInterpolatedAsync(sql);
+
+            return catalogItem;
+        }
+
         [HttpPut("{id}")]
         public async Task<CatalogItem> Put(int id, [FromBody] CatalogItem catalogItem)
         {
@@ -59,22 +84,62 @@ namespace OmasApi.Controllers
             return catalogItem;
         }
 
-        [HttpPost]
-        public async Task<CatalogItem> Post([FromBody] CatalogItem catalogItem)
-        {
-            _db.CatalogItems.Add(catalogItem);
-            await _db.SaveChangesAsync();
-
-            return catalogItem;
-        }
 
         [HttpDelete("{id}")]
         public async Task Delete(int id)
         {
+            // TODO check if item is used in an open OrderBatch
+
             var catalog = await Get(id);
+
+            if (catalog == null)
+            {
+                throw new NotFoundException($"Item ID {id} does not exist");
+            }
 
             _db.CatalogItems.Remove(catalog);
             await _db.SaveChangesAsync();
+
+            var sql = (FormattableString)$"UPDATE Catalog SET Sequence = Sequence - 1 WHERE Sequence > {catalog.Sequence}";
+            await _db.Database.ExecuteSqlInterpolatedAsync(sql);
         }
+
+        [HttpPatch("{id}/up")]
+        public async Task MoveUp(int id)
+        {
+            await SwapSequence(id, SwapDirection.Up);
+        }
+
+        [HttpPatch("{id}/down")]
+        public async Task MoveDown(int id)
+        {
+            await SwapSequence(id, SwapDirection.Down);
+        }
+
+        private async Task SwapSequence(int id, SwapDirection direction)
+        {
+            var item = _db.CatalogItems.SingleOrDefault(c => c.CatalogId == id);
+            if (item != null)
+            {
+                // Find the record that was in the slot that "id" is being moved to...
+                var otherItem = _db.CatalogItems.SingleOrDefault(c => c.Sequence == item.Sequence + (int)direction);
+                if (otherItem != null)
+                {
+                    // ...move it into "id"'s old slot...
+                    otherItem.Sequence = item.Sequence;
+                    // ...and move "id" up/down
+                    item.Sequence += (int)direction;
+                }
+            }
+
+            await _db.SaveChangesAsync();
+        }
+
+        private enum SwapDirection
+        {
+            Up = -1,
+            Down = 1
+        }
+
     }
 }

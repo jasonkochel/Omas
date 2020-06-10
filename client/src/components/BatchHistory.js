@@ -1,7 +1,7 @@
 import { Chip } from '@material-ui/core';
-import { format, parseISO } from 'date-fns';
 import MaterialTable from 'material-table';
 import React from 'react';
+import fns from '../fns';
 
 const BatchHistory = ({ loading, data, selectedId, onSelect }) => (
   <MaterialTable
@@ -12,12 +12,12 @@ const BatchHistory = ({ loading, data, selectedId, onSelect }) => (
       {
         title: 'Order Date',
         field: 'orderDate',
-        render: rowData => format(parseISO(rowData.orderDate), 'P'),
+        render: rowData => fns.formatDate(rowData.orderDate),
       },
       {
         title: 'Delivery Date',
         field: 'deliveryDate',
-        render: rowData => format(parseISO(rowData.deliveryDate), 'P'),
+        render: rowData => fns.formatDate(rowData.deliveryDate),
       },
       {
         title: '',
@@ -30,7 +30,7 @@ const BatchHistory = ({ loading, data, selectedId, onSelect }) => (
         ),
       },
     ]}
-    onRowClick={(_, data) => onSelect(data)}
+    onRowClick={(_, data) => onSelect(data.batchId)}
     options={{
       paging: false,
       search: false,

@@ -50,12 +50,21 @@ const getOrder = batchId => axios.get(`/orders/${batchId}`).then(res => res.data
 
 const getBatches = () => axios.get('/orderBatches').then(res => res.data);
 
+const getBatch = id => axios.get(`/orderBatches/${id}`).then(res => res.data);
+
+const updateBatch = async data => {
+  console.log('updateBatch', data);
+  return Promise.resolve(data);
+  //axios.put(`/orderBatches/${data.batchId}`, data).then(res => res.data);
+};
+
 export default {
   addCategory,
   addItem,
   createUser,
   deleteCategory,
   deleteItem,
+  getBatch,
   getBatches,
   getCategories,
   getItemsByCategoryId,
@@ -65,6 +74,7 @@ export default {
   moveCategoryUp,
   moveItemDown,
   moveItemUp,
+  updateBatch,
   updateCategory,
   updateItem,
 };

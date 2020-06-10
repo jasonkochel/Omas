@@ -7,7 +7,7 @@ import BatchHistory from './BatchHistory';
 const BatchAdmin = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedBatch, setSelectedBatch] = useState(null);
+  const [selectedBatchId, setSelectedBatchId] = useState(null);
 
   useEffect(() => {
     api
@@ -16,7 +16,7 @@ const BatchAdmin = () => {
       .then(data => data.sort((a, b) => (a.deliveryDate < b.deliveryDate ? 1 : -1)).slice(0, 10))
       .then(data => {
         setTableData(data);
-        setSelectedBatch(data[0]);
+        setSelectedBatchId(data[0].batchId);
       })
       .catch(() => setTableData([]))
       .finally(() => setLoading(false));
@@ -24,20 +24,20 @@ const BatchAdmin = () => {
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={3}>
+      <Grid item xs={4}>
         <BatchHistory
           loading={loading}
           data={tableData}
-          selectedId={selectedBatch?.batchId}
-          onSelect={setSelectedBatch}
+          selectedId={selectedBatchId}
+          onSelect={setSelectedBatchId}
         />
       </Grid>
       <Grid item xs={8}>
-        {selectedBatch && (
+        {selectedBatchId && (
           <Grid container spacing={3}>
             <BatchActions
-              batch={selectedBatch}
-              isLatest={selectedBatch.batchId === tableData[0].batchId}
+              batchId={selectedBatchId}
+              isLatest={selectedBatchId === tableData[0].batchId}
             />
           </Grid>
         )}

@@ -1,6 +1,7 @@
 import { CssBaseline, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Auth } from 'aws-amplify';
+import { ConfirmProvider } from 'material-ui-confirm';
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -40,43 +41,45 @@ const App = ({ authState }) => {
   }, [authState]);
 
   return (
-    <div className={classes.root}>
-      <Router>
-        <CssBaseline />
-        <Header authData={authData} />
-        <Sidebar />
-        <main className={classes.content}>
-          <Switch>
-            <Route path="/order">
-              <Order />
-            </Route>
-            <Route path="/history">
-              <OrderHistory />
-            </Route>
-            <Route path="/batches">
-              <BatchAdmin />
-            </Route>
-            <Route path="/catalog">
-              <CatalogItems />
-            </Route>
-            <Route path="/categories">
-              <Categories />
-            </Route>
-            <Route path="*">
-              <Typography paragraph>Make a selection on the left</Typography>
-            </Route>
-          </Switch>
-        </main>
-      </Router>
-      <ToastContainer
-        position="bottom-right"
-        newestOnTop
-        autoClose={false}
-        toastClassName={classes.toast}
-        draggable={false}
-        closeButton={false}
-      />
-    </div>
+    <ConfirmProvider defaultOptions={{ title: '' }}>
+      <div className={classes.root}>
+        <Router>
+          <CssBaseline />
+          <Header authData={authData} />
+          <Sidebar />
+          <main className={classes.content}>
+            <Switch>
+              <Route path="/order">
+                <Order />
+              </Route>
+              <Route path="/history">
+                <OrderHistory />
+              </Route>
+              <Route path="/batches">
+                <BatchAdmin />
+              </Route>
+              <Route path="/catalog">
+                <CatalogItems />
+              </Route>
+              <Route path="/categories">
+                <Categories />
+              </Route>
+              <Route path="*">
+                <Typography paragraph>Make a selection on the left</Typography>
+              </Route>
+            </Switch>
+          </main>
+        </Router>
+        <ToastContainer
+          position="bottom-right"
+          newestOnTop
+          autoClose={false}
+          toastClassName={classes.toast}
+          draggable={false}
+          closeButton={false}
+        />
+      </div>
+    </ConfirmProvider>
   );
 };
 

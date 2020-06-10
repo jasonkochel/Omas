@@ -1,8 +1,8 @@
 import { Grid, Typography } from '@material-ui/core';
-import { format, parseISO } from 'date-fns';
 import MaterialTable from 'material-table';
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
+import fns from '../fns';
 
 const OrderHistory = () => {
   const [tableData, setTableData] = useState([]);
@@ -45,7 +45,7 @@ const OrderHistory = () => {
             {
               title: 'Delivery Date',
               field: 'deliveryDate',
-              render: rowData => format(parseISO(rowData.deliveryDate), 'P'),
+              render: rowData => fns.formatDate(rowData.deliveryDate),
             },
             {
               title: 'Order Total',
@@ -66,7 +66,7 @@ const OrderHistory = () => {
       <Grid item xs={10}>
         {selectedOrder ? (
           <MaterialTable
-            title={`Your Order from ${format(parseISO(selectedOrder.deliveryDate), 'PP')}`}
+            title={`Your Order from ${fns.formatDate(selectedOrder.deliveryDate, 'PP')}`}
             isLoading={detailLoading}
             data={selectedOrder.lineItems}
             columns={[
@@ -91,7 +91,7 @@ const OrderHistory = () => {
                 title: 'Extended Price',
                 type: 'numeric',
                 width: '15%',
-                render: rowData => '$' + (rowData.price * rowData.quantity).toFixed(2),
+                render: rowData => fns.formatCurrency(rowData.price * rowData.quantity),
               },
             ]}
             options={{

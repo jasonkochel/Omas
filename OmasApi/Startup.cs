@@ -7,6 +7,8 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Converters;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
+using OmasApi.Services;
+
 //using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace OmasApi
@@ -35,7 +37,10 @@ namespace OmasApi
                 });
 
             services.Configure<AppSettings>(Configuration);
-            services.AddSingleton<UserIdentity, UserIdentity>();
+            
+            services.AddScoped<UserIdentity, UserIdentity>();
+            services.AddSingleton<OrderBatchService, OrderBatchService>();
+            services.AddSingleton<UserService, UserService>();
 
             services.AddCors(options =>
             {
@@ -48,7 +53,7 @@ namespace OmasApi
 
             services.AddControllers();
 
-            services.AddDbContextPool<OmasDbContext>(
+            services.AddDbContext<OmasDbContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
 
             /*

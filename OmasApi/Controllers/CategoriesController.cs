@@ -22,10 +22,28 @@ namespace OmasApi.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Category> GetAll()
+        public async Task<IEnumerable<Category>> GetAll([FromQuery] bool includeItems = false)
         {
-            return _db.Categories.OrderBy(c => c.Sequence).ToList();
+            var query = _db.Categories.AsQueryable();
+
+            if (includeItems)
+            {
+                query = query.Include(c => c.CatalogItems);
+            }
+
+            var results = await query.OrderBy(c => c.Sequence).ToListAsync();
+
+            if (includeItems)
+            {
+                foreach (var r in results)
+                {
+                    r.CatalogItems = r.CatalogItems.OrderBy(ci => ci.Sequence).ToList();
+                }
+            }
+
+            return results;
         }
+
 
         [HttpGet("{id}")]
         public async Task<Category> Get(int id)

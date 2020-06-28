@@ -4,6 +4,8 @@ namespace OmasApi.Data
 {
     public class OmasDbContext : DbContext
     {
+        private readonly string _connectionString;
+
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<CatalogItem> CatalogItems { get; set; }
         public virtual DbSet<OrderBatch> OrderBatches { get; set; }
@@ -11,6 +13,19 @@ namespace OmasApi.Data
         public virtual DbSet<User> Users { get; set; }
 
         public OmasDbContext(DbContextOptions options) : base(options) { }
+
+        public OmasDbContext(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            if (!_connectionString.IsNullOrEmpty())
+            {
+                options.UseSqlServer(_connectionString);
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

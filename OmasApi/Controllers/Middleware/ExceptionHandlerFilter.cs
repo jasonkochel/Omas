@@ -60,4 +60,11 @@ namespace OmasApi.Controllers.Middleware
         }
     }
 
+    public class InternalException : ApiException
+    {
+        public InternalException(string message) : base(message)
+        {
+            StatusCode = HttpStatusCode.InternalServerError;
+        }
+    }
 }

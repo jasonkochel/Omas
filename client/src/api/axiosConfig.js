@@ -25,7 +25,7 @@ instance.interceptors.response.use(
   response => response,
   // Any non-2xx
   error => {
-    const data = error.response.data;
+    const data = error.response?.data;
     const message = data?.title ?? 'Unknown Error'; // TODO: for model validation errors, loop over "errors" property to display details
 
     toast.error(message);

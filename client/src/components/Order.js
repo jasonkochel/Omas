@@ -1,33 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
+import JumpLinks from './JumpLinks';
+import OrderCategory from './OrderCategory';
 
 const Order = () => {
   const [catalog, setCatalog] = useState([]);
 
   useEffect(() => {
     api
-      .getItemsByCategoryId(null)
+      .getCategories(true)
       .then(data => setCatalog(data))
       .catch(() => setCatalog([]));
   }, []);
 
+  if (catalog === null) return;
+
   return (
     <>
-      Catalog:
-      <ul>
-        {catalog.map(cat => (
-          <li key={cat.categoryId}>
-            {cat.name}
-            <ul>
-              {cat.catalogItems.map(i => (
-                <li key={i.catalogId}>
-                  {i.name} - {i.price}
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
+      <JumpLinks catalog={catalog} />
+
+      {catalog.map(category => (
+        <React.Fragment key={category.categoryId}>
+          <div id={`cat-${category.categoryId}`}></div>
+          <OrderCategory category={category} />
+        </React.Fragment>
+      ))}
     </>
   );
 };

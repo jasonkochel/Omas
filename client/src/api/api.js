@@ -6,7 +6,8 @@ const createUser = async idToken => axios.post('/users').then(() => idToken);
 
 // CATEGORIES
 
-const getCategories = async () => axios.get('/categories').then(res => res.data);
+const getCategories = async (includeItems = false) =>
+  axios.get(`/categories?includeItems=${includeItems}`).then(res => res.data);
 
 const getItemsByCategoryId = async categoryId => {
   const qs = categoryId ? `?categoryId=${categoryId}` : '';
@@ -46,17 +47,17 @@ const getOrderHistory = () => axios.get('/orders').then(res => res.data);
 
 const getOrder = batchId => axios.get(`/orders/${batchId}`).then(res => res.data);
 
+const updateOrder = (catalogId, quantity) =>
+  axios.put(`/orders?catalogId=${catalogId}&quantity=${quantity}`);
+
 // BATCHES
 
 const getBatches = () => axios.get('/orderBatches').then(res => res.data);
 
 const getBatch = id => axios.get(`/orderBatches/${id}`).then(res => res.data);
 
-const updateBatch = async data => {
-  console.log('updateBatch', data);
-  return Promise.resolve(data);
-  //axios.put(`/orderBatches/${data.batchId}`, data).then(res => res.data);
-};
+const updateBatch = async data =>
+  axios.put(`/orderBatches/${data.batchId}`, data).then(res => res.data);
 
 export default {
   addCategory,
@@ -77,4 +78,5 @@ export default {
   updateBatch,
   updateCategory,
   updateItem,
+  updateOrder,
 };

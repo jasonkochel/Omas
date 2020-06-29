@@ -12,12 +12,16 @@ import { useForm } from 'react-hook-form';
 import fns from '../fns';
 
 const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
-  const { register, handleSubmit, errors } = useForm({
+  const {
+    register,
+    handleSubmit,
+    errors,
+  } = useForm(); /*{
     defaultValues: {
       orderDate: fns.formatDate(data.orderDate, 'yyyy-MM-dd'),
       deliveryDate: fns.formatDate(data.deliveryDate, 'yyyy-MM-dd'),
     },
-  });
+  });*/
 
   const handleCancel = () => {
     onCancel();
@@ -44,6 +48,7 @@ const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
                 label="Order By"
                 variant="filled"
                 margin="normal"
+                defaultValue={fns.formatDate(data.orderDate, 'yyyy-MM-dd')}
                 inputRef={register({ required: true, maxLength: 10 })}
               />
             </Grid>
@@ -54,6 +59,7 @@ const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
                 label="Delivery On"
                 variant="filled"
                 margin="normal"
+                defaultValue={fns.formatDate(data.deliveryDate, 'yyyy-MM-dd')}
                 inputRef={register({ required: true, maxLength: 10 })}
               />
             </Grid>

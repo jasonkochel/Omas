@@ -44,6 +44,12 @@ namespace OmasApi.Controllers
                 .ToListAsync();
         }
 
+        [HttpGet("current")]
+        public Task<List<Order>> GetCurrentOrder()
+        {
+            return GetOrder(_orderBatchService.CurrentBatchId);
+        }
+
         [HttpGet("{batchId}")]
         public Task<List<Order>> GetOrder([FromRoute] int batchId)
         {
@@ -53,7 +59,7 @@ namespace OmasApi.Controllers
         }
 
         [HttpPut]
-        public void UpdateCart([FromQuery] int catalogId, [FromQuery] int quantity)
+        public Order UpdateCart([FromQuery] int catalogId, [FromQuery] int quantity)
         {
             var userId = _userService.GetByCognitoId(_identity.CognitoId);
             var batchId = _orderBatchService.CurrentBatchId;
@@ -79,7 +85,7 @@ namespace OmasApi.Controllers
                 if (order == null)
                 {
                     // Insert
-                    _db.OrderItems.Add(new Order
+                    order = new Order
                     {
                         BatchId = batchId,
                         Multiplier = catalogItem.Multiplier,
@@ -91,7 +97,9 @@ namespace OmasApi.Controllers
                         Sku = catalogItem.Sku,
                         UserId = userId,
                         Weight = catalogItem.Weight
-                    });
+                    };
+
+                    _db.OrderItems.Add(order);
                 }
                 else
                 {
@@ -101,6 +109,7 @@ namespace OmasApi.Controllers
             }
 
             _db.SaveChanges();
+            return quantity == 0 ? null : order;
         }
 
         /*

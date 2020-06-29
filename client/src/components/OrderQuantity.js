@@ -11,14 +11,18 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const OrderQuantity = ({ item }) => {
+const quantityToDisplayQty = quantity => (quantity && quantity > 0 ? quantity.toString() : '');
+
+const OrderQuantity = ({ item, initialQuantity }) => {
   const classes = useStyles();
-  const [quantity, setQuantity] = useState('');
+  const [quantity, setQuantity] = useState(initialQuantity ?? 0);
 
   const handleIncrement = delta => {
-    const oldQuantity = quantity === '' ? 0 : Number.parseInt(quantity);
+    const oldQuantity = quantity ? Number.parseInt(quantity) : 0;
     const newQuantity = oldQuantity + delta < 0 ? 0 : oldQuantity + delta;
-    handleUpdateQuantity(newQuantity);
+
+    setQuantity(newQuantity);
+    api.updateOrder(item.catalogId, newQuantity);
   };
 
   const handleManualInput = e => {
@@ -27,12 +31,7 @@ const OrderQuantity = ({ item }) => {
       newQuantity = 0;
     }
 
-    handleUpdateQuantity(newQuantity);
-  };
-
-  const handleUpdateQuantity = newQuantity => {
-    const stringQuantity = newQuantity === 0 ? '' : newQuantity.toString();
-    setQuantity(stringQuantity);
+    setQuantity(newQuantity);
     api.updateOrder(item.catalogId, newQuantity);
   };
 
@@ -41,7 +40,7 @@ const OrderQuantity = ({ item }) => {
       type="number"
       variant="outlined"
       className={quantity > 0 ? classes.shadedInput : ''}
-      value={quantity}
+      value={quantityToDisplayQty(quantity)}
       onChange={handleManualInput}
       InputProps={{
         startAdornment: (

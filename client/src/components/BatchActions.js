@@ -35,6 +35,12 @@ const BatchActions = ({ batchId, isLatest }) => {
       .catch(() => setBatch(null));
   }, [batchId]);
 
+  const getBatch = async batchId =>
+    await api
+      .getBatch(batchId)
+      .then(data => setBatch(data))
+      .catch(() => setBatch(null));
+
   const handleCloseOrdering = () =>
     confirm({ description: 'Are you sure you want to close ordering?' }).then(() =>
       api.updateBatch({ ...batch, isOpen: false })
@@ -42,7 +48,7 @@ const BatchActions = ({ batchId, isLatest }) => {
 
   const handleEditDates = data => {
     setEditingDates(false);
-    api.updateBatch(data);
+    api.updateBatch(data).then(() => getBatch(batchId));
   };
 
   if (!batch) return null;

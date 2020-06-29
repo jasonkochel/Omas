@@ -43,12 +43,14 @@ const moveItemDown = async id => axios.patch(`/catalog/${id}/down`);
 
 // ORDERS
 
+const getCurrentOrder = () => axios.get('/orders/current').then(res => res.data);
+
 const getOrderHistory = () => axios.get('/orders').then(res => res.data);
 
 const getOrder = batchId => axios.get(`/orders/${batchId}`).then(res => res.data);
 
 const updateOrder = (catalogId, quantity) =>
-  axios.put(`/orders?catalogId=${catalogId}&quantity=${quantity}`);
+  axios.put(`/orders?catalogId=${catalogId}&quantity=${quantity}`).then(res => res.data);
 
 // BATCHES
 
@@ -68,6 +70,7 @@ export default {
   getBatch,
   getBatches,
   getCategories,
+  getCurrentOrder,
   getItemsByCategoryId,
   getOrder,
   getOrderHistory,

@@ -8,7 +8,7 @@ import {
   ListSubheader,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { AddShoppingCart, Category, DateRange, History, LocalOffer } from '@material-ui/icons';
+import { Category, DateRange, History, LocalOffer, ShoppingCart } from '@material-ui/icons';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -61,7 +61,7 @@ const Sidebar = () => {
     >
       <div className={classes.drawerContainer}>
         <List>
-          <ListItemLink to="/order" primary="Place an Order" icon={<AddShoppingCart />} />
+          <ListItemLink to="/order" primary="Place an Order" icon={<ShoppingCart />} />
           <ListItemLink to="/history" primary="View Order History" icon={<History />} />
         </List>
         <Divider />

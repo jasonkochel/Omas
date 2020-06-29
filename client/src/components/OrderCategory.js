@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const OrderCategory = ({ category }) => {
+const OrderCategory = ({ category, order, onChangeQuantity }) => {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -42,21 +42,20 @@ const OrderCategory = ({ category }) => {
         { title: 'Name', field: 'name', width: '40%' },
         {
           title: 'Price',
-          field: 'price',
           render: rowData =>
             Number(rowData.price).toFixed(2) + ' per ' + rowData.pricePer.toLowerCase(),
           width: '20%',
         },
         {
           title: 'Weight',
-          field: 'weight',
           render: rowData => Number(rowData.weight).toFixed(2) + ' lbs',
           width: '15%',
         },
         {
           title: 'Quantity',
-          field: 'sku',
-          render: rowData => <OrderQuantity item={rowData} />,
+          render: rowData => (
+            <OrderQuantity item={rowData} initialQuantity={order[rowData.sku]?.quantity} />
+          ),
           width: '10%',
         },
       ]}

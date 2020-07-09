@@ -33,33 +33,54 @@ namespace OmasApi.Controllers
             var userId = _userService.GetByCognitoId(_identity.CognitoId);
 
             return _db.OrderBatches
-                .Include(b => b.OrderItems)
+                .Include(b => b.Orders)
+                .ThenInclude(o => o.LineItems)
                 .Select(b => new OrderHistoryModel
                 {
                     BatchId = b.BatchId,
                     DeliveryDate = b.DeliveryDate,
-                    Total = b.OrderItems.Where(i => i.UserId == userId).Sum(i => i.Price * i.Quantity)
+                    Total = b.Orders.SingleOrDefault(o => o.UserId == userId).LineItems.Sum(i => i.Price * i.Quantity)
                 })
                 .Where(h => h.Total > 0)
                 .ToListAsync();
         }
 
         [HttpGet("current")]
-        public Task<List<Order>> GetCurrentOrder()
+        public Order GetCurrentOrder()
         {
             return GetOrder(_orderBatchService.CurrentBatchId);
         }
 
         [HttpGet("{batchId}")]
-        public Task<List<Order>> GetOrder([FromRoute] int batchId)
+        public Order GetOrder([FromRoute] int batchId)
         {
             var userId = _userService.GetByCognitoId(_identity.CognitoId);
 
-            return _db.OrderItems.Where(i => i.BatchId == batchId && i.UserId == userId).ToListAsync();
+            return _db.Orders
+                .Include(o => o.OrderBatch)
+                .Include(o => o.LineItems)
+                .SingleOrDefault(i => i.BatchId == batchId && i.UserId == userId);
+        }
+
+        [HttpPut("confirm")]
+        public Order ConfirmOrder()
+        {
+            var userId = _userService.GetByCognitoId(_identity.CognitoId);
+            var batchId = _orderBatchService.CurrentBatchId;
+
+            var order = _db.Orders.SingleOrDefault(i => i.BatchId == batchId && i.UserId == userId);
+
+            if (order != null)
+            {
+                order.Confirmed = true;
+                _db.SaveChanges();
+            }
+
+            return order;
         }
 
         [HttpPut]
-        public Order UpdateCart([FromQuery] int catalogId, [FromQuery] int quantity)
+        public void UpdateCart([FromQuery] int catalogId, [FromQuery] int quantity)
         {
             var userId = _userService.GetByCognitoId(_identity.CognitoId);
             var batchId = _orderBatchService.CurrentBatchId;
@@ -71,23 +92,37 @@ namespace OmasApi.Controllers
                 throw new BadRequestException($"Catalog Item ID '{catalogId}' does not exist");
             }
 
-            var order = _db.OrderItems.SingleOrDefault(i =>
-                i.BatchId == batchId && i.UserId == userId && i.Sku == catalogItem.Sku);
+            var order = _db.Orders.Include(o => o.LineItems)
+                .SingleOrDefault(i => i.BatchId == batchId && i.UserId == userId);
+
+            if (order == null)
+            {
+                order = new Order
+                {
+                    BatchId = batchId,
+                    UserId = userId,
+                    Confirmed = false
+                };
+
+                _db.Orders.Add(order);
+            }
+
+            var orderLine = order.LineItems?.SingleOrDefault(i => i.Sku == catalogItem.Sku);
 
             // Delete
-            if (quantity == 0 && order != null)
+            if (quantity == 0 && orderLine != null)
             {
-                _db.OrderItems.Remove(order);
+                order.LineItems.Remove(orderLine);
             }
 
             if (quantity > 0)
             {
-                if (order == null)
+                if (orderLine == null)
                 {
                     // Insert
-                    order = new Order
+                    orderLine = new OrderLine
                     {
-                        BatchId = batchId,
+                        OrderId = order.OrderId,
                         Multiplier = catalogItem.Multiplier,
                         Name = catalogItem.Name,
                         OrderPer = catalogItem.OrderPer,
@@ -95,21 +130,20 @@ namespace OmasApi.Controllers
                         PricePer = catalogItem.PricePer,
                         Quantity = quantity,
                         Sku = catalogItem.Sku,
-                        UserId = userId,
                         Weight = catalogItem.Weight
                     };
 
-                    _db.OrderItems.Add(order);
+                    if (order.LineItems == null) order.LineItems = new List<OrderLine>();
+                    order.LineItems.Add(orderLine);
                 }
                 else
                 {
                     // Update
-                    order.Quantity = quantity;
+                    orderLine.Quantity = quantity;
                 }
             }
 
             _db.SaveChanges();
-            return quantity == 0 ? null : order;
         }
 
         /*

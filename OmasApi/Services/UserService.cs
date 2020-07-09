@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
 
@@ -9,21 +8,20 @@ namespace OmasApi.Services
 {
     public class UserService
     {
-        private readonly string _connectionString;
         private readonly IMemoryCache _userCache;
+        private readonly OmasDbContext _db;
 
-        public UserService(IMemoryCache memoryCache, IOptions<AppSettings> config)
+        public UserService(IMemoryCache memoryCache, OmasDbContext db)
         {
             _userCache = memoryCache;
-            _connectionString = config.Value.ConnectionStrings.Default;
+            _db = db;
         }
 
         public int GetByCognitoId(Guid cognitoId)
         {
             if (!_userCache.TryGetValue(cognitoId, out int userId))
             {
-                var db = new OmasDbContext(_connectionString);
-                var user = db.Users.SingleOrDefault(u => u.CognitoId == cognitoId);
+                var user = _db.Users.SingleOrDefault(u => u.CognitoId == cognitoId);
 
                 if (user == null)
                 {

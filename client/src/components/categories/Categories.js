@@ -1,6 +1,6 @@
 import React from 'react';
-import api from '../api/api';
-import EditableTable from './EditableTable';
+import api from '../../api';
+import EditableTable from '../shared/EditableTable';
 
 const Categories = () => (
   <EditableTable

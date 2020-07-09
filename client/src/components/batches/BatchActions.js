@@ -1,29 +1,35 @@
 import { Grid, Typography } from '@material-ui/core';
 import { useConfirm } from 'material-ui-confirm';
 import React, { useEffect, useState } from 'react';
-import api from '../api/api';
-import fns from '../fns';
+import { useHistory } from 'react-router-dom';
+import api from '../../api';
+import fns from '../../fns';
 import ActionCard from './ActionCard';
 import EditBatchDatesModal from './EditBatchDatesModal';
 
 /*
 If one is open:
-- see summary (# orders, total $)
-- close it
-- edit its dates
+x see summary (# orders, total $)
+x close it
+x edit its dates
 - add an order on someone's behalf
 - view/print orders
+- view consolidated order
 - email reminders
 
 If none is open:
 - create one
 
 If selecting an old one:
-- see summary (# orders, total $)
+x see summary (# orders, total $)
 - view/print orders
 */
 
+const headerString = num => `${num} ${num === 1 ? ' customer has ' : ' customers have '} ordered`;
+
 const BatchActions = ({ batchId, isLatest }) => {
+  const history = useHistory();
+
   const [batch, setBatch] = useState();
   const [editingDates, setEditingDates] = useState(false);
   const confirm = useConfirm();
@@ -60,7 +66,7 @@ const BatchActions = ({ batchId, isLatest }) => {
           Manage Delivery for {fns.formatDateLong(batch.deliveryDate)}
         </Typography>
         <Typography variant="h6">
-          {batch.customerCount} customers have ordered, totaling {fns.formatCurrency(batch.total)}
+          {headerString(batch.customerCount)}, totaling {fns.formatCurrency(batch.total)}
         </Typography>
       </Grid>
 
@@ -94,7 +100,15 @@ const BatchActions = ({ batchId, isLatest }) => {
         <ActionCard
           buttonText="View Orders"
           caption="View or print each customer's order"
-          onClick={() => alert('view orders')}
+          onClick={() => history.push(`/batches/${batchId}/orders`)}
+        />
+      </Grid>
+
+      <Grid item xs={4}>
+        <ActionCard
+          buttonText="View Consolidated Order"
+          caption="View total orders by SKU"
+          onClick={() => history.push(`/batches/${batchId}/consolidated`)}
         />
       </Grid>
 
@@ -107,6 +121,7 @@ const BatchActions = ({ batchId, isLatest }) => {
           />
         </Grid>
       )}
+
       <EditBatchDatesModal
         open={editingDates}
         data={batch}

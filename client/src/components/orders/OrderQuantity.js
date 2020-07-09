@@ -1,28 +1,29 @@
 import { IconButton, InputAdornment, makeStyles, TextField } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
 import React, { useState } from 'react';
-import api from '../api/api';
+import api from '../../api';
 
 const useStyles = makeStyles(theme => ({
   shadedInput: {
-    '& .MuiOutlinedInput-root': {
+    '& .MuiInputBase-root': {
       backgroundColor: theme.palette.success.light,
+    },
+    '& .MuiInputBase-input': {
+      textAlign: 'center',
     },
   },
 }));
 
 const quantityToDisplayQty = quantity => (quantity && quantity > 0 ? quantity.toString() : '');
 
-const OrderQuantity = ({ item, initialQuantity }) => {
+const OrderQuantity = ({ item, initialQuantity, onChangeQuantity }) => {
   const classes = useStyles();
   const [quantity, setQuantity] = useState(initialQuantity ?? 0);
 
   const handleIncrement = delta => {
     const oldQuantity = quantity ? Number.parseInt(quantity) : 0;
     const newQuantity = oldQuantity + delta < 0 ? 0 : oldQuantity + delta;
-
-    setQuantity(newQuantity);
-    api.updateOrder(item.catalogId, newQuantity);
+    handleChangeQuantity(newQuantity);
   };
 
   const handleManualInput = e => {
@@ -30,9 +31,13 @@ const OrderQuantity = ({ item, initialQuantity }) => {
     if (isNaN(newQuantity)) {
       newQuantity = 0;
     }
+    handleChangeQuantity(newQuantity);
+  };
 
-    setQuantity(newQuantity);
-    api.updateOrder(item.catalogId, newQuantity);
+  const handleChangeQuantity = qty => {
+    setQuantity(qty);
+    onChangeQuantity(item, qty);
+    api.updateOrder(item.catalogId, qty);
   };
 
   return (

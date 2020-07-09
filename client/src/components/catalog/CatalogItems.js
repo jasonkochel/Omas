@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import api from '../api/api';
-import EditableTable from './EditableTable';
+import api from '../../api';
+import EditableTable from '../shared/EditableTable';
 import EditItemModal from './EditItemModal';
 
 const CatalogItems = () => {
@@ -9,8 +9,7 @@ const CatalogItems = () => {
   useEffect(() => {
     api
       .getCategories()
-      .then(data => setCategories(data.slice(0, 4))) // TODO: this is for dev speed only - remove for prod!
-      //.then(data => setCategories(data))
+      .then(data => setCategories(data))
       .catch(() => setCategories([]));
   }, []);
 

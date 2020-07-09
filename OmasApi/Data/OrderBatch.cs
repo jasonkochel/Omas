@@ -15,6 +15,6 @@ namespace OmasApi.Data
         public DateTime? DeliveryDate { get; set; }
         public bool IsOpen { get; set; }
     
-        public virtual ICollection<Order> OrderItems { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

@@ -9,7 +9,7 @@ import {
 } from 'aws-amplify-react';
 import React from 'react';
 import App from './App';
-import CustomSignIn from './components/CustomSignIn';
+import CustomSignIn from './CustomSignIn';
 
 const signUpConfig = {
   hiddenDefaults: ['username', 'email'],

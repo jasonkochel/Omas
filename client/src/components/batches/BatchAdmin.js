@@ -1,6 +1,6 @@
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import api from '../api/api';
+import api from '../../api';
 import BatchActions from './BatchActions';
 import BatchHistory from './BatchHistory';
 

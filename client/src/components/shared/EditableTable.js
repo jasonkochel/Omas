@@ -1,8 +1,19 @@
-import { TextField } from '@material-ui/core';
-import MaterialTable from 'material-table';
+import { makeStyles, TextField, useTheme } from '@material-ui/core';
+import MaterialTable, { MTableToolbar } from 'material-table';
 import React, { useCallback, useEffect, useState } from 'react';
+import fns from '../../fns';
 
-const noop = () => {};
+const useStyles = makeStyles(theme => ({
+  toolbarWrapper: {
+    '& .MuiToolbar-root': {
+      backgroundColor: theme.palette.primary.main,
+      color: 'white',
+    },
+    '& .MuiIconButton-root': {
+      color: 'white',
+    },
+  },
+}));
 
 const WideTextField = props => (
   <TextField value={props.value} fullWidth={true} onChange={e => props.onChange(e.target.value)} />
@@ -20,6 +31,9 @@ const EditableTable = ({
   onMoveUp,
   onMoveDown,
 }) => {
+  const classes = useStyles();
+  const theme = useTheme();
+
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,19 +47,19 @@ const EditableTable = ({
   const handleAdd = data => {
     return onAdd(data)
       .then(res => setTableData([res, ...tableData]))
-      .catch(noop);
+      .catch(fns.noop);
   };
 
   const handleUpdate = data => {
     return onUpdate(data)
       .then(res => setTableData(tableData.map(c => (c[idField] === res[idField] ? res : c))))
-      .catch(noop);
+      .catch(fns.noop);
   };
 
   const handleDelete = id => {
     return onDelete(id)
       .then(() => setTableData(tableData.filter(c => c[idField] !== id)))
-      .catch(noop);
+      .catch(fns.noop);
   };
 
   const handleMoveUp = data => {
@@ -62,6 +76,11 @@ const EditableTable = ({
 
   const components = {
     EditField: props => WideTextField(props),
+    Toolbar: props => (
+      <div className={classes.toolbarWrapper}>
+        <MTableToolbar {...props} />
+      </div>
+    ),
   };
 
   if (EditComponent) {
@@ -80,7 +99,11 @@ const EditableTable = ({
         search: false,
         addRowPosition: 'first',
         actionsColumnIndex: columns.length,
+        headerStyle: {
+          backgroundColor: theme.palette.grey['200'],
+        },
       }}
+      style={{ margin: '0 0 20px 0' }}
       editable={{
         onRowUpdate: data => handleUpdate(data),
         onRowDelete: data => handleDelete(data[idField]),

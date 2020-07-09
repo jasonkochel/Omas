@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
 using OmasApi.Models;
 
 namespace OmasApi.Controllers
 {
+    [AdminOnly]
     [ApiController]
     [Route("[controller]")]
     public class OrderBatchesController : ControllerBase
@@ -34,7 +35,8 @@ namespace OmasApi.Controllers
         [HttpGet("{id}")]
         public async Task<OrderBatchModel> Get(int id)
         {
-            var batch = await _db.OrderBatches.Include(b => b.OrderItems).SingleOrDefaultAsync(b => b.BatchId == id);
+            var batch = await _db.OrderBatches.Include(b => b.Orders).ThenInclude(o => o.LineItems)
+                .SingleOrDefaultAsync(b => b.BatchId == id);
 
             if (batch == null)
             {
@@ -47,11 +49,45 @@ namespace OmasApi.Controllers
                 OrderDate = batch.OrderDate,
                 DeliveryDate = batch.DeliveryDate,
                 IsOpen = batch.IsOpen,
-                CustomerCount = batch.OrderItems.Select(i => i.UserId).Distinct().Count(),
-                Total = batch.OrderItems.Sum(i => i.Price * i.Quantity)
+                CustomerCount = batch.Orders.Select(i => i.UserId).Distinct().Count(),
+                Total = batch.Orders.SelectMany(o => o.LineItems).Sum(li => li.Price * li.Quantity)
             };
 
             return model;
+        }
+
+        [HttpGet("{id}/orders")]
+        public Task<List<Order>> GetOrders(int id)
+        {
+            return _db.Orders
+                .Include(o => o.LineItems)
+                .Include(o => o.User)
+                .Where(o => o.BatchId == id && o.Confirmed)
+                .ToListAsync();
+        }
+
+        [HttpGet("{id}/consolidated")]
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+        public List<OrderLine> GetConsolidatedOrder(int id)
+        {
+            return _db.OrderLines
+                .Include(ol => ol.CatalogItem)
+                .Where(ol => ol.Order.BatchId == id && ol.Order.Confirmed)
+                .AsEnumerable()
+                .GroupBy(
+                    ol => ol.Sku,
+                    (sku, lines) =>
+                        new OrderLine
+                        {
+                            // Stealing this property to use as sorting key
+                            LineId = lines.First().CatalogItem.Sequence,
+                            Sku = sku,
+                            Name = lines.First().Name,
+                            Quantity = lines.Sum(l => l.Quantity),
+                            Price = lines.Sum(l => l.Price * l.Quantity * l.Multiplier)
+                        })
+                .OrderBy(ol => ol.LineId)
+                .ToList();
         }
 
         [HttpPost]
@@ -85,7 +121,7 @@ namespace OmasApi.Controllers
         [HttpDelete("{id}")]
         public async Task Delete(int id)
         {
-            if (_db.OrderItems.Any(i => i.BatchId == id))
+            if (_db.Orders.Any(i => i.BatchId == id))
             {
                 throw new ReferentialIntegrityException($"Batch '{id}' contains orders and cannot be deleted");
             }

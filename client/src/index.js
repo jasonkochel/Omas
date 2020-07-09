@@ -2,8 +2,8 @@ import '@aws-amplify/ui/dist/style.css';
 import Amplify from 'aws-amplify';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AuthenticatedApp from './AuthenticatedApp';
 import awsconfig from './aws-exports';
+import AuthenticatedApp from './components/app/AuthenticatedApp';
 import './index.css';
 
 Amplify.configure(awsconfig);

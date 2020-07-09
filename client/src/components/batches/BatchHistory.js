@@ -1,10 +1,10 @@
 import { Chip } from '@material-ui/core';
-import MaterialTable from 'material-table';
 import React from 'react';
-import fns from '../fns';
+import fns from '../../fns';
+import StyledTable from '../shared/StyledTable';
 
 const BatchHistory = ({ loading, data, selectedId, onSelect }) => (
-  <MaterialTable
+  <StyledTable
     title="Last 10 Order Cycles"
     isLoading={loading}
     data={data}
@@ -32,8 +32,6 @@ const BatchHistory = ({ loading, data, selectedId, onSelect }) => (
     ]}
     onRowClick={(_, data) => onSelect(data.batchId)}
     options={{
-      paging: false,
-      search: false,
       sorting: false,
       rowStyle: data => ({
         backgroundColor: data.batchId === selectedId ? 'aliceblue' : 'white',

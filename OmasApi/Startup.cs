@@ -39,8 +39,8 @@ namespace OmasApi
             services.Configure<AppSettings>(Configuration);
             
             services.AddScoped<UserIdentity, UserIdentity>();
-            services.AddSingleton<OrderBatchService, OrderBatchService>();
-            services.AddSingleton<UserService, UserService>();
+            services.AddScoped<OrderBatchService, OrderBatchService>();
+            services.AddScoped<UserService, UserService>();
 
             services.AddCors(options =>
             {
@@ -53,7 +53,7 @@ namespace OmasApi
 
             services.AddControllers();
 
-            services.AddDbContext<OmasDbContext>(
+            services.AddDbContextPool<OmasDbContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
 
             /*

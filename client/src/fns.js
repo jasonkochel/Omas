@@ -1,12 +1,14 @@
 import { format, parseISO } from 'date-fns';
 
 const arrayToObject = (array, keyField) =>
-  array.reduce((obj, item) => {
-    obj[item[keyField]] = item;
-    return obj;
-  }, {});
+  array && Array.isArray(array)
+    ? array.reduce((obj, item) => {
+        obj[item[keyField]] = item;
+        return obj;
+      }, {})
+    : {};
 
-const formatDate = (date, fmt = 'P') => format(parseISO(date), fmt);
+const formatDate = (date, fmt = 'P') => (date ? format(parseISO(date), fmt) : '');
 
 const formatDateLong = date => formatDate(date, 'PPPP');
 

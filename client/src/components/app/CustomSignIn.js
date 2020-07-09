@@ -2,7 +2,7 @@ import { withStyles } from '@material-ui/core';
 import { Auth } from 'aws-amplify';
 import { SignIn } from 'aws-amplify-react';
 import React from 'react';
-import googleButton from '../btn_google_signin_dark.png';
+import googleButton from './btn_google_signin_dark.png';
 
 // prettier-ignore
 const styles = {
@@ -177,7 +177,10 @@ class CustomSignIn extends SignIn {
                 />
                 <div className={classes.hint}>
                   Forget your password?{' '}
-                  <span className={classes.anchor} onClick={() => super.changeState('forgotPassword')}>
+                  <span
+                    className={classes.anchor}
+                    onClick={() => super.changeState('forgotPassword')}
+                  >
                     Reset password
                   </span>
                 </div>

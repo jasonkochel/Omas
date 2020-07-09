@@ -9,19 +9,10 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import fns from '../fns';
+import fns from '../../fns';
 
 const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
-  const {
-    register,
-    handleSubmit,
-    errors,
-  } = useForm(); /*{
-    defaultValues: {
-      orderDate: fns.formatDate(data.orderDate, 'yyyy-MM-dd'),
-      deliveryDate: fns.formatDate(data.deliveryDate, 'yyyy-MM-dd'),
-    },
-  });*/
+  const { register, handleSubmit, errors } = useForm();
 
   const handleCancel = () => {
     onCancel();

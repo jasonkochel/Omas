@@ -6,14 +6,17 @@ import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import api from './api/api';
-import BatchAdmin from './components/BatchAdmin';
-import CatalogItems from './components/CatalogItems';
-import Categories from './components/Categories';
-import Header from './components/Header';
-import Order from './components/Order';
-import OrderHistory from './components/OrderHistory';
-import Sidebar from './components/Sidebar';
+import api from '../../api';
+import BatchAdmin from '../batches/BatchAdmin';
+import BatchOrderList from '../batches/BatchOrderList';
+import ConsolidatedOrder from '../batches/ConsolidatedOrder';
+import CatalogItems from '../catalog/CatalogItems';
+import Categories from '../categories/Categories';
+import Order from '../orders/Order';
+import OrderHistory from '../orders/OrderHistory';
+import OrderView from '../orders/OrderView';
+import Header from './Header';
+import Sidebar from './Sidebar';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,15 +52,27 @@ const App = ({ authState }) => {
           <Sidebar />
           <main className={classes.content}>
             <Switch>
-              <Route path="/order">
+              <Route exact path="/order">
                 <Order />
               </Route>
+              <Route
+                path="/order/:batchId"
+                render={props => <OrderView batchId={props.match.params.batchId} />}
+              />
               <Route path="/history">
                 <OrderHistory />
               </Route>
-              <Route path="/batches">
+              <Route exact path="/batches">
                 <BatchAdmin />
               </Route>
+              <Route
+                path="/batches/:batchId/orders"
+                render={props => <BatchOrderList batchId={props.match.params.batchId} />}
+              />
+              <Route
+                path="/batches/:batchId/consolidated"
+                render={props => <ConsolidatedOrder batchId={props.match.params.batchId} />}
+              />
               <Route path="/catalog">
                 <CatalogItems />
               </Route>

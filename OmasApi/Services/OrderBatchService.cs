@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Caching.Memory;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
 
@@ -7,28 +7,30 @@ namespace OmasApi.Services
 {
     public class OrderBatchService
     {
-        private readonly string _connectionString;
-        public int CurrentBatchId { get; private set; }
+        private readonly IMemoryCache _cache;
+        private readonly OmasDbContext _db;
 
-        public OrderBatchService(IOptions<AppSettings> config)
+        public int CurrentBatchId =>
+            _cache.TryGetValue("CurrentBatchId", out int batchId) ? batchId : RefreshCurrentBatchCache();
+
+        public OrderBatchService(IMemoryCache cache, OmasDbContext db)
         {
-            _connectionString = config.Value.ConnectionStrings.Default;
-            RefreshCurrentBatchCache();
+            _cache = cache;
+            _db = db;
         }
 
-        public void RefreshCurrentBatchCache()
+        public int RefreshCurrentBatchCache()
         {
-            var db = new OmasDbContext(_connectionString);
-
-            var batchId = db.OrderBatches.SingleOrDefault(ob => ob.IsOpen)?.BatchId ??
-                          db.OrderBatches.OrderByDescending(ob => ob.DeliveryDate).FirstOrDefault()?.BatchId;
+            var batchId = _db.OrderBatches.SingleOrDefault(ob => ob.IsOpen)?.BatchId ??
+                          _db.OrderBatches.OrderByDescending(ob => ob.DeliveryDate).FirstOrDefault()?.BatchId;
 
             if (batchId == null)
             {
                 throw new InternalException("Current Order Batch ID could not be determined");
             }
 
-            CurrentBatchId = batchId.Value;
+            _cache.Set("CurrentBatchId", batchId.Value);
+            return batchId.Value;
         }
     }
 }

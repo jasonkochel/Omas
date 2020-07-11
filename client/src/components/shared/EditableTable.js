@@ -2,6 +2,7 @@ import { makeStyles, TextField, useTheme } from '@material-ui/core';
 import MaterialTable, { MTableToolbar } from 'material-table';
 import React, { useCallback, useEffect, useState } from 'react';
 import fns from '../../fns';
+//import {useQuery, queryCache} from 'react-query'
 
 const useStyles = makeStyles(theme => ({
   toolbarWrapper: {
@@ -36,6 +37,8 @@ const EditableTable = ({
 
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  //const { isLoading, isError, data, error } = useQuery('data', getData);
 
   const _getData = useCallback(() => {
     getData()

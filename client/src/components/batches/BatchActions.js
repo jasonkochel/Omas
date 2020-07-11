@@ -8,13 +8,17 @@ import ActionCard from './ActionCard';
 import EditBatchDatesModal from './EditBatchDatesModal';
 
 /*
+TODO:
+- make presentation-only and move fetchers and handlers to parent
+- refresh BatchHistory list when certain actions are taken in individual batch
+
 If one is open:
 x see summary (# orders, total $)
 x close it
 x edit its dates
 - add an order on someone's behalf
-- view/print orders
-- view consolidated order
+x view/print orders
+x view consolidated order
 - email reminders
 
 If none is open:
@@ -22,7 +26,7 @@ If none is open:
 
 If selecting an old one:
 x see summary (# orders, total $)
-- view/print orders
+x view/print orders
 */
 
 const headerString = num => `${num} ${num === 1 ? ' customer has ' : ' customers have '} ordered`;
@@ -50,6 +54,11 @@ const BatchActions = ({ batchId, isLatest }) => {
   const handleCloseOrdering = () =>
     confirm({ description: 'Are you sure you want to close ordering?' }).then(() =>
       api.updateBatch({ ...batch, isOpen: false })
+    );
+
+  const handleOpenOrdering = () =>
+    confirm({ description: 'Are you sure you want to re-open ordering?' }).then(() =>
+      api.updateBatch({ ...batch, isOpen: true })
     );
 
   const handleEditDates = data => {
@@ -94,6 +103,16 @@ const BatchActions = ({ batchId, isLatest }) => {
             />
           </Grid>
         </>
+      )}
+
+      {isLatest && !batch.isOpen && (
+        <Grid item xs={4}>
+          <ActionCard
+            buttonText="Re-Open Ordering"
+            caption="Re-Open system to new orders"
+            onClick={handleOpenOrdering}
+          />
+        </Grid>
       )}
 
       <Grid item xs={4}>

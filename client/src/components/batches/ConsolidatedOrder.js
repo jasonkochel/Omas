@@ -38,10 +38,10 @@ const ConsolidatedOrder = ({ batchId }) => {
   return (
     <>
       <Typography variant="body1" className={classes.paddedParagraph}>
-        This table shows the total quantity and price of each item, across all of your customers,
-        for this ordering cycle. You can download this data into Excel by clicking the
+        This shows the total quantity and price of each item, across all of your customers, for this
+        ordering cycle. You can download this data into Excel by clicking the
         <SaveAlt className={classes.paddedIcon} />
-        icon below <Redo className={classes.paddedIcon} />
+        icon on the right below <Redo className={classes.paddedIcon} />
       </Typography>
       <StyledTable
         title="Consolidated Order Form"

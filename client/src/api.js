@@ -98,6 +98,8 @@ const getBatch = id => client.get(`/orderBatches/${id}`).then(res => res.data);
 const getConsolidatedOrder = id =>
   client.get(`/orderBatches/${id}/consolidated`).then(res => res.data);
 
+const getBatchOrders = id => client.get(`/orderBatches/${id}/orders`).then(res => res.data);
+
 const updateBatch = data => client.put(`/orderBatches/${data.batchId}`, data);
 
 export default {
@@ -109,6 +111,7 @@ export default {
   deleteItem,
   getBatch,
   getBatches,
+  getBatchOrders,
   getCategories,
   getConsolidatedOrder,
   getCurrentOrder,

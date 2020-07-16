@@ -42,7 +42,7 @@ const createUser = idToken => client.post('/users').then(() => idToken);
 
 // CATEGORIES
 
-const getCategories = (includeItems = false) =>
+const getCategories = (queryKey, includeItems = false) =>
   client.get(`/categories?includeItems=${includeItems}`).then(res => res.data);
 
 const getItemsByCategoryId = categoryId => {
@@ -93,7 +93,7 @@ const confirmOrder = () => client.put('/orders/confirm').then(res => res.data);
 
 const getBatches = () => client.get('/orderBatches').then(res => res.data);
 
-const getBatch = id => client.get(`/orderBatches/${id}`).then(res => res.data);
+const getBatch = (queryKey, id) => client.get(`/orderBatches/${id}`).then(res => res.data);
 
 const getConsolidatedOrder = id =>
   client.get(`/orderBatches/${id}/consolidated`).then(res => res.data);

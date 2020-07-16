@@ -4,6 +4,7 @@ import EditableTable from '../shared/EditableTable';
 
 const Categories = () => (
   <EditableTable
+    queryKey="Categories"
     title="Categories"
     columns={[
       { title: 'Name', field: 'name' },

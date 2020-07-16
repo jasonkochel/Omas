@@ -18,6 +18,7 @@ const CatalogItems = () => {
       {categories.map(cat => (
         <EditableTable
           key={cat.categoryId}
+          queryKey={`CatalogItems-${cat.categoryId}`}
           title={cat.name}
           EditComponent={EditItemModal}
           columns={[

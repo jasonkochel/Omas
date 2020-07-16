@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Auth } from 'aws-amplify';
 import { ConfirmProvider } from 'material-ui-confirm';
 import React, { useEffect, useState } from 'react';
+import { ReactQueryDevtools } from 'react-query-devtools';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -93,6 +94,7 @@ const App = ({ authState }) => {
           draggable={false}
           closeButton={false}
         />
+        <ReactQueryDevtools />
       </div>
     </ConfirmProvider>
   );

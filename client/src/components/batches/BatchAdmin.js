@@ -1,48 +1,88 @@
 import { Grid } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import { useConfirm } from 'material-ui-confirm';
+import React, { useState } from 'react';
+import { queryCache, useQuery } from 'react-query';
 import api from '../../api';
+import fns from '../../fns';
 import BatchActions from './BatchActions';
 import BatchHistory from './BatchHistory';
+import EditBatchDatesModal from './EditBatchDatesModal';
 
 const BatchAdmin = () => {
-  const [tableData, setTableData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedBatchId, setSelectedBatchId] = useState(null);
+  const [selectedBatchId, setSelectedBatchId] = useState();
+  const [editingDates, setEditingDates] = useState(false);
+  const confirm = useConfirm();
 
-  useEffect(() => {
-    api
-      .getBatches()
-      // 10 most recent, by date
-      .then(data => data.sort((a, b) => (a.deliveryDate < b.deliveryDate ? 1 : -1)).slice(0, 10))
-      .then(data => {
-        setTableData(data);
-        setSelectedBatchId(data[0].batchId);
-      })
-      .catch(() => setTableData([]))
-      .finally(() => setLoading(false));
-  }, []);
+  const getBatches = async () => {
+    const data = await api.getBatches();
+    return fns.sortArray(data, 'deliveryDate', fns.sortDir.DESC).slice(0, 10);
+  };
+
+  const { isLoading, data: batchHistory } = useQuery('BatchHistory', getBatches);
+
+  const { data: selectedBatch } = useQuery(['BatchHistory', selectedBatchId], api.getBatch, {
+    enabled: selectedBatchId,
+  });
+
+  const handleCloseOrdering = () =>
+    confirm({ description: 'Are you sure you want to close ordering?' }).then(async () => {
+      await api.updateBatch({ ...selectedBatch, isOpen: false });
+      queryCache.invalidateQueries('BatchHistory');
+    });
+
+  const handleOpenOrdering = () =>
+    confirm({ description: 'Are you sure you want to re-open ordering?' }).then(async () => {
+      await api.updateBatch({ ...selectedBatch, isOpen: true });
+      queryCache.invalidateQueries('BatchHistory');
+    });
+
+  const handleStartEditingDates = () => setEditingDates(true);
+
+  const handleEditDates = async data => {
+    setEditingDates(false);
+    await api.updateBatch(data);
+    queryCache.invalidateQueries('BatchHistory');
+  };
+
+  if (selectedBatchId == null && !isLoading && batchHistory && batchHistory.length > 0) {
+    setSelectedBatchId(batchHistory[0].batchId);
+  }
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={4}>
-        <BatchHistory
-          loading={loading}
-          data={tableData}
-          selectedId={selectedBatchId}
-          onSelect={setSelectedBatchId}
+    <>
+      <Grid container spacing={3}>
+        <Grid item xs={4}>
+          <BatchHistory
+            loading={isLoading}
+            data={batchHistory}
+            selectedId={selectedBatchId}
+            onSelect={setSelectedBatchId}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          {selectedBatch && (
+            <Grid container spacing={3}>
+              <BatchActions
+                batch={selectedBatch}
+                isLatest={selectedBatchId === batchHistory[0].batchId}
+                onCloseOrdering={handleCloseOrdering}
+                onOpenOrdering={handleOpenOrdering}
+                onStartEditingDates={handleStartEditingDates}
+              />
+            </Grid>
+          )}
+        </Grid>
+      </Grid>
+      {selectedBatch && (
+        <EditBatchDatesModal
+          key={selectedBatchId}
+          open={editingDates}
+          data={selectedBatch}
+          onSave={handleEditDates}
+          onCancel={() => setEditingDates(false)}
         />
-      </Grid>
-      <Grid item xs={8}>
-        {selectedBatchId && (
-          <Grid container spacing={3}>
-            <BatchActions
-              batchId={selectedBatchId}
-              isLatest={selectedBatchId === tableData[0].batchId}
-            />
-          </Grid>
-        )}
-      </Grid>
-    </Grid>
+      )}
+    </>
   );
 };
 

@@ -1,28 +1,25 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  TextField,
-} from '@material-ui/core';
+import { yupResolver } from '@hookform/resolvers';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@material-ui/core';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import fns from '../../fns';
+import * as yup from 'yup';
+import DateField from '../shared/DateField';
 
 const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
-  const { register, handleSubmit, errors } = useForm();
+  const schema = yup.object().shape({
+    orderDate: yup.date().typeError('Invalid Date').required('Required'),
+    deliveryDate: yup.date().typeError('Invalid Date').required('Required'),
+  });
+
+  const { register, handleSubmit, errors } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   const handleCancel = () => {
     onCancel();
   };
 
   const handleSave = formData => {
-    if (Object.keys(errors).length > 0) {
-      // TODO: check form errors (form will not submit if there are errors)
-    }
-
     onSave({ ...data, ...formData });
   };
 
@@ -33,25 +30,21 @@ const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
         <form>
           <Grid container spacing={0}>
             <Grid item xs={6}>
-              <TextField
-                type="date"
+              <DateField
                 name="orderDate"
                 label="Order By"
-                variant="filled"
-                margin="normal"
-                defaultValue={fns.formatDate(data.orderDate, 'yyyy-MM-dd')}
-                inputRef={register({ required: true, maxLength: 10 })}
+                defaultValue={data.orderDate}
+                register={register}
+                errors={errors}
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                type="date"
+              <DateField
                 name="deliveryDate"
                 label="Delivery On"
-                variant="filled"
-                margin="normal"
-                defaultValue={fns.formatDate(data.deliveryDate, 'yyyy-MM-dd')}
-                inputRef={register({ required: true, maxLength: 10 })}
+                defaultValue={data.deliveryDate}
+                register={register}
+                errors={errors}
               />
             </Grid>
           </Grid>

@@ -1,17 +1,10 @@
 import { Grid, Typography } from '@material-ui/core';
-import { useConfirm } from 'material-ui-confirm';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import api from '../../api';
 import fns from '../../fns';
 import ActionCard from './ActionCard';
-import EditBatchDatesModal from './EditBatchDatesModal';
 
 /*
-TODO:
-- make presentation-only and move fetchers and handlers to parent
-- refresh BatchHistory list when certain actions are taken in individual batch
-
 If one is open:
 x see summary (# orders, total $)
 x close it
@@ -31,42 +24,14 @@ x view/print orders
 
 const headerString = num => `${num} ${num === 1 ? ' customer has ' : ' customers have '} ordered`;
 
-const BatchActions = ({ batchId, isLatest }) => {
+const BatchActions = ({
+  batch,
+  isLatest,
+  onCloseOrdering,
+  onOpenOrdering,
+  onStartEditingDates,
+}) => {
   const history = useHistory();
-
-  const [batch, setBatch] = useState();
-  const [editingDates, setEditingDates] = useState(false);
-  const confirm = useConfirm();
-
-  useEffect(() => {
-    api
-      .getBatch(batchId)
-      .then(data => setBatch(data))
-      .catch(() => setBatch(null));
-  }, [batchId]);
-
-  const getBatch = async batchId =>
-    await api
-      .getBatch(batchId)
-      .then(data => setBatch(data))
-      .catch(() => setBatch(null));
-
-  const handleCloseOrdering = () =>
-    confirm({ description: 'Are you sure you want to close ordering?' }).then(() =>
-      api.updateBatch({ ...batch, isOpen: false })
-    );
-
-  const handleOpenOrdering = () =>
-    confirm({ description: 'Are you sure you want to re-open ordering?' }).then(() =>
-      api.updateBatch({ ...batch, isOpen: true })
-    );
-
-  const handleEditDates = data => {
-    setEditingDates(false);
-    api.updateBatch(data).then(() => getBatch(batchId));
-  };
-
-  if (!batch) return null;
 
   return (
     <>
@@ -85,14 +50,14 @@ const BatchActions = ({ batchId, isLatest }) => {
             <ActionCard
               buttonText="Close Ordering"
               caption="Close the system to new orders"
-              onClick={handleCloseOrdering}
+              onClick={onCloseOrdering}
             />
           </Grid>
           <Grid item xs={4}>
             <ActionCard
               buttonText="Edit Dates"
               caption="Edit the Order-By and Delivery dates"
-              onClick={() => setEditingDates(true)}
+              onClick={onStartEditingDates}
             />
           </Grid>
           <Grid item xs={4}>
@@ -110,7 +75,7 @@ const BatchActions = ({ batchId, isLatest }) => {
           <ActionCard
             buttonText="Re-Open Ordering"
             caption="Re-Open system to new orders"
-            onClick={handleOpenOrdering}
+            onClick={onOpenOrdering}
           />
         </Grid>
       )}
@@ -119,7 +84,7 @@ const BatchActions = ({ batchId, isLatest }) => {
         <ActionCard
           buttonText="View Orders"
           caption="View or print each customer's order"
-          onClick={() => history.push(`/batches/${batchId}/orders`)}
+          onClick={() => history.push(`/batches/${batch.batchId}/orders`)}
         />
       </Grid>
 
@@ -127,7 +92,7 @@ const BatchActions = ({ batchId, isLatest }) => {
         <ActionCard
           buttonText="View Consolidated Order"
           caption="View total orders by SKU"
-          onClick={() => history.push(`/batches/${batchId}/consolidated`)}
+          onClick={() => history.push(`/batches/${batch.batchId}/consolidated`)}
         />
       </Grid>
 
@@ -140,13 +105,6 @@ const BatchActions = ({ batchId, isLatest }) => {
           />
         </Grid>
       )}
-
-      <EditBatchDatesModal
-        open={editingDates}
-        data={batch}
-        onSave={handleEditDates}
-        onCancel={() => setEditingDates(false)}
-      />
     </>
   );
 };

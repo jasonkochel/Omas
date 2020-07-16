@@ -1,3 +1,4 @@
+import { yupResolver } from '@hookform/resolvers';
 import {
   Button,
   Checkbox,
@@ -12,19 +13,44 @@ import {
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import fns from '../../fns';
+
+yup.addMethod(yup.number, 'decimal', fns.validateDecimal);
+
+const schema = yup.object().shape({
+  sku: yup.string().max(10, 'Max 10 characters').required('Required'),
+  name: yup.string().max(200, 'Max 200 characters').required('Required'),
+  price: yup.number().decimal(9, 2).typeError('Invalid Number').required('Required'),
+  pricePer: yup.string().max(10, 'Max 10 characters').required('Required'),
+  weight: yup.number().decimal(7, 2).typeError('Invalid Number').required('Required'),
+  useMultiplier: yup.boolean(),
+  orderPer: yup.string().when('useMultiplier', {
+    is: true,
+    then: yup.string().length(10).required('Required'),
+    otherwise: yup.string().notRequired(),
+  }),
+  multiplier: yup.number().when('useMultiplier', {
+    is: true,
+    then: yup.number().decimal(5, 2).typeError('Invalid Number').required('Required'),
+    otherwise: yup.number().notRequired(),
+  }),
+});
 
 const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => {
   const [open, setOpen] = useState(true);
 
   const defaultValues = data
-    ? { ...data, price: Number(data.price).toFixed(2) }
-    : { price: '0.00', multiplier: 1.0 };
+    ? { ...data, price: Number(data.price).toFixed(2), useMultiplier: data.multiplier !== 1.0 }
+    : { price: '0.00', multiplier: 1.0, useMultiplier: false };
 
-  const [useMultiplier, setUseMultiplier] = useState(defaultValues.multiplier !== 1.0);
-
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, errors, watch } = useForm({
+    mode: 'onBlur',
     defaultValues: defaultValues,
+    resolver: yupResolver(schema),
   });
+
+  const watchUseMultiplier = watch('useMultiplier');
 
   const handleCancel = () => {
     setOpen(false);
@@ -32,15 +58,11 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
   };
 
   const handleAddOrUpdate = formData => {
-    if (Object.keys(errors).length > 0) {
-      // TODO: check form errors (form will not submit if there are errors)
-    }
-
     // "defaultValues" contains entire record, not just form fields, so include
     // all of those fields and overwrite the applicable ones with "formData"
     const newData = { ...defaultValues, ...formData };
 
-    if (!useMultiplier) {
+    if (!watchUseMultiplier) {
       newData.multiplier = 1.0;
       newData.orderPer = newData.pricePer;
     }
@@ -72,7 +94,9 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
                   label="SKU"
                   variant="filled"
                   margin="normal"
-                  inputRef={register({ required: true, maxLength: 10 })}
+                  inputRef={register}
+                  error={!!errors.sku}
+                  helperText={errors.sku?.message}
                 />
               </Grid>
               <Grid item xs={8}>
@@ -83,7 +107,9 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
                   margin="normal"
                   variant="filled"
                   fullWidth={true}
-                  inputRef={register({ required: true, maxLength: 200 })}
+                  inputRef={register}
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -93,7 +119,9 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
                   label="Price"
                   margin="normal"
                   variant="filled"
-                  inputRef={register({ required: true, maxLength: 9 })}
+                  inputRef={register}
+                  error={!!errors.price}
+                  helperText={errors.price?.message}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -101,10 +129,13 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
                   type="text"
                   name="pricePer"
                   label="Per"
-                  helperText="(each, case, etc)"
+                  helperText={
+                    (!!errors.pricePer ? errors.pricePer.message + ' ' : '') + '(each, case, etc)'
+                  }
                   margin="normal"
                   variant="filled"
-                  inputRef={register({ required: true })}
+                  inputRef={register}
+                  error={!!errors.pricePer}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -114,18 +145,18 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
                   label="Weight (lbs)"
                   margin="normal"
                   variant="filled"
-                  inputRef={register({ required: true })}
+                  inputRef={register}
+                  error={!!errors.weight}
+                  helperText={errors.weight?.message}
                 />
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
-                  control={
-                    <Checkbox checked={useMultiplier} onChange={() => setUseMultiplier(x => !x)} />
-                  }
+                  control={<Checkbox name="useMultiplier" inputRef={register} />}
                   label="This item is priced by one unit (e.g. lbs) but ordered by another (e.g. each)"
                 />
               </Grid>
-              {useMultiplier && (
+              {watchUseMultiplier && (
                 <Grid item xs={4}>
                   <TextField
                     type="text"
@@ -133,20 +164,26 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
                     label="Ordered in Units Of"
                     margin="normal"
                     variant="filled"
-                    inputRef={register({ required: true })}
+                    inputRef={register}
+                    error={!!errors.orderPer}
+                    helperText={errors.orderPer?.message}
                   />
                 </Grid>
               )}
-              {useMultiplier && (
+              {watchUseMultiplier && (
                 <Grid item xs={8}>
                   <TextField
                     type="number"
                     name="multiplier"
                     label="Multiplier"
-                    helperText="(The amount to multiply the price by, for each 'order-per' unit)"
+                    helperText={
+                      (!!errors.multiplier ? errors.multiplier.message + ' ' : '') +
+                      "(The amount to multiply the price by, for each 'order-per' unit)"
+                    }
                     margin="normal"
                     variant="filled"
-                    inputRef={register({ required: true })}
+                    inputRef={register}
+                    error={!!errors.multiplier}
                   />
                 </Grid>
               )}

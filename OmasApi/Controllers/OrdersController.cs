@@ -149,8 +149,6 @@ namespace OmasApi.Controllers
         /*
         TODO:
             - Bulk insert into cart from history
-            - Get all orders (all users) for a batch
-            - Get consolidated order (all users) for a batch
             - Email order confirmation/reminder (one or all users)
         */
     }

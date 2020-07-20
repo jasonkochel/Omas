@@ -48,7 +48,7 @@ function ListItemLink(props) {
   );
 }
 
-const Sidebar = () => {
+const Sidebar = ({ admin }) => {
   const classes = useStyles();
 
   return (
@@ -65,12 +65,14 @@ const Sidebar = () => {
           <ListItemLink to="/history" primary="View Order History" icon={<History />} />
         </List>
         <Divider />
-        <List>
-          <ListSubheader>Administration</ListSubheader>
-          <ListItemLink to="/batches" primary="Manage Ordering" icon={<DateRange />} />
-          <ListItemLink to="/catalog" primary="Manage Catalog" icon={<LocalOffer />} />
-          <ListItemLink to="/categories" primary="Manage Categories" icon={<Category />} />
-        </List>
+        {admin && (
+          <List>
+            <ListSubheader>Administration</ListSubheader>
+            <ListItemLink to="/batches" primary="Manage Ordering" icon={<DateRange />} />
+            <ListItemLink to="/catalog" primary="Manage Catalog" icon={<LocalOffer />} />
+            <ListItemLink to="/categories" primary="Manage Categories" icon={<Category />} />
+          </List>
+        )}
       </div>
     </Drawer>
   );

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
+using OmasApi.Models;
 using OmasApi.Services;
 
 namespace OmasApi.Controllers
@@ -25,6 +27,7 @@ namespace OmasApi.Controllers
             _userService = userService;
         }
 
+        [AdminOnly]
         [HttpGet]
         public Task<List<User>> GetAll()
         {
@@ -34,6 +37,28 @@ namespace OmasApi.Controllers
                 Name = u.Name,
                 Email = u.Email
             }).ToListAsync();
+        }
+
+        [HttpGet("{cognitoId}")]
+        public UserModel Get([FromRoute] Guid cognitoId)
+        {
+            if (cognitoId != _identity.CognitoId)
+            {
+                throw new UnauthorizedException("Specified User ID does not match logged in user");
+            }
+
+            var userMapping = _userService.GetByCognitoId(cognitoId);
+            var user = _db.Users.SingleOrDefault(u => u.CognitoId == cognitoId);
+            var impersonatingUser = _db.Users.SingleOrDefault(u => u.UserId == userMapping.ImpersonatingUserId);
+
+            return new UserModel
+            {
+                Name = user?.Name,
+                Email = user?.Email,
+                ImpersonatingName = impersonatingUser?.Name,
+                ImpersonatingEmail = impersonatingUser?.Email,
+                IsAdmin = _identity.Admin
+            };
         }
 
         [HttpPost]
@@ -58,7 +83,7 @@ namespace OmasApi.Controllers
 
         [AdminOnly]
         [HttpPost("admin/impersonation")]
-        public User SetImpersonation([FromQuery] int? userId, [FromQuery] bool impersonate)
+        public UserModel SetImpersonation([FromQuery] int? userId, [FromQuery] bool impersonate)
         {
             if (impersonate && userId == null)
             {
@@ -67,7 +92,7 @@ namespace OmasApi.Controllers
 
             _userService.Impersonate(_identity.CognitoId, impersonate ? userId : null);
 
-            return impersonate ? _db.Users.SingleOrDefault(u => u.UserId == userId) : null;
+            return Get(_identity.CognitoId);
         }
     }
 }

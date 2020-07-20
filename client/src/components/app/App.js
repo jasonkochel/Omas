@@ -11,6 +11,7 @@ import api from '../../api';
 import BatchAdmin from '../batches/BatchAdmin';
 import BatchOrderList from '../batches/BatchOrderList';
 import ConsolidatedOrder from '../batches/ConsolidatedOrder';
+import ImpersonationList from '../batches/ImpersonationList';
 import CatalogItems from '../catalog/CatalogItems';
 import Categories from '../categories/Categories';
 import Order from '../orders/Order';
@@ -38,16 +39,21 @@ const App = ({ authState }) => {
   const [authData, setAuthData] = useState();
 
   useEffect(() => {
-    Auth.currentAuthenticatedUser()
-      .then(user => user.signInUserSession.idToken)
-      .then(idToken => api.createUser(idToken))
-      .then(idToken => setAuthData({ ...idToken, impersonation: null }));
+    const buildAuthData = async () => {
+      const user = await Auth.currentAuthenticatedUser();
+      const idToken = user.signInUserSession.idToken;
+      await api.createUser(idToken);
+      const localUser = await api.getUser(idToken.payload.sub);
+      setAuthData({ ...idToken, ...localUser });
+    };
+
+    buildAuthData();
   }, [authState]);
 
   const handleImpersonate = (userId, impersonate) => {
-    api.setImpersonation(userId, impersonate).then(impersonation =>
+    api.setImpersonation(userId, impersonate).then(localUser =>
       setAuthData(state => {
-        return { ...state, impersonation };
+        return { ...state, ...localUser };
       })
     );
   };
@@ -57,8 +63,8 @@ const App = ({ authState }) => {
       <div className={classes.root}>
         <Router>
           <CssBaseline />
-          <Header authData={authData} />
-          <Sidebar />
+          <Header authData={authData} onImpersonate={handleImpersonate} />
+          <Sidebar admin={authData?.isAdmin ?? false} />
           <main className={classes.content}>
             <Switch>
               <Route exact path="/order">
@@ -72,7 +78,7 @@ const App = ({ authState }) => {
                 <OrderHistory />
               </Route>
               <Route exact path="/batches">
-                <BatchAdmin onImpersonate={handleImpersonate} />
+                <BatchAdmin />
               </Route>
               <Route
                 path="/batches/:batchId/orders"
@@ -82,6 +88,9 @@ const App = ({ authState }) => {
                 path="/batches/:batchId/consolidated"
                 render={props => <ConsolidatedOrder batchId={props.match.params.batchId} />}
               />
+              <Route path="/impersonate">
+                <ImpersonationList onImpersonate={handleImpersonate} />
+              </Route>
               <Route path="/catalog">
                 <CatalogItems />
               </Route>

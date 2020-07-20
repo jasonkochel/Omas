@@ -4,24 +4,6 @@ import { useHistory } from 'react-router-dom';
 import fns from '../../fns';
 import ActionCard from './ActionCard';
 
-/*
-If one is open:
-x see summary (# orders, total $)
-x close it
-x edit its dates
-TODO: - add an order on someone's behalf
-x view/print orders
-x view consolidated order
-x email reminders
-
-If none is open:
-TODO: - create one
-
-If selecting an old one:
-x see summary (# orders, total $)
-x view/print orders
-*/
-
 const headerString = num => `${num} ${num === 1 ? ' customer has ' : ' customers have '} ordered`;
 
 const BatchActions = ({
@@ -31,8 +13,6 @@ const BatchActions = ({
   onOpenOrdering,
   onStartEditingDates,
   onEmailBatch,
-  onStartImpersonation,
-  onEndImpersonation,
 }) => {
   const history = useHistory();
 
@@ -65,9 +45,9 @@ const BatchActions = ({
           </Grid>
           <Grid item xs={4}>
             <ActionCard
-              buttonText="Add or Modify Order"
-              caption="Enter or change an order on a customer's behalf"
-              onClick={() => alert('edit order')}
+              buttonText="Impersonate User"
+              caption="Create, change, or view an order on a customer's behalf"
+              onClick={() => history.push('/impersonate')}
             />
           </Grid>
         </>
@@ -103,26 +83,11 @@ const BatchActions = ({
         <Grid item xs={4}>
           <ActionCard
             buttonText="Send Reminders"
-            caption="Email each customer a reminder message and their order total"
+            caption="Email each customer a reminder message with their order details and total due"
             onClick={onEmailBatch}
           />
         </Grid>
       )}
-
-      <Grid item xs={4}>
-        <ActionCard
-          buttonText="Start Impersonation"
-          caption="TEST - start impersonation"
-          onClick={onStartImpersonation}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <ActionCard
-          buttonText="End Impersonation"
-          caption="TEST - end impersonation"
-          onClick={onEndImpersonation}
-        />
-      </Grid>
     </>
   );
 };

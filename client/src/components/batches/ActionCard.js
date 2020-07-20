@@ -5,8 +5,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
-const ActionCard = ({ caption, buttonText, onClick }) => (
-  <Card>
+const ActionCard = ({ caption, buttonText, onClick, ...props }) => (
+  <Card {...props}>
     <CardContent>
       <Typography variant="body1" component="p">
         {caption}

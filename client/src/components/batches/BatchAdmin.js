@@ -1,17 +1,27 @@
-import { Grid } from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 import { useConfirm } from 'material-ui-confirm';
 import React, { useState } from 'react';
 import { queryCache, useQuery } from 'react-query';
 import { toast } from 'react-toastify';
 import api from '../../api';
 import fns from '../../fns';
+import ActionCard from './ActionCard';
 import BatchActions from './BatchActions';
 import BatchHistory from './BatchHistory';
 import EditBatchDatesModal from './EditBatchDatesModal';
 
-const BatchAdmin = ({ onImpersonate }) => {
+const useStyles = makeStyles(theme => ({
+  paddedCard: {
+    marginBottom: '15px',
+  },
+}));
+
+const BatchAdmin = () => {
+  const classes = useStyles();
+
   const [selectedBatchId, setSelectedBatchId] = useState();
   const [editingDates, setEditingDates] = useState(false);
+  const [editDatesData, setEditDatesData] = useState({});
 
   const confirm = useConfirm();
 
@@ -38,11 +48,26 @@ const BatchAdmin = ({ onImpersonate }) => {
       queryCache.invalidateQueries('BatchHistory');
     });
 
-  const handleStartEditingDates = () => setEditingDates(true);
+  const handleCreateNewBatch = () =>
+    confirm({ description: 'Are you sure you want to create a new ordering cycle?' }).then(
+      async () => {
+        setEditDatesData({ batchId: 0, orderDate: null, deliveryDate: null, isOpen: true });
+        setEditingDates(true);
+      }
+    );
+
+  const handleStartEditingDates = () => {
+    setEditDatesData({ ...selectedBatch });
+    setEditingDates(true);
+  };
 
   const handleEditDates = async data => {
     setEditingDates(false);
-    await api.updateBatch(data);
+    if (data.batchId === 0) {
+      await api.createBatch(data);
+    } else {
+      await api.updateBatch(data);
+    }
     queryCache.invalidateQueries('BatchHistory');
   };
 
@@ -59,6 +84,14 @@ const BatchAdmin = ({ onImpersonate }) => {
     <>
       <Grid container spacing={3}>
         <Grid item xs={4}>
+          {Array.isArray(batchHistory) && batchHistory[0].isOpen ? null : (
+            <ActionCard
+              className={classes.paddedCard}
+              buttonText="Create New Ordering Cycle"
+              caption="Click below to set up the next ordering cycle.  Only one ordering cycle can be open at a time.  If you closed the prior ordering cycle prematurely, use the 'Re-Open Ordering' button to the right."
+              onClick={handleCreateNewBatch}
+            />
+          )}
           <BatchHistory
             loading={isLoading}
             data={batchHistory}
@@ -76,8 +109,6 @@ const BatchAdmin = ({ onImpersonate }) => {
                 onOpenOrdering={handleOpenOrdering}
                 onStartEditingDates={handleStartEditingDates}
                 onEmailBatch={handleEmailBatch}
-                onStartImpersonation={() => onImpersonate('138', true)}
-                onEndImpersonation={() => onImpersonate(null, false)}
               />
             </Grid>
           )}
@@ -87,7 +118,7 @@ const BatchAdmin = ({ onImpersonate }) => {
         <EditBatchDatesModal
           key={selectedBatchId}
           open={editingDates}
-          data={selectedBatch}
+          data={editDatesData}
           onSave={handleEditDates}
           onCancel={() => setEditingDates(false)}
         />

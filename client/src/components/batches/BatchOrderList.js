@@ -39,7 +39,7 @@ const BatchOrderList = ({ batchId }) => {
         {data.map((order, i) => (
           <StyledTable
             key={i}
-            title={order.user.name}
+            title={order.user.name || order.user.email}
             isLoading={isLoading}
             data={order.lineItems}
             columns={[

@@ -38,6 +38,10 @@ client.interceptors.response.use(
 
 // IDENTITIES
 
+const getUsers = () => client.get('/users').then(res => res.data);
+
+const getUser = id => client.get(`/users/${id}`).then(res => res.data);
+
 // the "body" of this post is just the JWT which Axios puts in the Auth header,
 // but which the caller expects to be returned by the promise
 const createUser = idToken => client.post('/users').then(() => idToken);
@@ -112,6 +116,8 @@ const getConsolidatedOrder = (queryKey, id) =>
 const getBatchOrders = (queryKey, id) =>
   client.get(`/orderBatches/${id}/orders`).then(res => res.data);
 
+const createBatch = data => client.post('/orderBatches', data).then(res => res.data);
+
 const updateBatch = data => client.put(`/orderBatches/${data.batchId}`, data);
 
 const emailBatch = id => client.post(`/orderBatches/${id}/email`);
@@ -121,6 +127,7 @@ export default {
   addItem,
   cloneOrder,
   confirmOrder,
+  createBatch,
   createUser,
   deleteCategory,
   deleteItem,
@@ -135,6 +142,8 @@ export default {
   getItemsByCategoryId,
   getOrder,
   getOrderHistory,
+  getUser,
+  getUsers,
   moveCategoryDown,
   moveCategoryUp,
   moveItemDown,

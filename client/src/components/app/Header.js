@@ -2,6 +2,7 @@ import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Auth } from 'aws-amplify';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -10,12 +11,22 @@ const useStyles = makeStyles(theme => ({
   title: {
     flexGrow: 1,
   },
+  button: {
+    marginLeft: '10px',
+  },
 }));
 
-const Header = ({ authData }) => {
+const Header = ({ authData, onImpersonate }) => {
   const classes = useStyles();
-  const name = authData?.payload?.name ?? authData?.payload?.email;
-  const impersonatingName = authData?.impersonation?.name ?? authData?.impersonation?.email;
+  const history = useHistory();
+
+  const name = authData?.name || authData?.email;
+  const impersonatingName = authData?.impersonatingName || authData?.impersonatingEmail;
+
+  const handleStopImpersonating = () => {
+    onImpersonate(null, false);
+    history.push('/batches');
+  };
 
   return (
     <AppBar position="fixed" className={classes.appBar}>
@@ -29,9 +40,27 @@ const Header = ({ authData }) => {
             {impersonatingName && ` (On Behalf of ${impersonatingName})`}
           </Typography>
         )}
-        <Button type="button" color="inherit" onClick={() => Auth.signOut()}>
-          LOG OUT
-        </Button>
+        <Typography variant="h6">
+          {impersonatingName && (
+            <Button
+              type="button"
+              variant="outlined"
+              color="inherit"
+              onClick={handleStopImpersonating}
+            >
+              STOP IMPERSONATING
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="outlined"
+            color="inherit"
+            className={classes.button}
+            onClick={() => Auth.signOut()}
+          >
+            LOG OUT
+          </Button>
+        </Typography>
       </Toolbar>
     </AppBar>
   );

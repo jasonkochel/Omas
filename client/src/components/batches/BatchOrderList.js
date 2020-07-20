@@ -1,4 +1,4 @@
-import { Button, makeStyles } from '@material-ui/core';
+import { Button, makeStyles, Paper } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
 import React from 'react';
 import { useQuery } from 'react-query';
@@ -29,7 +29,7 @@ const BatchOrderList = ({ batchId }) => {
         <Button
           variant="contained"
           color="primary"
-          className={classes.paddedButton}
+          className={`${classes.paddedButton} print-hidden`}
           startIcon={<ArrowBack />}
           onClick={() => history.goBack()}
         >
@@ -74,6 +74,9 @@ const BatchOrderList = ({ batchId }) => {
                 onClick: fns.noop,
               },
             ]}
+            components={{
+              Container: props => <Paper elevation={2} className="print-half-page" {...props} />,
+            }}
           />
         ))}
       </>

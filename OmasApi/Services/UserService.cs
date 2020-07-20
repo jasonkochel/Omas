@@ -17,9 +17,9 @@ namespace OmasApi.Services
             _db = db;
         }
 
-        public int GetByCognitoId(Guid cognitoId)
+        public UserMapping GetByCognitoId(Guid cognitoId)
         {
-            if (!_userCache.TryGetValue(cognitoId, out int userId))
+            if (!_userCache.TryGetValue(cognitoId, out UserMapping userMapping))
             {
                 var user = _db.Users.SingleOrDefault(u => u.CognitoId == cognitoId);
 
@@ -28,11 +28,28 @@ namespace OmasApi.Services
                     throw new UnauthorizedException("User is not logged in or cannot be found");
                 }
 
-                userId = user.UserId;
-                _userCache.Set(cognitoId, userId);
+                userMapping = new UserMapping {UserId = user.UserId};
+                _userCache.Set(cognitoId, userMapping);
             }
 
-            return userId;
+            return userMapping;
         }
+
+        public void Impersonate(Guid cognitoId, int? userIdToImpersonate)
+        {
+            if (!_userCache.TryGetValue(cognitoId, out UserMapping userMapping))
+            {
+                userMapping = GetByCognitoId(cognitoId);
+            }
+
+            userMapping.ImpersonatingUserId = userIdToImpersonate;
+            _userCache.Set(cognitoId, userMapping);
+        }
+    }
+
+    public class UserMapping
+    {
+        public int UserId { get; set; }
+        public int? ImpersonatingUserId { get; set; }
     }
 }

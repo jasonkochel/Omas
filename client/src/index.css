@@ -21,3 +21,46 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+
+@media print {
+  main {
+    margin-top: 0 !important;
+  }
+  .MuiAppBar-root {
+    display: none !important;
+  }
+  .MuiDrawer-root {
+    display: none !important;
+  }
+  .MuiTableCell-root {
+    padding: 3px 10px 3px 10px !important;
+  }
+  .MuiPaper-root {
+    border: 1px black solid !important;
+    page-break-inside: avoid !important;
+  }
+  .MuiPaper-elevation2 {
+    box-shadow: none !important;
+  }
+  .MuiPaper-rounded {
+    border-radius: 0 !important;
+  }
+  .print-hidden {
+    display: none !important;
+  }
+  .print-monochrome {
+    background-color: white !important;
+    color: black !important;
+  }
+  .print-monochrome .MuiToolbar-root {
+    background-color: white !important;
+    color: black !important;
+  }
+  .print-monochrome .MuiIconButton-root {
+    background-color: white !important;
+    color: black !important;
+  }
+  .print-half-page {
+    height: 460px !important;
+  }
+}

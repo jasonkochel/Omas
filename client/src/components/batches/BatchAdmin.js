@@ -9,7 +9,7 @@ import BatchActions from './BatchActions';
 import BatchHistory from './BatchHistory';
 import EditBatchDatesModal from './EditBatchDatesModal';
 
-const BatchAdmin = () => {
+const BatchAdmin = ({ onImpersonate }) => {
   const [selectedBatchId, setSelectedBatchId] = useState();
   const [editingDates, setEditingDates] = useState(false);
 
@@ -76,6 +76,8 @@ const BatchAdmin = () => {
                 onOpenOrdering={handleOpenOrdering}
                 onStartEditingDates={handleStartEditingDates}
                 onEmailBatch={handleEmailBatch}
+                onStartImpersonation={() => onImpersonate('138', true)}
+                onEndImpersonation={() => onImpersonate(null, false)}
               />
             </Grid>
           )}

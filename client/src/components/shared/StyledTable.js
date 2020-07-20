@@ -23,7 +23,7 @@ const StyledTable = props => {
   const components = {
     ...passedComponents,
     Toolbar: props => (
-      <div className={classes.toolbarWrapper}>
+      <div className={`${classes.toolbarWrapper} print-monochrome`}>
         <MTableToolbar {...props} />
       </div>
     ),

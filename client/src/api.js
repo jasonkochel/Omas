@@ -36,9 +36,16 @@ client.interceptors.response.use(
   }
 );
 
+// IDENTITIES
+
 // the "body" of this post is just the JWT which Axios puts in the Auth header,
 // but which the caller expects to be returned by the promise
 const createUser = idToken => client.post('/users').then(() => idToken);
+
+const setImpersonation = (userId, impersonate) =>
+  client
+    .post(`/users/admin/impersonation?userId=${userId || ''}&impersonate=${impersonate}`)
+    .then(res => res.data);
 
 // CATEGORIES
 
@@ -132,6 +139,7 @@ export default {
   moveCategoryUp,
   moveItemDown,
   moveItemUp,
+  setImpersonation,
   updateBatch,
   updateCategory,
   updateItem,

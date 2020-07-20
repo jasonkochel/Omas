@@ -31,6 +31,8 @@ const BatchActions = ({
   onOpenOrdering,
   onStartEditingDates,
   onEmailBatch,
+  onStartImpersonation,
+  onEndImpersonation,
 }) => {
   const history = useHistory();
 
@@ -92,7 +94,7 @@ const BatchActions = ({
       <Grid item xs={4}>
         <ActionCard
           buttonText="View Consolidated Order"
-          caption="View total orders by SKU"
+          caption="View or print total orders by SKU"
           onClick={() => history.push(`/batches/${batch.batchId}/consolidated`)}
         />
       </Grid>
@@ -106,6 +108,21 @@ const BatchActions = ({
           />
         </Grid>
       )}
+
+      <Grid item xs={4}>
+        <ActionCard
+          buttonText="Start Impersonation"
+          caption="TEST - start impersonation"
+          onClick={onStartImpersonation}
+        />
+      </Grid>
+      <Grid item xs={4}>
+        <ActionCard
+          buttonText="End Impersonation"
+          caption="TEST - end impersonation"
+          onClick={onEndImpersonation}
+        />
+      </Grid>
     </>
   );
 };

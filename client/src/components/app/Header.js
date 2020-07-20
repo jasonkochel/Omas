@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Auth } from 'aws-amplify';
 import React from 'react';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
   },
@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
 const Header = ({ authData }) => {
   const classes = useStyles();
   const name = authData?.payload?.name ?? authData?.payload?.email;
+  const impersonatingName = authData?.impersonation?.name ?? authData?.impersonation?.email;
 
   return (
     <AppBar position="fixed" className={classes.appBar}>
@@ -25,6 +26,7 @@ const Header = ({ authData }) => {
         {name && (
           <Typography variant="h6" className={classes.title}>
             Welcome, {name}
+            {impersonatingName && ` (On Behalf of ${impersonatingName})`}
           </Typography>
         )}
         <Button type="button" color="inherit" onClick={() => Auth.signOut()}>

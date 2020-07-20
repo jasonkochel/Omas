@@ -34,7 +34,7 @@ const ConsolidatedOrder = ({ batchId }) => {
 
   return (
     <>
-      <Typography variant="body1" className={classes.paddedParagraph}>
+      <Typography variant="body1" className={`${classes.paddedParagraph} print-hidden`}>
         <Button
           variant="contained"
           color="primary"

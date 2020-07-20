@@ -41,8 +41,16 @@ const App = ({ authState }) => {
     Auth.currentAuthenticatedUser()
       .then(user => user.signInUserSession.idToken)
       .then(idToken => api.createUser(idToken))
-      .then(idToken => setAuthData(idToken));
+      .then(idToken => setAuthData({ ...idToken, impersonation: null }));
   }, [authState]);
+
+  const handleImpersonate = (userId, impersonate) => {
+    api.setImpersonation(userId, impersonate).then(impersonation =>
+      setAuthData(state => {
+        return { ...state, impersonation };
+      })
+    );
+  };
 
   return (
     <ConfirmProvider defaultOptions={{ title: '' }}>
@@ -64,7 +72,7 @@ const App = ({ authState }) => {
                 <OrderHistory />
               </Route>
               <Route exact path="/batches">
-                <BatchAdmin />
+                <BatchAdmin onImpersonate={handleImpersonate} />
               </Route>
               <Route
                 path="/batches/:batchId/orders"

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -39,7 +41,7 @@ namespace OmasApi.Controllers
         [HttpGet]
         public Task<List<OrderHistoryModel>> GetHistory()
         {
-            var userId = _userService.GetByCognitoId(_identity.CognitoId);
+            var userId = GetUserId();
 
             return _db.OrderBatches
                 .Include(b => b.Orders)
@@ -64,7 +66,7 @@ namespace OmasApi.Controllers
         [HttpGet("{batchId}")]
         public Order GetOrder([FromRoute] int batchId)
         {
-            var userId = _userService.GetByCognitoId(_identity.CognitoId);
+            var userId = GetUserId();
 
             var order = _db.Orders
                 .AsNoTracking()
@@ -73,12 +75,10 @@ namespace OmasApi.Controllers
                     .ThenInclude(l => l.CatalogItem)
                 .SingleOrDefault(i => i.BatchId == batchId && i.UserId == userId);
 
-            if (order == null)
+            if (order?.LineItems != null)
             {
-                throw new NotFoundException($"No order found for this user and batch");
+                order.LineItems = order.LineItems.OrderBy(l => l.CatalogItem.Sequence).ToList();
             }
-
-            order.LineItems = order.LineItems.OrderBy(l => l.CatalogItem.Sequence).ToList();
 
             return order;
         }
@@ -86,7 +86,7 @@ namespace OmasApi.Controllers
         [HttpPut("confirm")]
         public async Task<Order> ConfirmOrder()
         {
-            var userId = _userService.GetByCognitoId(_identity.CognitoId);
+            var userId = GetUserId();
             var batchId = _orderBatchService.CurrentBatchId;
 
             var order = _db.Orders.SingleOrDefault(i => i.BatchId == batchId && i.UserId == userId);
@@ -96,7 +96,14 @@ namespace OmasApi.Controllers
                 order.Confirmed = true;
                 _db.SaveChanges();
 
-                await EmailOrder(batchId);
+                try
+                {
+                    await EmailOrder(batchId);
+                }
+                catch (Exception)
+                {
+                    // silently continue if emailing fails
+                }
             }
 
             return order;
@@ -105,7 +112,7 @@ namespace OmasApi.Controllers
         [HttpPut]
         public void UpdateCart([FromQuery] int catalogId, [FromQuery] int quantity)
         {
-            var userId = _userService.GetByCognitoId(_identity.CognitoId);
+            var userId = GetUserId();
             var batchId = _orderBatchService.CurrentBatchId;
 
             var catalogItem = _db.CatalogItems.Find(catalogId);
@@ -158,7 +165,7 @@ namespace OmasApi.Controllers
         [HttpPost("{batchId}/clone")]
         public void CloneFromHistory([FromRoute] int batchId)
         {
-            var userId = _userService.GetByCognitoId(_identity.CognitoId);
+            var userId = GetUserId();
             var currentBatchId = _orderBatchService.CurrentBatchId;
 
             var order = GetOrCreateOrder(currentBatchId, userId);
@@ -192,10 +199,9 @@ namespace OmasApi.Controllers
             _db.SaveChanges();
         }
 
-        [HttpPost("{batchId}/email")]
-        public async Task EmailOrder([FromRoute] int batchId)
+        private async Task EmailOrder(int batchId)
         {
-            var userId = _userService.GetByCognitoId(_identity.CognitoId);
+            var userId = GetUserId();
 
             var order = _db.Orders
                 .Include(o => o.User)
@@ -210,6 +216,12 @@ namespace OmasApi.Controllers
 
             var orderHtml = await _viewRenderService.RenderViewToStringAsync("~/Views/OrderHtml.cshtml", order);
             await _emailService.SendEmail(_emailSettings.MailFrom, order.User.Email, _emailSettings.Subject, orderHtml);
+        }
+
+        private int GetUserId()
+        {
+            var user = _userService.GetByCognitoId(_identity.CognitoId);
+            return user.ImpersonatingUserId ?? user.UserId;
         }
 
         private Order GetOrCreateOrder(int batchId, int userId)

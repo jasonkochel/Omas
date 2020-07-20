@@ -158,4 +158,4 @@ $RECYCLE.BIN/
 
 # My stuff
 /old_client
-OmasApi/appsettings.Development.json
+appsettings.Development.json

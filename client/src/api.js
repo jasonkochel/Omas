@@ -82,12 +82,16 @@ const getCurrentOrder = () => client.get('/orders/current').then(res => res.data
 
 const getOrderHistory = () => client.get('/orders').then(res => res.data);
 
-const getOrder = batchId => client.get(`/orders/${batchId}`).then(res => res.data);
+const getOrder = (queryKey, batchId) => client.get(`/orders/${batchId}`).then(res => res.data);
 
 const updateOrder = (catalogId, quantity) =>
   client.put(`/orders?catalogId=${catalogId}&quantity=${quantity}`);
 
 const confirmOrder = () => client.put('/orders/confirm').then(res => res.data);
+
+const cloneOrder = batchId => client.post(`/orders/${batchId}/clone`);
+
+const emailOrder = batchId => client.post(`/orders/${batchId}/email`);
 
 // BATCHES
 
@@ -95,20 +99,26 @@ const getBatches = () => client.get('/orderBatches').then(res => res.data);
 
 const getBatch = (queryKey, id) => client.get(`/orderBatches/${id}`).then(res => res.data);
 
-const getConsolidatedOrder = id =>
+const getConsolidatedOrder = (queryKey, id) =>
   client.get(`/orderBatches/${id}/consolidated`).then(res => res.data);
 
-const getBatchOrders = id => client.get(`/orderBatches/${id}/orders`).then(res => res.data);
+const getBatchOrders = (queryKey, id) =>
+  client.get(`/orderBatches/${id}/orders`).then(res => res.data);
 
 const updateBatch = data => client.put(`/orderBatches/${data.batchId}`, data);
+
+const emailBatch = id => client.post(`/orderBatches/${id}/email`);
 
 export default {
   addCategory,
   addItem,
+  cloneOrder,
   confirmOrder,
   createUser,
   deleteCategory,
   deleteItem,
+  emailBatch,
+  emailOrder,
   getBatch,
   getBatches,
   getBatchOrders,

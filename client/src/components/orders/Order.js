@@ -1,6 +1,7 @@
 import { Fab, makeStyles } from '@material-ui/core';
 import { ShoppingCart } from '@material-ui/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from 'react-query';
 import { useHistory } from 'react-router-dom';
 import api from '../../api';
 import fns from '../../fns';
@@ -43,23 +44,24 @@ const Order = () => {
   const classes = useStyles();
   const history = useHistory();
 
-  const [catalog, setCatalog] = useState([]);
-  const [savedOrder, setSavedOrder] = useState({});
   const [cart, setCart] = useState({});
 
-  useEffect(() => {
-    const getData = async () => {
-      const data = await api.getCurrentOrder();
-      const savedOrderObj = fns.arrayToObject(data.lineItems, 'sku');
-      setSavedOrder(savedOrderObj);
-      setCart(makeCart(savedOrderObj));
+  const getSavedOrder = async () => {
+    const data = await api.getCurrentOrder();
+    const savedOrderObj = fns.arrayToObject(data.lineItems, 'sku');
+    setCart(makeCart(savedOrderObj));
+    return savedOrderObj;
+  };
 
-      const catData = await api.getCategories(true);
-      setCatalog(catData);
-    };
+  const getCategories = () => api.getCategories(null, true);
 
-    getData();
-  }, []);
+  const { isSuccess, data: savedOrder } = useQuery('SavedOrder', getSavedOrder);
+
+  const { data: catalog } = useQuery('Catalog', getCategories, {
+    cacheTime: 0, // re-fetch every time the screen loads, so latest savedOrder is respected
+    staleTime: Infinity, // never re-fetch after initial fetch (per screen load)
+    enabled: isSuccess,
+  });
 
   const handleChangeQuantity = React.useCallback((item, quantity) => {
     setCart(c => {
@@ -76,6 +78,7 @@ const Order = () => {
 
   const orderForm = React.useMemo(
     () =>
+      catalog &&
       catalog.map(category => (
         <React.Fragment key={category.categoryId}>
           <div id={`cat-${category.categoryId}`}></div>
@@ -89,19 +92,25 @@ const Order = () => {
     [catalog, savedOrder, handleChangeQuantity]
   );
 
-  if (catalog === null) return;
-
   return (
-    <div>
-      <JumpLinks catalog={catalog} />
+    isSuccess &&
+    !!catalog && (
+      <div>
+        <JumpLinks catalog={catalog} />
 
-      {orderForm}
+        {orderForm}
 
-      <Fab color="primary" variant="extended" className={classes.fab} onClick={handleConfirmOrder}>
-        <ShoppingCart className={classes.extendedIcon} />
-        Check Out ({fns.formatCurrency(totalCart(cart))})
-      </Fab>
-    </div>
+        <Fab
+          color="primary"
+          variant="extended"
+          className={classes.fab}
+          onClick={handleConfirmOrder}
+        >
+          <ShoppingCart className={classes.extendedIcon} />
+          Check Out ({fns.formatCurrency(totalCart(cart))})
+        </Fab>
+      </div>
+    )
   );
 };
 

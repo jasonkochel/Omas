@@ -9,13 +9,13 @@ If one is open:
 x see summary (# orders, total $)
 x close it
 x edit its dates
-- add an order on someone's behalf
+TODO: - add an order on someone's behalf
 x view/print orders
 x view consolidated order
-- email reminders
+x email reminders
 
 If none is open:
-- create one
+TODO: - create one
 
 If selecting an old one:
 x see summary (# orders, total $)
@@ -30,6 +30,7 @@ const BatchActions = ({
   onCloseOrdering,
   onOpenOrdering,
   onStartEditingDates,
+  onEmailBatch,
 }) => {
   const history = useHistory();
 
@@ -101,7 +102,7 @@ const BatchActions = ({
           <ActionCard
             buttonText="Send Reminders"
             caption="Email each customer a reminder message and their order total"
-            onClick={() => alert('send reminders')}
+            onClick={onEmailBatch}
           />
         </Grid>
       )}

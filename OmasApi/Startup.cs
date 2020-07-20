@@ -41,6 +41,8 @@ namespace OmasApi
             services.AddScoped<UserIdentity, UserIdentity>();
             services.AddScoped<OrderBatchService, OrderBatchService>();
             services.AddScoped<UserService, UserService>();
+            services.AddScoped<EmailService, EmailService>();
+            services.AddTransient<ViewRenderService, ViewRenderService>();
 
             services.AddCors(options =>
             {
@@ -51,7 +53,7 @@ namespace OmasApi
                     });
             });
 
-            services.AddControllers();
+            services.AddControllersWithViews();
 
             services.AddDbContextPool<OmasDbContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("Default")));

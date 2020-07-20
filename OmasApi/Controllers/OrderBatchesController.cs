@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
 using OmasApi.Models;
+using OmasApi.Services;
 
 namespace OmasApi.Controllers
 {
@@ -16,10 +18,16 @@ namespace OmasApi.Controllers
     public class OrderBatchesController : ControllerBase
     {
         private readonly OmasDbContext _db;
+        private readonly ViewRenderService _viewRenderService;
+        private readonly EmailService _emailService;
+        private readonly EmailSettings _emailSettings;
 
-        public OrderBatchesController(OmasDbContext db)
+        public OrderBatchesController(OmasDbContext db, ViewRenderService viewRenderService, EmailService emailService, IOptions<AppSettings> appSettings)
         {
             _db = db;
+            _viewRenderService = viewRenderService;
+            _emailService = emailService;
+            _emailSettings = appSettings.Value.EmailSettings;
         }
 
         [HttpGet]
@@ -57,13 +65,20 @@ namespace OmasApi.Controllers
         }
 
         [HttpGet("{id}/orders")]
-        public Task<List<Order>> GetOrders(int id)
+        public async Task<List<Order>> GetOrders(int id)
         {
-            return _db.Orders
+            var orders = await _db.Orders
                 .Include(o => o.LineItems)
+                .ThenInclude(l => l.CatalogItem)
                 .Include(o => o.User)
                 .Where(o => o.BatchId == id && o.Confirmed)
                 .ToListAsync();
+
+            return orders.Select(order =>
+            {
+                order.LineItems = order.LineItems.OrderBy(l => l.CatalogItem.Sequence).ToList();
+                return order;
+            }).ToList();
         }
 
         [HttpGet("{id}/consolidated")]
@@ -135,6 +150,22 @@ namespace OmasApi.Controllers
 
             _db.OrderBatches.Remove(batch);
             await _db.SaveChangesAsync();
+        }
+
+        [HttpPost("{id}/email")]
+        public async Task EmailOrders([FromRoute] int id)
+        {
+            var orders = _db.Orders
+                .Include(o => o.User)
+                .Include(o => o.LineItems)
+                .Include(o => o.OrderBatch)
+                .Where(o => o.BatchId == id);
+
+            foreach (var order in orders)
+            {
+                var orderHtml = await _viewRenderService.RenderViewToStringAsync("~/Views/OrderHtml.cshtml", order);
+                await _emailService.SendEmail(_emailSettings.MailFrom, order.User.Email, _emailSettings.Subject, orderHtml);
+            }
         }
     }
 }

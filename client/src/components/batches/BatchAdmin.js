@@ -2,6 +2,7 @@ import { Grid } from '@material-ui/core';
 import { useConfirm } from 'material-ui-confirm';
 import React, { useState } from 'react';
 import { queryCache, useQuery } from 'react-query';
+import { toast } from 'react-toastify';
 import api from '../../api';
 import fns from '../../fns';
 import BatchActions from './BatchActions';
@@ -11,6 +12,7 @@ import EditBatchDatesModal from './EditBatchDatesModal';
 const BatchAdmin = () => {
   const [selectedBatchId, setSelectedBatchId] = useState();
   const [editingDates, setEditingDates] = useState(false);
+
   const confirm = useConfirm();
 
   const getBatches = async () => {
@@ -44,7 +46,12 @@ const BatchAdmin = () => {
     queryCache.invalidateQueries('BatchHistory');
   };
 
-  if (selectedBatchId == null && !isLoading && batchHistory && batchHistory.length > 0) {
+  const handleEmailBatch = async () => {
+    await api.emailBatch(selectedBatchId);
+    toast.info('Emails Sent');
+  };
+
+  if (selectedBatchId == null && batchHistory?.length > 0) {
     setSelectedBatchId(batchHistory[0].batchId);
   }
 
@@ -68,6 +75,7 @@ const BatchAdmin = () => {
                 onCloseOrdering={handleCloseOrdering}
                 onOpenOrdering={handleOpenOrdering}
                 onStartEditingDates={handleStartEditingDates}
+                onEmailBatch={handleEmailBatch}
               />
             </Grid>
           )}

@@ -25,16 +25,22 @@ const schema = yup.object().shape({
   pricePer: yup.string().max(10, 'Max 10 characters').required('Required'),
   weight: yup.number().decimal(7, 2).typeError('Invalid Number').required('Required'),
   useMultiplier: yup.boolean(),
-  orderPer: yup.string().when('useMultiplier', {
-    is: true,
-    then: yup.string().length(10).required('Required'),
-    otherwise: yup.string().notRequired(),
-  }),
-  multiplier: yup.number().when('useMultiplier', {
-    is: true,
-    then: yup.number().decimal(5, 2).typeError('Invalid Number').required('Required'),
-    otherwise: yup.number().notRequired(),
-  }),
+  orderPer: yup
+    .string()
+    .max(10, 'Max 10 characters')
+    .when('useMultiplier', {
+      is: true,
+      then: yup.string().required('Required'),
+      otherwise: yup.string().notRequired(),
+    }),
+  multiplier: yup
+    .number()
+    .typeError('Invalid Number')
+    .when('useMultiplier', {
+      is: true,
+      then: yup.number().decimal(5, 2).required('Required'),
+      otherwise: yup.number().notRequired(),
+    }),
 });
 
 const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => {

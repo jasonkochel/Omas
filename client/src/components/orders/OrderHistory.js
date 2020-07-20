@@ -1,43 +1,33 @@
 import { Grid } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from 'react-query';
 import api from '../../api';
 import fns from '../../fns';
 import StyledTable from '../shared/StyledTable';
 import OrderView from './OrderView';
 
 const OrderHistory = () => {
-  const [tableData, setTableData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedBatchId, setSelectedBatchId] = useState();
 
-  const handleHistoryRowClick = (_, rowData) => {
-    setSelectedBatchId(rowData.batchId);
+  const getOrderHistory = async () => {
+    const data = await api.getOrderHistory();
+    return fns.sortArray(data, 'deliveryDate', fns.sortDir.DESC).slice(0, 10);
   };
 
-  useEffect(() => {
-    api
-      .getOrderHistory()
-      // 10 most recent, by date
-      .then(data => data.sort((a, b) => (a.deliveryDate < b.deliveryDate ? 1 : -1)).slice(0, 10))
-      .then(data => {
-        setTableData(data);
-        // pseudo-click the first row to auto-show detail of most recent order
-        if (data && data.length > 0) {
-          handleHistoryRowClick(null, data[0]);
-        }
-      })
-      .catch(() => setTableData([]))
-      .finally(() => setLoading(false));
-  }, []);
+  const { isLoading, data: orderHistoryData } = useQuery('OrderHistory', getOrderHistory);
+
+  if (selectedBatchId == null && !isLoading && orderHistoryData && orderHistoryData.length > 0) {
+    setSelectedBatchId(orderHistoryData[0].batchId);
+  }
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={2}>
         <StyledTable
           title="Last 10 Orders"
-          isLoading={loading}
-          data={tableData}
-          onRowClick={handleHistoryRowClick}
+          isLoading={isLoading}
+          data={orderHistoryData}
+          onRowClick={(_, rowData) => setSelectedBatchId(rowData.batchId)}
           columns={[
             {
               title: 'Date',

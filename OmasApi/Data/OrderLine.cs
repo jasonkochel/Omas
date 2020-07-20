@@ -17,6 +17,7 @@ namespace OmasApi.Data
 
         [Column(TypeName = "varchar(10)")]
         [MaxLength(10)]
+        [Required]
         public string Sku { get; set; }
 
         [Column(TypeName = "decimal(7,2)")]

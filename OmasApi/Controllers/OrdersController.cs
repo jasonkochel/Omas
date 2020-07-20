@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
 using OmasApi.Models;
@@ -18,13 +19,21 @@ namespace OmasApi.Controllers
         private readonly UserIdentity _identity;
         private readonly UserService _userService;
         private readonly OrderBatchService _orderBatchService;
+        private readonly ViewRenderService _viewRenderService;
+        private readonly EmailService _emailService;
+        private readonly EmailSettings _emailSettings;
 
-        public OrdersController(OmasDbContext db, UserIdentity identity, UserService userService, OrderBatchService orderBatchService)
+        public OrdersController(OmasDbContext db, UserIdentity identity, UserService userService,
+            OrderBatchService orderBatchService, ViewRenderService viewRenderService, EmailService emailService,
+            IOptions<AppSettings> appSettings)
         {
             _db = db;
             _identity = identity;
             _userService = userService;
             _orderBatchService = orderBatchService;
+            _viewRenderService = viewRenderService;
+            _emailService = emailService;
+            _emailSettings = appSettings.Value.EmailSettings;
         }
 
         [HttpGet]
@@ -42,6 +51,7 @@ namespace OmasApi.Controllers
                     Total = b.Orders.SingleOrDefault(o => o.UserId == userId).LineItems.Sum(i => i.Price * i.Quantity)
                 })
                 .Where(h => h.Total > 0)
+                .OrderByDescending(h => h.DeliveryDate)
                 .ToListAsync();
         }
 
@@ -56,14 +66,25 @@ namespace OmasApi.Controllers
         {
             var userId = _userService.GetByCognitoId(_identity.CognitoId);
 
-            return _db.Orders
+            var order = _db.Orders
+                .AsNoTracking()
                 .Include(o => o.OrderBatch)
                 .Include(o => o.LineItems)
+                    .ThenInclude(l => l.CatalogItem)
                 .SingleOrDefault(i => i.BatchId == batchId && i.UserId == userId);
+
+            if (order == null)
+            {
+                throw new NotFoundException($"No order found for this user and batch");
+            }
+
+            order.LineItems = order.LineItems.OrderBy(l => l.CatalogItem.Sequence).ToList();
+
+            return order;
         }
 
         [HttpPut("confirm")]
-        public Order ConfirmOrder()
+        public async Task<Order> ConfirmOrder()
         {
             var userId = _userService.GetByCognitoId(_identity.CognitoId);
             var batchId = _orderBatchService.CurrentBatchId;
@@ -74,6 +95,8 @@ namespace OmasApi.Controllers
             {
                 order.Confirmed = true;
                 _db.SaveChanges();
+
+                await EmailOrder(batchId);
             }
 
             return order;
@@ -92,21 +115,7 @@ namespace OmasApi.Controllers
                 throw new BadRequestException($"Catalog Item ID '{catalogId}' does not exist");
             }
 
-            var order = _db.Orders.Include(o => o.LineItems)
-                .SingleOrDefault(i => i.BatchId == batchId && i.UserId == userId);
-
-            if (order == null)
-            {
-                order = new Order
-                {
-                    BatchId = batchId,
-                    UserId = userId,
-                    Confirmed = false
-                };
-
-                _db.Orders.Add(order);
-            }
-
+            var order = GetOrCreateOrder(batchId, userId);
             var orderLine = order.LineItems?.SingleOrDefault(i => i.Sku == catalogItem.Sku);
 
             // Delete
@@ -146,10 +155,83 @@ namespace OmasApi.Controllers
             _db.SaveChanges();
         }
 
-        /*
-        TODO:
-            - Bulk insert into cart from history
-            - Email order confirmation/reminder (one or all users)
-        */
+        [HttpPost("{batchId}/clone")]
+        public void CloneFromHistory([FromRoute] int batchId)
+        {
+            var userId = _userService.GetByCognitoId(_identity.CognitoId);
+            var currentBatchId = _orderBatchService.CurrentBatchId;
+
+            var order = GetOrCreateOrder(currentBatchId, userId);
+            var linesToClone = _db.OrderLines.Where(l => l.Order.BatchId == batchId && l.Order.UserId == userId);
+
+            foreach (var line in linesToClone)
+            {
+                var existingLine = order.LineItems.SingleOrDefault(l => l.Sku == line.Sku);
+
+                if (existingLine == null)
+                {
+                    _db.OrderLines.Add(new OrderLine
+                    {
+                        OrderId = order.OrderId,
+                        Sku = line.Sku,
+                        Quantity = line.Quantity,
+                        Name = line.CatalogItem.Name,
+                        Multiplier = line.CatalogItem.Multiplier,
+                        OrderPer = line.CatalogItem.OrderPer,
+                        PricePer = line.CatalogItem.PricePer,
+                        Price = line.CatalogItem.Price,
+                        Weight = line.CatalogItem.Weight
+                    });
+                }
+                else
+                {
+                    existingLine.Quantity += line.Quantity;
+                }
+            }
+
+            _db.SaveChanges();
+        }
+
+        [HttpPost("{batchId}/email")]
+        public async Task EmailOrder([FromRoute] int batchId)
+        {
+            var userId = _userService.GetByCognitoId(_identity.CognitoId);
+
+            var order = _db.Orders
+                .Include(o => o.User)
+                .Include(o => o.LineItems)
+                .Include(o => o.OrderBatch)
+                .SingleOrDefault(o => o.UserId == userId && o.BatchId == batchId);
+
+            if (order == null)
+            {
+                throw new NotFoundException($"No order found for User '{userId}' and Batch '{batchId}'");
+            }
+
+            var orderHtml = await _viewRenderService.RenderViewToStringAsync("~/Views/OrderHtml.cshtml", order);
+            await _emailService.SendEmail(_emailSettings.MailFrom, order.User.Email, _emailSettings.Subject, orderHtml);
+        }
+
+        private Order GetOrCreateOrder(int batchId, int userId)
+        {
+            var order = _db.Orders
+                .Include(o => o.LineItems)
+                .SingleOrDefault(i => i.BatchId == batchId && i.UserId == userId);
+
+            if (order == null)
+            {
+                order = new Order
+                {
+                    BatchId = batchId,
+                    UserId = userId,
+                    Confirmed = false
+                };
+
+                _db.Orders.Add(order);
+                _db.SaveChanges();
+            }
+
+            return order;
+        }
     }
 }

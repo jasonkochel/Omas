@@ -20,7 +20,7 @@ const OrderCategory = ({ category, onChangeQuantity, savedOrder }) => {
   const classes = useStyles();
   const theme = useTheme();
 
-  if (category === null) return;
+  if (!category?.catalogItems) return;
 
   return (
     <MaterialTable

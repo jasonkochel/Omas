@@ -89,12 +89,11 @@ const App = ({ authState }) => {
         <ToastContainer
           position="bottom-right"
           newestOnTop
-          autoClose={false}
           toastClassName={classes.toast}
           draggable={false}
           closeButton={false}
         />
-        <ReactQueryDevtools />
+        {false && <ReactQueryDevtools />}
       </div>
     </ConfirmProvider>
   );

@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OmasApi.Data
 {
@@ -14,6 +16,7 @@ namespace OmasApi.Data
 
         [Column(TypeName = "varchar(10)")]
         [MaxLength(10)]
+        [Required]
         public string Sku { get; set; }
 
         [Column(TypeName = "decimal(9,2)")]

@@ -11,8 +11,8 @@ namespace OmasApi.Data
         [Key]
         public int BatchId { get; set; }
 
-        public DateTime? OrderDate { get; set; }
-        public DateTime? DeliveryDate { get; set; }
+        public DateTime OrderDate { get; set; }
+        public DateTime DeliveryDate { get; set; }
         public bool IsOpen { get; set; }
     
         public virtual ICollection<Order> Orders { get; set; }

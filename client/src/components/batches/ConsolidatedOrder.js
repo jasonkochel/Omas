@@ -1,6 +1,8 @@
-import { makeStyles, Typography } from '@material-ui/core';
-import { Redo, SaveAlt } from '@material-ui/icons';
-import React, { useEffect, useState } from 'react';
+import { Button, makeStyles, Typography } from '@material-ui/core';
+import { ArrowBack, Redo, SaveAlt } from '@material-ui/icons';
+import React from 'react';
+import { useQuery } from 'react-query';
+import { useHistory } from 'react-router-dom';
 import api from '../../api';
 import fns from '../../fns';
 import StyledTable from '../shared/StyledTable';
@@ -12,32 +14,36 @@ const useStyles = makeStyles(theme => ({
   paddedIcon: {
     margin: '0 5px 0 5px',
   },
+  paddedButton: {
+    marginRight: '15px',
+  },
   rightAlignText: {
     textAlign: 'right',
   },
 }));
 
 const totalConsolidatedOrder = order => {
-  return order.reduce((acc, i) => (acc += i.price), 0);
+  return !!order && Array.isArray(order) && order.reduce((acc, i) => (acc += i.price), 0);
 };
 
 const ConsolidatedOrder = ({ batchId }) => {
   const classes = useStyles();
+  const history = useHistory();
 
-  const [order, setOrder] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api
-      .getConsolidatedOrder(batchId)
-      .then(data => setOrder(data))
-      .then(() => setLoading(false))
-      .catch(() => setOrder([]));
-  }, [batchId]);
+  const { isLoading, data } = useQuery(['ConsolidatedOrder', batchId], api.getConsolidatedOrder);
 
   return (
     <>
       <Typography variant="body1" className={classes.paddedParagraph}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.paddedButton}
+          startIcon={<ArrowBack />}
+          onClick={() => history.goBack()}
+        >
+          Back
+        </Button>
         This shows the total quantity and price of each item, across all of your customers, for this
         ordering cycle. You can download this data into Excel by clicking the
         <SaveAlt className={classes.paddedIcon} />
@@ -45,8 +51,8 @@ const ConsolidatedOrder = ({ batchId }) => {
       </Typography>
       <StyledTable
         title="Consolidated Order Form"
-        isLoading={loading}
-        data={order}
+        isLoading={isLoading}
+        data={data}
         columns={[
           { title: 'SKU', field: 'sku', width: '15%' },
           { title: 'Name', field: 'name', width: '40%' },
@@ -69,7 +75,7 @@ const ConsolidatedOrder = ({ batchId }) => {
         }}
       />
       <Typography variant="h6" className={classes.rightAlignText}>
-        Total: {fns.formatCurrency(totalConsolidatedOrder(order))}
+        Total: {fns.formatCurrency(totalConsolidatedOrder(data))}
       </Typography>
     </>
   );

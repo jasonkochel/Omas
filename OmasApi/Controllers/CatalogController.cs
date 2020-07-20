@@ -88,7 +88,10 @@ namespace OmasApi.Controllers
         [HttpDelete("{id}")]
         public async Task Delete(int id)
         {
-            // TODO check if item is used in an open OrderBatch
+            if (_db.OrderLines.Any(l => l.CatalogItem.CatalogId == id && l.Order.OrderBatch.IsOpen))
+            {
+                throw new ReferentialIntegrityException($"Item ID {id} is in use in an open order batch");
+            }
 
             var catalog = await Get(id);
 

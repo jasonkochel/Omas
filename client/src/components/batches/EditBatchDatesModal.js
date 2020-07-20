@@ -5,26 +5,22 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import DateField from '../shared/DateField';
 
-const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
-  const schema = yup.object().shape({
-    orderDate: yup.date().typeError('Invalid Date').required('Required'),
-    deliveryDate: yup.date().typeError('Invalid Date').required('Required'),
-  });
+const schema = yup.object().shape({
+  orderDate: yup.date().typeError('Invalid Date').required('Required'),
+  deliveryDate: yup.date().typeError('Invalid Date').required('Required'),
+});
 
+const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
   const { register, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
   });
-
-  const handleCancel = () => {
-    onCancel();
-  };
 
   const handleSave = formData => {
     onSave({ ...data, ...formData });
   };
 
   return (
-    <Dialog open={open} onClose={handleCancel} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onCancel} fullWidth maxWidth="sm">
       <DialogTitle>Edit Order and Delivery Dates</DialogTitle>
       <DialogContent>
         <form>
@@ -51,7 +47,7 @@ const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel} color="secondary">
+        <Button onClick={onCancel} color="secondary">
           Cancel
         </Button>
         <Button onClick={handleSubmit(handleSave)} variant="contained" color="primary">

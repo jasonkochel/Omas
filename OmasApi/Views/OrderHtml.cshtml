@@ -1,0 +1,66 @@
+﻿@model OmasApi.Data.Order
+@* ReSharper disable Html.Obsolete *@
+@* ReSharper disable MissingHeadTag *@
+@{
+    var totalPrice = Model.LineItems.Sum(l => l.Price * l.Quantity * l.Multiplier);
+    var totalWeight = Model.LineItems.Sum(l => l.Weight);
+    var shippingCost = totalWeight * 0.20M;
+
+    string FormatNumber(decimal num, int precision = 2) => num.ToString($"F{precision}");
+    string FormatCurrency(decimal num) => num.ToString("C");
+
+    var oddRow = false;
+}
+<html>
+<body>
+    <b>Dear @Model.User.Name</b>
+    <p>
+        This is to confirm the order you have placed at OmasOrders.com. You must pick up your order on @Model.OrderBatch.DeliveryDate.ToString("D").
+        You may modify your order through the website until @Model.OrderBatch.OrderDate.ToString("D").
+        If you have any questions, please contact Diane Mellon at goldiggers@comcast.net.
+    </p>
+    <p>
+        <b>MAKE CHECKS PAYABLE TO 'GOLDIGGERS'</b>
+        <table width="750" cellspacing="0" cellpadding="2">
+            <tr>
+                <td width="80"><u>SKU</u></td>
+                <td width="350"><u>Description</u></td>
+                <td width="100"><u>Price</u></td>
+                <td width="80"><u>Qty</u></td>
+                <td width="80" align="right"><u>Total</u></td>
+                <td width="60" align="right"><u>Lbs</u></td>
+            </tr>
+            @foreach (var line in Model.LineItems)
+            {
+                oddRow = !oddRow;
+                <tr style="background-color: @(oddRow ? "#eeeeee" : "#ffffff")">
+                    <td>@line.Sku</td>
+                    <td>@line.Name</td>
+                    <td>@FormatCurrency(line.Price) / @line.PricePer.ToLower()</td>
+                    <td>@FormatNumber(line.Quantity, 0) @(string.Equals(line.OrderPer, line.PricePer, StringComparison.InvariantCultureIgnoreCase) ? "" : " " + line.OrderPer.ToLower())</td>
+                    <td align="right">@FormatCurrency(line.Quantity * line.Price * line.Multiplier)</td>
+                    <td align="right">@FormatNumber(line.Quantity * line.Weight)</td>
+                </tr>
+            }
+            <tr>
+                <td colspan="6" align="right">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="5" align="right"><b>Subtotal:</b></td>
+                <td align="right">@FormatCurrency(totalPrice)</td>
+            </tr>
+            <tr>
+                <td colspan="5" align="right"><b>Weight:</b></td>
+                <td colspan="1" align="right">@FormatNumber(totalWeight) lbs</td>
+            </tr>
+            <tr>
+                <td colspan="5" align="right"><b>Shipping & Handling:</b></td>
+                <td colspan="1" align="right">@FormatCurrency(shippingCost)</td>
+            </tr>
+            <tr>
+                <td colspan="5" align="right"><b>Total:</b></td>
+                <td colspan="1" align="right">@FormatCurrency(totalPrice + shippingCost)</td>
+            </tr>
+        </table>
+</body>
+</html>

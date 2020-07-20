@@ -1,4 +1,5 @@
 import { makeStyles, useTheme } from '@material-ui/core';
+import clsx from 'clsx';
 import MaterialTable, { MTableToolbar } from 'material-table';
 import React from 'react';
 
@@ -23,7 +24,7 @@ const StyledTable = props => {
   const components = {
     ...passedComponents,
     Toolbar: props => (
-      <div className={`${classes.toolbarWrapper} print-monochrome`}>
+      <div className={clsx(classes.toolbarWrapper, 'print-monochrome')}>
         <MTableToolbar {...props} />
       </div>
     ),

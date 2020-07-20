@@ -1,5 +1,6 @@
 import { IconButton, InputAdornment, makeStyles, TextField } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
+import clsx from 'clsx';
 import React, { useState } from 'react';
 import api from '../../api';
 
@@ -44,7 +45,7 @@ const OrderQuantity = ({ item, initialQuantity, onChangeQuantity }) => {
     <TextField
       type="number"
       variant="outlined"
-      className={quantity > 0 ? classes.shadedInput : ''}
+      className={clsx(quantity > 0 && classes.shadedInput)}
       value={quantityToDisplayQty(quantity)}
       onChange={handleManualInput}
       InputProps={{

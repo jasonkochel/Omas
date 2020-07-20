@@ -1,5 +1,6 @@
 import { Button, makeStyles, Paper } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
+import clsx from 'clsx';
 import React from 'react';
 import { useQuery } from 'react-query';
 import { useHistory } from 'react-router-dom';
@@ -29,7 +30,7 @@ const BatchOrderList = ({ batchId }) => {
         <Button
           variant="contained"
           color="primary"
-          className={`${classes.paddedButton} print-hidden`}
+          className={clsx(classes.paddedButton, 'print-hidden')}
           startIcon={<ArrowBack />}
           onClick={() => history.goBack()}
         >

@@ -1,5 +1,6 @@
 import { Button, makeStyles, Typography } from '@material-ui/core';
 import { ArrowBack, Redo, SaveAlt } from '@material-ui/icons';
+import clsx from 'clsx';
 import React from 'react';
 import { useQuery } from 'react-query';
 import { useHistory } from 'react-router-dom';
@@ -34,7 +35,7 @@ const ConsolidatedOrder = ({ batchId }) => {
 
   return (
     <>
-      <Typography variant="body1" className={`${classes.paddedParagraph} print-hidden`}>
+      <Typography variant="body1" className={clsx(classes.paddedParagraph, 'print-hidden')}>
         <Button
           variant="contained"
           color="primary"

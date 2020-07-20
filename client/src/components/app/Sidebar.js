@@ -73,6 +73,13 @@ const Sidebar = ({ admin }) => {
             <ListItemLink to="/categories" primary="Manage Categories" icon={<Category />} />
           </List>
         )}
+        <ul>
+          <li>Impersonate when batch is closed</li>
+          <li>Mark items new/featured/discontinued</li>
+          <li>Tax and tax-exempt</li>
+          <li>Admin set shipping rate</li>
+          <li>Mobile-friendly</li>
+        </ul>
       </div>
     </Drawer>
   );

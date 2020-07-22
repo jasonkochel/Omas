@@ -53,13 +53,16 @@ const OrderCategory = ({ category, onChangeQuantity, savedOrder }) => {
         },
         {
           title: 'Quantity',
-          render: rowData => (
-            <OrderQuantity
-              item={rowData}
-              onChangeQuantity={onChangeQuantity}
-              initialQuantity={savedOrder[rowData.sku]?.quantity}
-            />
-          ),
+          render: rowData =>
+            rowData.discontinued ? (
+              <i>Discontinued</i>
+            ) : (
+              <OrderQuantity
+                item={rowData}
+                onChangeQuantity={onChangeQuantity}
+                initialQuantity={savedOrder[rowData.sku]?.quantity}
+              />
+            ),
           width: '20%',
         },
       ]}

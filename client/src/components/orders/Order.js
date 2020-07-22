@@ -53,7 +53,7 @@ const Order = () => {
     return savedOrderObj;
   };
 
-  const getCategories = () => api.getCategories(null, true);
+  const getCategories = () => api.getCategories(null, true, true);
 
   const { isSuccess, data: savedOrder } = useQuery('SavedOrder', getSavedOrder);
 

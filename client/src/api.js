@@ -53,8 +53,10 @@ const setImpersonation = (userId, impersonate) =>
 
 // CATEGORIES
 
-const getCategories = (queryKey, includeItems = false) =>
-  client.get(`/categories?includeItems=${includeItems}`).then(res => res.data);
+const getCategories = (queryKey, includeItems = false, includeVirtual = false) =>
+  client
+    .get(`/categories?includeItems=${includeItems}&includeVirtual=${includeVirtual}`)
+    .then(res => res.data);
 
 const getItemsByCategoryId = categoryId => {
   const qs = categoryId ? `?categoryId=${categoryId}` : '';
@@ -84,8 +86,18 @@ const updateItem = item => client.put(`/catalog/${item.catalogId}`, item).then(r
 const deleteItem = id => client.delete(`/catalog/${id}`);
 
 const moveItemUp = id => client.patch(`/catalog/${id}/up`);
-
 const moveItemDown = id => client.patch(`/catalog/${id}/down`);
+
+const markNew = (id, isNew) =>
+  client.patch(`/catalog/${id}/new?isNew=${isNew}`).then(res => res.data);
+
+const markFeatured = (id, isFeatured) =>
+  client.patch(`/catalog/${id}/featured?isFeatured=${isFeatured}`).then(res => res.data);
+
+const markDiscontinued = (id, isDiscontinued) =>
+  client
+    .patch(`/catalog/${id}/discontinued?isDiscontinued=${isDiscontinued}`)
+    .then(res => res.data);
 
 // ORDERS
 
@@ -144,6 +156,9 @@ export default {
   getOrderHistory,
   getUser,
   getUsers,
+  markNew,
+  markFeatured,
+  markDiscontinued,
   moveCategoryDown,
   moveCategoryUp,
   moveItemDown,

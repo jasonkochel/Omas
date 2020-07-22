@@ -24,6 +24,7 @@ const EditableTable = ({
   title,
   EditComponent,
   columns,
+  actions,
   idField,
   getData,
   onAdd,
@@ -74,6 +75,22 @@ const EditableTable = ({
     components.EditRow = props => <EditComponent {...props} />;
   }
 
+  const allActions = actions ? [...actions] : [];
+
+  allActions.push(rowData => ({
+    icon: 'keyboard_arrow_up',
+    tooltip: 'Move Up',
+    onClick: (_, data) => handleMoveUp(data),
+    disabled: rowData.tableData.id === 0,
+  }));
+
+  allActions.push(rowData => ({
+    icon: 'keyboard_arrow_down',
+    tooltip: 'Move Down',
+    onClick: (_, data) => handleMoveDown(data),
+    disabled: rowData.tableData.id === tableData.length - 1,
+  }));
+
   return (
     <MaterialTable
       title={title}
@@ -96,20 +113,7 @@ const EditableTable = ({
         onRowDelete: data => handleDelete(data[idField]),
         onRowAdd: data => handleAdd(data),
       }}
-      actions={[
-        rowData => ({
-          icon: 'keyboard_arrow_up',
-          tooltip: 'Move Up',
-          onClick: (_, data) => handleMoveUp(data),
-          disabled: rowData.tableData.id === 0,
-        }),
-        rowData => ({
-          icon: 'keyboard_arrow_down',
-          tooltip: 'Move Down',
-          onClick: (_, data) => handleMoveDown(data),
-          disabled: rowData.tableData.id === tableData.length - 1,
-        }),
-      ]}
+      actions={allActions}
     />
   );
 };

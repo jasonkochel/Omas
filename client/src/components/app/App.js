@@ -110,7 +110,7 @@ const App = ({ authState }) => {
           draggable={false}
           closeButton={false}
         />
-        {false && <ReactQueryDevtools />}
+        {true && <ReactQueryDevtools />}
       </div>
     </ConfirmProvider>
   );

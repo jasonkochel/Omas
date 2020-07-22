@@ -22,7 +22,7 @@ namespace OmasApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Category>> GetAll([FromQuery] bool includeItems = false)
+        public async Task<IEnumerable<Category>> GetAll([FromQuery] bool includeItems = false, [FromQuery] bool includeVirtual = false)
         {
             var query = _db.Categories.AsQueryable();
 
@@ -37,8 +37,33 @@ namespace OmasApi.Controllers
             {
                 foreach (var r in results)
                 {
-                    r.CatalogItems = r.CatalogItems.OrderBy(ci => ci.Sequence).ToList();
+                    r.CatalogItems = r.CatalogItems.Where(i => !i.Discontinued).OrderBy(ci => ci.Sequence).ToList();
                 }
+            }
+
+            if (includeVirtual)
+            {
+                results.Insert(0, new Category
+                {
+                    Name = "Featured Items",
+                    CategoryId = -1,
+                    Sequence = 0,
+                    CatalogItems = _db.CatalogItems.Where(i => i.Featured).OrderBy(ci => ci.Sequence).ToList()
+                });
+                results.Insert(0, new Category
+                {
+                    Name = "New Items",
+                    CategoryId = -2,
+                    Sequence = 0,
+                    CatalogItems = _db.CatalogItems.Where(i => i.New).OrderBy(ci => ci.Sequence).ToList()
+                });
+                results.Add(new Category
+                {
+                    Name = "Discontinued Items",
+                    CategoryId = -3,
+                    Sequence = 99,
+                    CatalogItems = _db.CatalogItems.Where(i => i.Discontinued).OrderBy(ci => ci.Sequence).ToList()
+                });
             }
 
             return results;
@@ -126,7 +151,7 @@ namespace OmasApi.Controllers
             if (category != null)
             {
                 // Find the record that was in the slot that "id" is being moved to...
-                var otherCategory = _db.Categories.SingleOrDefault(c => c.Sequence == category.Sequence + (int) direction);
+                var otherCategory = _db.Categories.SingleOrDefault(c => c.Sequence == category.Sequence + (int)direction);
                 if (otherCategory != null)
                 {
                     // ...move it into "id"'s old slot...

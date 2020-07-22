@@ -37,13 +37,14 @@ namespace OmasApi.Controllers
         [HttpGet("{id}")]
         public async Task<CatalogItem> Get(int id)
         {
-            var catalog = await _db.CatalogItems.FindAsync(id);
-            if (catalog == null)
+            var item = await _db.CatalogItems.FindAsync(id);
+
+            if (item == null)
             {
-                throw new NotFoundException($"CatalogItem ID '{id}' does not exist");
+                throw new NotFoundException($"Item ID '{id}' does not exist");
             }
 
-            return catalog;
+            return item;
         }
 
         [HttpPost]
@@ -93,30 +94,52 @@ namespace OmasApi.Controllers
                 throw new ReferentialIntegrityException($"Item ID {id} is in use in an open order batch");
             }
 
-            var catalog = await Get(id);
+            var item = await Get(id);
 
-            if (catalog == null)
-            {
-                throw new NotFoundException($"Item ID {id} does not exist");
-            }
-
-            _db.CatalogItems.Remove(catalog);
+            _db.CatalogItems.Remove(item);
             await _db.SaveChangesAsync();
 
-            var sql = (FormattableString)$"UPDATE Catalog SET Sequence = Sequence - 1 WHERE Sequence > {catalog.Sequence}";
+            var sql = (FormattableString)$"UPDATE Catalog SET Sequence = Sequence - 1 WHERE Sequence > {item.Sequence}";
             await _db.Database.ExecuteSqlInterpolatedAsync(sql);
         }
 
         [HttpPatch("{id}/up")]
-        public async Task MoveUp(int id)
+        public async Task MoveUp([FromRoute] int id)
         {
             await SwapSequence(id, SwapDirection.Up);
         }
 
         [HttpPatch("{id}/down")]
-        public async Task MoveDown(int id)
+        public async Task MoveDown([FromRoute] int id)
         {
             await SwapSequence(id, SwapDirection.Down);
+        }
+
+        [HttpPatch("{id}/new")]
+        public async Task<CatalogItem> MarkAsNew([FromRoute] int id, [FromQuery] bool isNew)
+        {
+            var item = await Get(id);
+            item.New = isNew;
+            await _db.SaveChangesAsync();
+            return item;
+        }
+
+        [HttpPatch("{id}/featured")]
+        public async Task<CatalogItem> MarkAsFeatured([FromRoute] int id, [FromQuery] bool isFeatured)
+        {
+            var item = await Get(id);
+            item.Featured = isFeatured;
+            await _db.SaveChangesAsync();
+            return item;
+        }
+
+        [HttpPatch("{id}/discontinued")]
+        public async Task<CatalogItem> MarkAsDiscontinued([FromRoute] int id, [FromQuery] bool isDiscontinued)
+        {
+            var item = await Get(id);
+            item.Discontinued = isDiscontinued;
+            await _db.SaveChangesAsync();
+            return item;
         }
 
         private async Task SwapSequence(int id, SwapDirection direction)

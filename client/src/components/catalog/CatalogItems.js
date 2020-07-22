@@ -1,17 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import {
+  Backspace,
+  BackspaceOutlined,
+  NewReleases,
+  NewReleasesOutlined,
+  Star,
+  StarBorderOutlined,
+} from '@material-ui/icons';
+import React from 'react';
+import { queryCache, useQuery } from 'react-query';
 import api from '../../api';
 import EditableTable from '../shared/EditableTable';
 import EditItemModal from './EditItemModal';
 
 const CatalogItems = () => {
-  const [categories, setCategories] = useState([]);
+  const { data: categories } = useQuery(`Categories`, api.getCategories, {
+    staleTime: Infinity,
+  });
 
-  useEffect(() => {
+  const handleMarkNew = (e, data) =>
     api
-      .getCategories()
-      .then(data => setCategories(data))
-      .catch(() => setCategories([]));
-  }, []);
+      .markNew(data.catalogId, !data.new)
+      .then(() => queryCache.invalidateQueries(`CatalogItems-${data.categoryId}`));
+
+  const handleMarkFeatured = (e, data) =>
+    api
+      .markFeatured(data.catalogId, !data.featured)
+      .then(() => queryCache.invalidateQueries(`CatalogItems-${data.categoryId}`));
+
+  const handleMarkDiscontinued = (e, data) =>
+    api
+      .markDiscontinued(data.catalogId, !data.discontinued)
+      .then(() => queryCache.invalidateQueries(`CatalogItems-${data.categoryId}`));
+
+  if (!categories || !Array.isArray(categories)) return null;
 
   return (
     <>
@@ -49,6 +70,38 @@ const CatalogItems = () => {
           onDelete={api.deleteItem}
           onMoveUp={api.moveItemUp}
           onMoveDown={api.moveItemDown}
+          actions={[
+            rowData => ({
+              icon: props =>
+                rowData.new ? (
+                  <NewReleases color="primary" fontSize="large" />
+                ) : (
+                  <NewReleasesOutlined />
+                ),
+              tooltip: 'New',
+              onClick: handleMarkNew,
+            }),
+            rowData => ({
+              icon: props =>
+                rowData.featured ? (
+                  <Star color="primary" fontSize="large" />
+                ) : (
+                  <StarBorderOutlined />
+                ),
+              tooltip: 'Featured',
+              onClick: handleMarkFeatured,
+            }),
+            rowData => ({
+              icon: props =>
+                rowData.discontinued ? (
+                  <Backspace color="primary" fontSize="large" />
+                ) : (
+                  <BackspaceOutlined />
+                ),
+              tooltip: 'Discontinued',
+              onClick: handleMarkDiscontinued,
+            }),
+          ]}
         />
       ))}
     </>

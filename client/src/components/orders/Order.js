@@ -55,14 +55,18 @@ const Order = () => {
 
   const getCategories = () => api.getCategories(null, true, true);
 
-  const { isSuccess, data: savedOrder } = useQuery('SavedOrder', getSavedOrder);
+  const { isSuccess } = useQuery('SavedOrder', getSavedOrder, {
+    cacheTime: 0, // re-fetch every time the screen loads, so latest savedOrder is respected
+    staleTime: Infinity, // never re-fetch after initial fetch (per screen load)
+  });
 
   const { data: catalog } = useQuery('Catalog', getCategories, {
     cacheTime: 0, // re-fetch every time the screen loads, so latest savedOrder is respected
     staleTime: Infinity, // never re-fetch after initial fetch (per screen load)
-    enabled: isSuccess,
+    enabled: isSuccess, // wait until cart has been fetched and built
   });
 
+  /*
   const handleChangeQuantity = React.useCallback((item, quantity) => {
     setCart(c => {
       return {
@@ -71,26 +75,19 @@ const Order = () => {
       };
     });
   }, []);
+  */
+  const handleChangeQuantity = (item, quantity) => {
+    setCart(c => {
+      return {
+        ...c,
+        [item.sku]: { price: item.price, quantity, multiplier: item.multiplier },
+      };
+    });
+  };
 
   const handleConfirmOrder = () => {
     api.confirmOrder().then(order => history.push(`/order/${order.batchId}`));
   };
-
-  const orderForm = React.useMemo(
-    () =>
-      catalog &&
-      catalog.map(category => (
-        <React.Fragment key={category.categoryId}>
-          <div id={`cat-${category.categoryId}`}></div>
-          <OrderCategory
-            category={category}
-            savedOrder={savedOrder}
-            onChangeQuantity={handleChangeQuantity}
-          />
-        </React.Fragment>
-      )),
-    [catalog, savedOrder, handleChangeQuantity]
-  );
 
   return (
     isSuccess &&
@@ -98,7 +95,16 @@ const Order = () => {
       <div>
         <JumpLinks catalog={catalog} />
 
-        {orderForm}
+        {catalog.map(category => (
+          <React.Fragment key={category.categoryId}>
+            <div id={`cat-${category.categoryId}`}></div>
+            <OrderCategory
+              category={category}
+              cart={cart}
+              onChangeQuantity={handleChangeQuantity}
+            />
+          </React.Fragment>
+        ))}
 
         <Fab
           color="primary"

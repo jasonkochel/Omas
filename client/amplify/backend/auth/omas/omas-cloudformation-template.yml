@@ -159,7 +159,12 @@ Resources:
     Type: AWS::Cognito::UserPool
     UpdateReplacePolicy: Retain
     Properties:
-      UserPoolName: !If [ShouldNotCreateEnvResources, !Ref userPoolName, !Join ['', [!Ref userPoolName, '-', !Ref env]]]
+      UserPoolName:
+        !If [
+          ShouldNotCreateEnvResources,
+          !Ref userPoolName,
+          !Join ['', [!Ref userPoolName, '-', !Ref env]],
+        ]
 
       Schema:
         - Name: email
@@ -223,7 +228,10 @@ Resources:
         !If [
           ShouldNotCreateEnvResources,
           !Ref userpoolClientLambdaRole,
-          !Join ['', ['upClientLambdaRole', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]],
+          !Join [
+            '',
+            ['upClientLambdaRole', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env],
+          ],
         ]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -308,7 +316,11 @@ Resources:
               - 'logs:PutLogEvents'
             Resource: !Sub
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
-              - { region: !Ref 'AWS::Region', account: !Ref 'AWS::AccountId', lambda: !Ref UserPoolClientLambda }
+              - {
+                  region: !Ref 'AWS::Region',
+                  account: !Ref 'AWS::AccountId',
+                  lambda: !Ref UserPoolClientLambda,
+                }
     DependsOn: UserPoolClientLambdaPolicy
   UserPoolClientInputs:
     # Values passed to Userpool client Lambda
@@ -434,7 +446,11 @@ Resources:
               - 'logs:PutLogEvents'
             Resource: !Sub
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
-              - { region: !Ref 'AWS::Region', account: !Ref 'AWS::AccountId', lambda: !Ref HostedUICustomResource }
+              - {
+                  region: !Ref 'AWS::Region',
+                  account: !Ref 'AWS::AccountId',
+                  lambda: !Ref HostedUICustomResource,
+                }
     DependsOn: HostedUICustomResourcePolicy
   HostedUICustomResourceInputs:
     Type: 'Custom::LambdaCallout'
@@ -442,7 +458,11 @@ Resources:
       ServiceToken: !GetAtt HostedUICustomResource.Arn
       userPoolId: !Ref UserPool
       hostedUIDomainName:
-        !If [ShouldNotCreateEnvResources, !Ref hostedUIDomainName, !Join ['-', [!Ref hostedUIDomainName, !Ref env]]]
+        !If [
+          ShouldNotCreateEnvResources,
+          !Ref hostedUIDomainName,
+          !Join ['-', [!Ref hostedUIDomainName, !Ref env]],
+        ]
     DependsOn: HostedUICustomResourceLogPolicy
 
   HostedUIProvidersCustomResource:
@@ -659,7 +679,11 @@ Resources:
               - 'logs:PutLogEvents'
             Resource: !Sub
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
-              - { region: !Ref 'AWS::Region', account: !Ref 'AWS::AccountId', lambda: !Ref OAuthCustomResource }
+              - {
+                  region: !Ref 'AWS::Region',
+                  account: !Ref 'AWS::AccountId',
+                  lambda: !Ref OAuthCustomResource,
+                }
     DependsOn: OAuthCustomResourcePolicy
 
   OAuthCustomResourceInputs:
@@ -675,7 +699,12 @@ Resources:
 
 Outputs:
   HostedUIDomain:
-    Value: !If [ShouldNotCreateEnvResources, !Ref hostedUIDomainName, !Join ['-', [!Ref hostedUIDomainName, !Ref env]]]
+    Value:
+      !If [
+        ShouldNotCreateEnvResources,
+        !Ref hostedUIDomainName,
+        !Join ['-', [!Ref hostedUIDomainName, !Ref env]],
+      ]
 
   OAuthMetadata:
     Value: !Ref oAuthMetadata

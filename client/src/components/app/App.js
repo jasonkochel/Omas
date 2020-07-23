@@ -50,12 +50,11 @@ const App = ({ authState }) => {
     buildAuthData();
   }, [authState]);
 
-  const handleImpersonate = (userId, impersonate) => {
-    api.setImpersonation(userId, impersonate).then(localUser =>
-      setAuthData(state => {
-        return { ...state, ...localUser };
-      })
-    );
+  const handleImpersonate = async (userId, impersonate) => {
+    const localUser = await api.setImpersonation(userId, impersonate);
+    setAuthData(state => {
+      return { ...state, ...localUser };
+    });
   };
 
   return (
@@ -110,7 +109,7 @@ const App = ({ authState }) => {
           draggable={false}
           closeButton={false}
         />
-        {true && <ReactQueryDevtools />}
+        {false && <ReactQueryDevtools />}
       </div>
     </ConfirmProvider>
   );

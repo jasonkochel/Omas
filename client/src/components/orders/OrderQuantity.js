@@ -1,7 +1,7 @@
 import { IconButton, InputAdornment, makeStyles, TextField } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React from 'react';
 import api from '../../api';
 
 const useStyles = makeStyles(theme => ({
@@ -17,9 +17,8 @@ const useStyles = makeStyles(theme => ({
 
 const quantityToDisplayQty = quantity => (quantity && quantity > 0 ? quantity.toString() : '');
 
-const OrderQuantity = ({ item, initialQuantity, onChangeQuantity }) => {
+const OrderQuantity = ({ item, quantity, onChangeQuantity }) => {
   const classes = useStyles();
-  const [quantity, setQuantity] = useState(initialQuantity ?? 0);
 
   const handleIncrement = delta => {
     const oldQuantity = quantity ? Number.parseInt(quantity) : 0;
@@ -36,7 +35,6 @@ const OrderQuantity = ({ item, initialQuantity, onChangeQuantity }) => {
   };
 
   const handleChangeQuantity = qty => {
-    setQuantity(qty);
     onChangeQuantity(item, qty);
     api.updateOrder(item.catalogId, qty);
   };

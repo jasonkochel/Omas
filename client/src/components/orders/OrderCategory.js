@@ -1,90 +1,116 @@
-import { makeStyles, useTheme } from '@material-ui/core';
+import {
+  IconButton,
+  makeStyles,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import { VerticalAlignTop } from '@material-ui/icons';
-import MaterialTable, { MTableToolbar } from 'material-table';
 import React from 'react';
 import OrderQuantity from './OrderQuantity';
 
 const useStyles = makeStyles(theme => ({
-  toolbarWrapper: {
-    '& .MuiToolbar-root': {
-      backgroundColor: theme.palette.primary.main,
-      color: 'white',
-    },
+  paper: {
+    margin: '0 0 20px 0',
+  },
+  titleBar: {
+    backgroundColor: theme.palette.primary.main,
+    color: 'white',
+  },
+  title: {
+    flex: '1 1 100%',
+  },
+  header: {
+    backgroundColor: theme.palette.grey['200'],
   },
   scrollToTopIcon: {
     color: 'white',
   },
+  colSku: {
+    width: '15%',
+  },
+  colName: {
+    width: '35%',
+  },
+  colPrice: {
+    width: '15%',
+  },
+  colWeight: {
+    width: '15%',
+  },
+  colQty: {
+    width: '20%',
+  },
 }));
 
-const OrderCategory = ({ category, onChangeQuantity, savedOrder }) => {
+const OrderCategory = ({ category, cart, onChangeQuantity }) => {
   const classes = useStyles();
-  const theme = useTheme();
 
   if (!category?.catalogItems) return;
 
   return (
-    <MaterialTable
-      title={category.name}
-      data={category.catalogItems}
-      components={{
-        Toolbar: props => (
-          <div className={classes.toolbarWrapper}>
-            <MTableToolbar {...props} />
-          </div>
-        ),
-      }}
-      columns={[
-        {
-          title: 'SKU',
-          field: 'sku',
-          width: '15%',
-        },
-        { title: 'Name', field: 'name', width: '35%' },
-        {
-          title: 'Price',
-          render: rowData =>
-            Number(rowData.price).toFixed(2) + ' per ' + rowData.pricePer.toLowerCase(),
-          width: '15%',
-        },
-        {
-          title: 'Weight',
-          render: rowData => Number(rowData.weight).toFixed(2) + ' lbs',
-          width: '15%',
-        },
-        {
-          title: 'Quantity',
-          render: rowData =>
-            rowData.discontinued ? (
-              <i>Discontinued</i>
-            ) : (
-              <OrderQuantity
-                item={rowData}
-                onChangeQuantity={onChangeQuantity}
-                initialQuantity={savedOrder[rowData.sku]?.quantity}
-              />
-            ),
-          width: '20%',
-        },
-      ]}
-      style={{ margin: '0 0 20px 0' }}
-      options={{
-        paging: false,
-        search: false,
-        headerStyle: {
-          backgroundColor: theme.palette.grey['200'],
-        },
-      }}
-      actions={[
-        {
-          icon: props => <VerticalAlignTop {...props} className={classes.scrollToTopIcon} />,
-          tooltip: 'Back to Top',
-          isFreeAction: true,
-          onClick: () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          },
-        },
-      ]}
-    />
+    <Paper className={classes.paper}>
+      <Toolbar className={classes.titleBar}>
+        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+          {category.name}
+        </Typography>
+        <Tooltip title="Back to Top">
+          <IconButton
+            className={classes.scrollToTopIcon}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <VerticalAlignTop />
+          </IconButton>
+        </Tooltip>
+      </Toolbar>
+      <TableContainer>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow className={classes.header}>
+              <TableCell className={classes.colSku}>SKU</TableCell>
+              <TableCell className={classes.colName}>Name</TableCell>
+              <TableCell className={classes.colPrice}>Price</TableCell>
+              <TableCell className={classes.colWeight}>Weight</TableCell>
+              <TableCell className={classes.colQty} align="center">
+                Quantity
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {category.catalogItems.map(c => (
+              <TableRow key={c.catalogId}>
+                <TableCell className={classes.colSku}>{c.sku}</TableCell>
+                <TableCell className={classes.colName}>{c.name}</TableCell>
+                <TableCell className={classes.colPrice}>
+                  {Number(c.price).toFixed(2) + ' per ' + c.pricePer.toLowerCase()}
+                </TableCell>
+                <TableCell className={classes.colWeight}>
+                  {Number(c.weight).toFixed(2) + ' lbs'}
+                </TableCell>
+                <TableCell className={classes.colQty} align="center">
+                  {c.discontinued ? (
+                    <i>Discontinued</i>
+                  ) : (
+                    <OrderQuantity
+                      item={c}
+                      quantity={cart[c.sku]?.quantity}
+                      onChangeQuantity={onChangeQuantity}
+                    />
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   );
 };
 

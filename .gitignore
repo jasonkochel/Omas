@@ -160,3 +160,4 @@ $RECYCLE.BIN/
 /old_client
 appsettings.Development.json
 /_OmasApi
+/MySql

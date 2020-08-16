@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +9,7 @@ using Newtonsoft.Json.Converters;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
 using OmasApi.Services;
-
-//using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace OmasApi
 {
@@ -55,16 +55,16 @@ namespace OmasApi
 
             services.AddControllersWithViews();
 
+            /*
             services.AddDbContextPool<OmasDbContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
+            */
 
-            /*
             services.AddDbContextPool<OmasDbContext>(
                 options => options
                     .UseMySql(Configuration.GetConnectionString("MySql"), mySqlOptions => mySqlOptions
-                        // replace with your Server Version and Type
                         .ServerVersion(new Version(5, 6), ServerType.MySql)));
-                        */
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

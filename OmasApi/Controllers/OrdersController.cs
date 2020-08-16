@@ -169,7 +169,10 @@ namespace OmasApi.Controllers
             var currentBatchId = _orderBatchService.CurrentBatchId;
 
             var order = GetOrCreateOrder(currentBatchId, userId);
-            var linesToClone = _db.OrderLines.Where(l => l.Order.BatchId == batchId && l.Order.UserId == userId);
+
+            var linesToClone = _db.OrderLines
+                .Include(l => l.CatalogItem)
+                .Where(l => l.Order.BatchId == batchId && l.Order.UserId == userId);
 
             foreach (var line in linesToClone)
             {

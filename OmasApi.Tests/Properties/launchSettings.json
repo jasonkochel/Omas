@@ -3,8 +3,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:56907/",
-      "sslPort": 44300
+      "applicationUrl": "http://localhost:56908/",
+      "sslPort": 44352
     }
   },
   "profiles": {
@@ -15,9 +15,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "OmasApi": {
+    "OmasApi.Tests": {
       "commandName": "Project",
-      "launchBrowser": false,
+      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

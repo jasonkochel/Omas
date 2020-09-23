@@ -160,7 +160,7 @@ class CustomSignIn extends SignIn {
                 <div className={classes.inputLabel}>Email *</div>
                 <input
                   onChange={this.handleInputChange}
-                  placeholder="Your email address is your username"
+                  placeholder="Your email address will be your username"
                   name="username"
                   type="text"
                   className={classes.input}

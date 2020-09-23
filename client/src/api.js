@@ -11,7 +11,6 @@ const client = axios.create({
 client.interceptors.request.use(config =>
   Auth.currentSession()
     .then(session => {
-      //console.time(`ajax: ${config.method} ${config.baseURL}${config.url}`);
       config.headers.Authorization = 'Bearer ' + session.idToken.jwtToken;
       return Promise.resolve(config);
     })
@@ -23,7 +22,6 @@ client.interceptors.request.use(config =>
 client.interceptors.response.use(
   // Any 2xx
   response => {
-    //console.timeEnd(`ajax: ${response.config.method} ${response.config.url}`);
     return response;
   },
   // Any non-2xx

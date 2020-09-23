@@ -1,4 +1,5 @@
 using System;
+using Amazon.SimpleEmail;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,10 @@ namespace OmasApi
                 });
 
             services.Configure<AppSettings>(Configuration);
-            
+
+            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+            services.AddAWSService<IAmazonSimpleEmailService>();
+
             services.AddScoped<UserIdentity, UserIdentity>();
             services.AddScoped<OrderBatchService, OrderBatchService>();
             services.AddScoped<UserService, UserService>();

@@ -21,12 +21,14 @@ namespace OmasApi.Controllers
         private readonly ViewRenderService _viewRenderService;
         private readonly EmailService _emailService;
         private readonly EmailSettings _emailSettings;
+        private readonly OrderBatchService _orderBatchService;
 
-        public OrderBatchesController(OmasDbContext db, ViewRenderService viewRenderService, EmailService emailService, IOptions<AppSettings> appSettings)
+        public OrderBatchesController(OmasDbContext db, ViewRenderService viewRenderService, EmailService emailService, IOptions<AppSettings> appSettings, OrderBatchService orderBatchService)
         {
             _db = db;
             _viewRenderService = viewRenderService;
             _emailService = emailService;
+            _orderBatchService = orderBatchService;
             _emailSettings = appSettings.Value.EmailSettings;
         }
 
@@ -110,6 +112,8 @@ namespace OmasApi.Controllers
         {
             _db.OrderBatches.Add(batch);
             await _db.SaveChangesAsync();
+
+            _orderBatchService.RefreshCurrentBatchCache();
 
             return batch;
         }

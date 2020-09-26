@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -10,6 +11,8 @@ namespace OmasApi.Controllers.Middleware
     {
         public override void OnException(ExceptionContext context)
         {
+            Debug.Print($"Exception: {context.Exception.Message}");
+
             context.Result = new ContentResult
             {
                 Content = JsonConvert.SerializeObject(new { title = context.Exception.Message }),

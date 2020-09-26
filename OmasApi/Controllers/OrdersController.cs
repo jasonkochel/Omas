@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -100,9 +101,9 @@ namespace OmasApi.Controllers
                 {
                     await EmailOrder(batchId);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    // silently continue if emailing fails
+                    Debug.Print($"Exception during email send: {e.Message}");
                 }
             }
 

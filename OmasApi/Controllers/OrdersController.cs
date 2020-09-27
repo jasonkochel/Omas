@@ -99,7 +99,7 @@ namespace OmasApi.Controllers
 
                 try
                 {
-                    await EmailOrder(batchId);
+                    //await EmailOrder(batchId);
                 }
                 catch (Exception e)
                 {

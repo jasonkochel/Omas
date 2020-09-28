@@ -1,8 +1,7 @@
-using System;
+using Amazon.DynamoDBv2;
 using Amazon.SimpleEmail;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,7 +9,6 @@ using Newtonsoft.Json.Converters;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
 using OmasApi.Services;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace OmasApi
 {
@@ -21,7 +19,7 @@ namespace OmasApi
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public static IConfiguration Configuration { get; private set; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -41,11 +39,19 @@ namespace OmasApi
 
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             services.AddAWSService<IAmazonSimpleEmailService>();
+            AddDynamoDb(services);
 
             services.AddScoped<UserIdentity, UserIdentity>();
             services.AddScoped<OrderBatchService, OrderBatchService>();
             services.AddScoped<UserService, UserService>();
             services.AddScoped<EmailService, EmailService>();
+
+            services.AddScoped<CategoryRepository, CategoryRepository>();
+            services.AddScoped<CatalogItemRepository, CatalogItemRepository>();
+            services.AddScoped<UserRepository, UserRepository>();
+            services.AddScoped<OrderRepository, OrderRepository>();
+            services.AddScoped<OrderLineRepository, OrderLineRepository>();
+
             services.AddTransient<ViewRenderService, ViewRenderService>();
 
             services.AddCors(options =>
@@ -58,17 +64,6 @@ namespace OmasApi
             });
 
             services.AddControllersWithViews();
-
-            /*
-            services.AddDbContextPool<OmasDbContext>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
-            */
-
-            services.AddDbContextPool<OmasDbContext>(
-                options => options
-                    .UseMySql(Configuration.GetConnectionString("MySql"), mySqlOptions => mySqlOptions
-                        .ServerVersion(new Version(5, 6), ServerType.MySql)));
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -87,5 +82,26 @@ namespace OmasApi
                 endpoints.MapControllers();
             });
         }
+
+        private static void AddDynamoDb(IServiceCollection services)
+        {
+            var dynamoDbConfig = Configuration.GetSection("DynamoDb");
+            var runLocalDynamoDb = dynamoDbConfig.GetValue<bool>("LocalMode");
+
+            if (runLocalDynamoDb)
+            {
+                services.AddSingleton<IAmazonDynamoDB>(sp =>
+                {
+                    var clientConfig = new AmazonDynamoDBConfig
+                        { ServiceURL = dynamoDbConfig.GetValue<string>("LocalServiceUrl") };
+                    return new AmazonDynamoDBClient(clientConfig);
+                });
+            }
+            else
+            {
+                services.AddAWSService<IAmazonDynamoDB>();
+            }
+        }
+
     }
 }

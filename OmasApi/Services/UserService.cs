@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
@@ -9,37 +8,37 @@ namespace OmasApi.Services
     public class UserService
     {
         private readonly IMemoryCache _userCache;
-        private readonly OmasDbContext _db;
+        private readonly UserRepository _repo;
 
-        public UserService(IMemoryCache memoryCache, OmasDbContext db)
+        public UserService(IMemoryCache memoryCache, UserRepository repo)
         {
             _userCache = memoryCache;
-            _db = db;
+            _repo = repo;
         }
 
-        public UserMapping GetByCognitoId(Guid cognitoId)
+        public async Task<UserMapping> GetByCognitoId(string cognitoId)
         {
             if (!_userCache.TryGetValue(cognitoId, out UserMapping userMapping))
             {
-                var user = _db.Users.SingleOrDefault(u => u.CognitoId == cognitoId);
+                var user = await _repo.Get(cognitoId);
 
                 if (user == null)
                 {
                     throw new UnauthorizedException("User is not logged in or cannot be found");
                 }
 
-                userMapping = new UserMapping {UserId = user.UserId};
+                userMapping = new UserMapping { UserId = user.UserId };
                 _userCache.Set(cognitoId, userMapping);
             }
 
             return userMapping;
         }
 
-        public void Impersonate(Guid cognitoId, int? userIdToImpersonate)
+        public async Task Impersonate(string cognitoId, string userIdToImpersonate)
         {
             if (!_userCache.TryGetValue(cognitoId, out UserMapping userMapping))
             {
-                userMapping = GetByCognitoId(cognitoId);
+                userMapping = await GetByCognitoId(cognitoId);
             }
 
             userMapping.ImpersonatingUserId = userIdToImpersonate;
@@ -49,7 +48,7 @@ namespace OmasApi.Services
 
     public class UserMapping
     {
-        public int UserId { get; set; }
-        public int? ImpersonatingUserId { get; set; }
+        public string UserId { get; set; }
+        public string ImpersonatingUserId { get; set; }
     }
 }

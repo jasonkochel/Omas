@@ -1,20 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Amazon.DynamoDBv2.DataModel;
 
 namespace OmasApi.Data
 {
-    [Table("OrderBatches")]
+    [DynamoDBTable("Omas_OrderBatches")]
     public class OrderBatch
     {
-        [Key]
-        public int BatchId { get; set; }
+        [DynamoDBHashKey]
+        public string BatchId { get; set; }
 
         public DateTime OrderDate { get; set; }
         public DateTime DeliveryDate { get; set; }
         public bool IsOpen { get; set; }
-    
-        public virtual ICollection<Order> Orders { get; set; }
     }
 }

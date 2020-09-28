@@ -1,0 +1,1 @@
+docker run -d --rm --name omasdynamodb -p 8000:8000 -v ${PWD}\data:/data/ amazon/dynamodb-local -jar DynamoDBLocal.jar -inMemory

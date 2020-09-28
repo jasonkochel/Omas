@@ -1,47 +1,37 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
+using Amazon.DynamoDBv2.DataModel;
 
 namespace OmasApi.Data
 {
-    [Table("Catalog")]
+    [DynamoDBTable("Omas_CatalogItems")]
     public class CatalogItem
     {
-        [Key]
-        public int CatalogId { get; set; }
+        [DynamoDBHashKey]
+        public string CatalogId { get; set; }
+
+        public string CategoryId { get; set; }
 
         [MaxLength(200)]
         public string Name { get; set; }
 
-        [Column(TypeName = "varchar(10)")]
         [MaxLength(10)]
         [Required]
         public string Sku { get; set; }
 
-        [Column(TypeName = "decimal(9,2)")]
         public decimal Price { get; set; }
+        public decimal Weight { get; set; }
+        public decimal Multiplier { get; set; }
+        public int Sequence { get; set; }
 
         [MaxLength(10)]
         public string PricePer { get; set; }
 
-        [Column(TypeName = "decimal(7,2)")]
-        public decimal Weight { get; set; }
-
         [MaxLength(10)]
         public string OrderPer { get; set; }
-
-        [Column(TypeName = "decimal(5,2)")]
-        public decimal Multiplier { get; set; }
-
-        public int Sequence { get; set; }
 
         public bool New { get; set; }
         public bool Featured { get; set; }
         public bool Discontinued { get; set; }
-
-        public int CategoryId { get; set; }
-        public virtual Category Category { get; set; }
 
         public static CatalogItem MapForUpdate(CatalogItem oldData, CatalogItem newData)
         {

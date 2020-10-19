@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Entities;
+using OmasApi.Data.Repositories;
 using OmasApi.Models;
 using OmasApi.Services;
 

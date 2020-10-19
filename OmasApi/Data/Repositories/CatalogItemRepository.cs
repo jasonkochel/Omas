@@ -1,18 +1,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using OmasApi.Data.Entities;
 
-namespace OmasApi.Data
+namespace OmasApi.Data.Repositories
 {
     public class CatalogItemRepository : DynamoDBRepository<CatalogItem>
     {
         private readonly DynamoDBContext _db;
 
-        public CatalogItemRepository(DynamoDBContext db) : base(db)
+        public CatalogItemRepository(IAmazonDynamoDB client) : base(client)
         {
-            _db = db;
+            _db = new DynamoDBContext(client, new DynamoDBContextConfig
+            {
+                Conversion = DynamoDBEntryConversion.V2
+            });
         }
 
         public async Task<List<CatalogItem>> GetByCategory(string categoryId)

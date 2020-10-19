@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Entities;
+using OmasApi.Data.Repositories;
 
 namespace OmasApi.Services
 {
@@ -11,7 +14,7 @@ namespace OmasApi.Services
         private readonly OrderBatchRepository _repo;
 
         public string CurrentBatchId =>
-            _cache.TryGetValue("CurrentBatchId", out string batchId) ? batchId : RefreshCurrentBatchCache();
+            _cache.TryGetValue("CurrentBatchId", out string batchId) ? batchId : RefreshCurrentBatchCache().Result;
 
         public OrderBatchService(IMemoryCache cache, OrderBatchRepository repo)
         {
@@ -19,7 +22,7 @@ namespace OmasApi.Services
             _repo = repo;
         }
 
-        public string RefreshCurrentBatchCache()
+        public async Task<string> RefreshCurrentBatchCache()
         {
             var batches = _repo.Scan().Result;
 
@@ -28,7 +31,16 @@ namespace OmasApi.Services
 
             if (batchId == null)
             {
-                throw new InternalException("Current Order Batch ID could not be determined");
+                batchId = Guid.NewGuid().ToString();
+
+                // initial "seed" batch if table is empty
+                await _repo.Put(new OrderBatch
+                {
+                    BatchId = batchId,
+                    DeliveryDate = DateTime.Today.AddDays(7),
+                    OrderDate = DateTime.Today,
+                    IsOpen = true
+                });
             }
 
             _cache.Set("CurrentBatchId", batchId);

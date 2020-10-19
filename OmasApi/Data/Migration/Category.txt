@@ -1,0 +1,18 @@
+﻿1	MIXES (meat, bone, organs, veggies)	Mixes contain meat, bone, organs, vegetables	1
+2	OMAS WOOF COMPLETE CANINE CHICKEN MEAL	Exceeds AFFCO canine nutritional standards as a complete meal for all life stages	3
+3	BLENDS	These are the blends	2
+4	CHICKEN	Cluck	4
+5	TURKEY	Gobble	5
+6	OTHER POULTRY	Duck is a good fat source for adding weight, and for Working dogs	6
+7	BEEF & BUFFALO & PORK	Moo	7
+8	LAMB	Baaa	8
+9	EXOTICS		9
+10	TRIPE TRACHEA AND PERFORMANCE	Tripe is a great Natural Digestive Enzyme.  Trachea is a natural joint lubricant.	10
+11	BONES OF ALL TYPES		11
+12	FISH	Use fish Sparingly for Felines due to Potential Allergy Issues	12
+13	FISH OILS	Salmon Oil is 8% EPA 12% DHA	13
+14	FRUIT and VEGETABLES		14
+15	TREATS		15
+16	O'PAWS SUPPLEMENTS & Specialty Health Items		16
+17	FREEZE DRIED	Disks are 3/4 in. by 2 1/2 in. diameter 9 Packs- 3tbs.of water makes 2 oz of Product. Packs contain 6 or 9 Disks; Cases are 12 Packages	17
+18	MISC		18

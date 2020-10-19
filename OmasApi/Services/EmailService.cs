@@ -6,7 +6,7 @@ using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
 using Microsoft.Extensions.Options;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Repositories;
 
 namespace OmasApi.Services
 {
@@ -32,7 +32,7 @@ namespace OmasApi.Services
 
         public async Task EmailOrderForUser(string batchId, string userId)
         {
-            var order = await _orderRepo.Get(batchId, userId);
+            var order = await _orderRepo.Get(batchId, userId, includeNavigationProperties: true, includeLineItems: true);
             var orderLines = await _lineRepo.GetByOrder(batchId, userId);
 
             if (orderLines != null)

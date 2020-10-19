@@ -1,3 +1,4 @@
+using System;
 using Amazon.DynamoDBv2;
 using Amazon.SimpleEmail;
 using Microsoft.AspNetCore.Builder;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Converters;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
+using OmasApi.Data.Repositories;
 using OmasApi.Services;
 
 namespace OmasApi
@@ -41,6 +43,8 @@ namespace OmasApi
             services.AddAWSService<IAmazonSimpleEmailService>();
             AddDynamoDb(services);
 
+            services.AddSingleton<Migration, Migration>();
+
             services.AddScoped<UserIdentity, UserIdentity>();
             services.AddScoped<OrderBatchService, OrderBatchService>();
             services.AddScoped<UserService, UserService>();
@@ -51,6 +55,7 @@ namespace OmasApi
             services.AddScoped<UserRepository, UserRepository>();
             services.AddScoped<OrderRepository, OrderRepository>();
             services.AddScoped<OrderLineRepository, OrderLineRepository>();
+            services.AddScoped<OrderBatchRepository, OrderBatchRepository>();
 
             services.AddTransient<ViewRenderService, ViewRenderService>();
 
@@ -81,6 +86,12 @@ namespace OmasApi
             {
                 endpoints.MapControllers();
             });
+
+            var migrator = app.ApplicationServices.GetService<Migration>();
+            if (!migrator.Migrate().Result)
+            {
+                throw new Exception("Migration failed.  See log for details.");
+            }
         }
 
         private static void AddDynamoDb(IServiceCollection services)
@@ -93,7 +104,10 @@ namespace OmasApi
                 services.AddSingleton<IAmazonDynamoDB>(sp =>
                 {
                     var clientConfig = new AmazonDynamoDBConfig
-                        { ServiceURL = dynamoDbConfig.GetValue<string>("LocalServiceUrl") };
+                    {
+                        ServiceURL = dynamoDbConfig.GetValue<string>("LocalServiceUrl")
+                    };
+
                     return new AmazonDynamoDBClient(clientConfig);
                 });
             }

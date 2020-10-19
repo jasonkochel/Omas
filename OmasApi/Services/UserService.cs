@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Repositories;
 
 namespace OmasApi.Services
 {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OmasApi
+﻿namespace OmasApi
 {
     public class UserIdentity
     {

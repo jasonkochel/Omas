@@ -1,18 +1,22 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 
-namespace OmasApi.Data
+namespace OmasApi.Data.Repositories
 {
     public class DynamoDBRepository<T>
     {
         private readonly DynamoDBContext _db;
 
-        public DynamoDBRepository(DynamoDBContext db)
+        public DynamoDBRepository(IAmazonDynamoDB client)
         {
-            _db = db;
+            _db = new DynamoDBContext(client, new DynamoDBContextConfig
+            {
+                Conversion = DynamoDBEntryConversion.V2
+            });
         }
 
         public async Task<List<T>> Scan(List<ScanCondition> conditions = null)

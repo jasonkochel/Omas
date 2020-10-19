@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
 using Microsoft.Extensions.Logging;
+using OmasApi.Data.Entities;
 
 namespace OmasApi.Data
 {
     public class Migration
     {
         private readonly IAmazonDynamoDB _client;
+        private readonly DynamoDBContext _db;
         private readonly ILogger<Migration> _logger;
 
         private readonly List<CreateTableDefinition> _tables = new List<CreateTableDefinition>
@@ -18,6 +23,7 @@ namespace OmasApi.Data
             new CreateTableDefinition
             {
                 TableName = "Omas_Categories",
+                EntityType = typeof(Category),
                 Keys = new KeyDefinition
                 {
                     HashKeyName = "CategoryId",
@@ -39,6 +45,7 @@ namespace OmasApi.Data
             new CreateTableDefinition
             {
                 TableName = "Omas_CatalogItems",
+                EntityType = typeof(CatalogItem),
                 Keys = new KeyDefinition
                 {
                     HashKeyName = "CatalogId",
@@ -78,6 +85,7 @@ namespace OmasApi.Data
             new CreateTableDefinition
             {
                 TableName = "Omas_OrderBatches",
+                EntityType = typeof(OrderBatch),
                 Keys = new KeyDefinition
                 {
                     HashKeyName = "BatchId",
@@ -87,6 +95,7 @@ namespace OmasApi.Data
             new CreateTableDefinition
             {
                 TableName = "Omas_Orders",
+                EntityType = typeof(Order),
                 Keys = new KeyDefinition
                 {
                     HashKeyName = "BatchId",
@@ -110,6 +119,7 @@ namespace OmasApi.Data
             new CreateTableDefinition
             {
                 TableName = "Omas_OrderLines",
+                EntityType = typeof(OrderLine),
                 Keys = new KeyDefinition
                 {
                     HashKeyName = "BatchId",
@@ -133,6 +143,7 @@ namespace OmasApi.Data
             new CreateTableDefinition
             {
                 TableName = "Omas_Users",
+                EntityType = typeof(User),
                 Keys = new KeyDefinition
                 {
                     HashKeyName = "UserId",
@@ -145,33 +156,54 @@ namespace OmasApi.Data
         {
             _client = client;
             _logger = logger;
+            _db = new DynamoDBContext(client, new DynamoDBContextConfig
+            {
+                Conversion = DynamoDBEntryConversion.V2
+            });
+
         }
 
         public async Task<bool> Migrate()
         {
+            var throughput = new ProvisionedThroughput
+            {
+                ReadCapacityUnits = 5,
+                WriteCapacityUnits = 5
+            };
+
             // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
             foreach (var table in _tables)
             {
                 var req = new CreateTableRequest
                 {
                     TableName = table.TableName,
-                    AttributeDefinitions = table.Keys.ToAttributeDefinition(),
+                    AttributeDefinitions = table.GetAttributeDefinition(),
                     KeySchema = table.Keys.ToKeySchema(),
-                    GlobalSecondaryIndexes = table.Indexes.Select(i => new GlobalSecondaryIndex
+                    GlobalSecondaryIndexes = table.Indexes?.Select(i => new GlobalSecondaryIndex
                     {
                         IndexName = i.IndexName,
-                        KeySchema = i.Keys.ToKeySchema()
+                        KeySchema = i.Keys.ToKeySchema(),
+                        ProvisionedThroughput = throughput,
+                        Projection = new Projection {ProjectionType = ProjectionType.ALL}
                     }).ToList(),
-                    ProvisionedThroughput = new ProvisionedThroughput
-                    {
-                        ReadCapacityUnits = 5,
-                        WriteCapacityUnits = 5
-                    }
+                    ProvisionedThroughput = throughput
                 };
 
-                if (!await CreateTableAsync(req))
+                var result = await CreateTableAsync(req);
+                switch (result)
                 {
-                    return false;
+                    case CreateTableResult.Created:
+                        await PopulateTable(req);
+                        break;
+
+                    case CreateTableResult.Exists:
+                        break;
+                    
+                    case CreateTableResult.Error:
+                        return false;
+                        
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
@@ -186,12 +218,12 @@ namespace OmasApi.Data
             }
         }
 
-        private async Task<bool> CreateTableAsync(CreateTableRequest request)
+        private async Task<CreateTableResult> CreateTableAsync(CreateTableRequest request)
         {
             _logger.LogInformation($"Creating a new table named {request.TableName}");
             if (await CheckTableExistenceAsync(request.TableName))
             {
-                return true;
+                return CreateTableResult.Exists;
             }
 
             return await CreateNewTableAsync(request);
@@ -219,18 +251,42 @@ namespace OmasApi.Data
             return false;
         }
 
-        public async Task<bool> CreateNewTableAsync(CreateTableRequest request)
+        private async Task<CreateTableResult> CreateNewTableAsync(CreateTableRequest request)
         {
             try
             {
                 await _client.CreateTableAsync(request);
                 _logger.LogInformation($"Created table '{request.TableName}' successfully");
-                return true;
+                return CreateTableResult.Created;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to create the new table ({ex.Message})");
-                return false;
+                return CreateTableResult.Error;
+            }
+        }
+
+        private async Task PopulateTable(CreateTableRequest request)
+        {
+            var def = _tables.Single(t => t.TableName == request.TableName);
+            var entityType = def.EntityType;
+
+            var fileName = Path.Join(
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                "Data\\Migration",
+                def.EntityType.Name + ".txt"
+            );
+
+            if (File.Exists(fileName))
+            {
+                _logger.LogInformation($"Populating table {request.TableName}");
+
+                dynamic entityClass = Activator.CreateInstance(entityType);
+                var entities = entityClass.Import(File.ReadLines(fileName));
+                foreach (var entity in entities)
+                {
+                    await _db.SaveAsync(entity);
+                }
             }
         }
     }
@@ -238,8 +294,66 @@ namespace OmasApi.Data
     public class CreateTableDefinition
     {
         public string TableName { get; set; }
+        public Type EntityType { get; set; }
         public KeyDefinition Keys { get; set; }
         public List<CreateIndexDefinition> Indexes { get; set; }
+
+        public List<AttributeDefinition> GetAttributeDefinition()
+        {
+            var attributeNames = new List<string>();
+
+            var attributes = new List<AttributeDefinition>
+            {
+                new AttributeDefinition
+                {
+                    AttributeName = Keys.HashKeyName,
+                    AttributeType = Keys.HashKeyType
+                }
+            };
+            attributeNames.Add(Keys.HashKeyName);
+
+            if (!Keys.RangeKeyName.IsNullOrEmpty())
+            {
+                attributes.Add(new AttributeDefinition
+                {
+                    AttributeName = Keys.RangeKeyName,
+                    AttributeType = Keys.RangeKeyType
+                }
+                );
+                attributeNames.Add(Keys.RangeKeyName);
+            }
+
+            if (Indexes != null)
+            {
+                foreach (var index in Indexes)
+                {
+                    if (!attributeNames.Contains(index.Keys.HashKeyName))
+                    {
+                        attributes.Add(new AttributeDefinition
+                        {
+                            AttributeName = index.Keys.HashKeyName,
+                            AttributeType = index.Keys.HashKeyType
+                        });
+                        attributeNames.Add(index.Keys.HashKeyName);
+                    }
+
+                    if (!index.Keys.RangeKeyName.IsNullOrEmpty())
+                    {
+                        if (!attributeNames.Contains(index.Keys.RangeKeyName))
+                        {
+                            attributes.Add(new AttributeDefinition
+                            {
+                                AttributeName = index.Keys.RangeKeyName,
+                                AttributeType = index.Keys.RangeKeyType
+                            });
+                            attributeNames.Add(index.Keys.RangeKeyName);
+                        }
+                    }
+                }
+            }
+
+            return attributes;
+        }
     }
 
     public class CreateIndexDefinition
@@ -277,29 +391,12 @@ namespace OmasApi.Data
 
             return keys;
         }
+    }
 
-        public List<AttributeDefinition> ToAttributeDefinition()
-        {
-            var attributes = new List<AttributeDefinition>
-            {
-                new AttributeDefinition
-                {
-                    AttributeName = HashKeyName,
-                    AttributeType = HashKeyType
-                }
-            };
-
-            if (!RangeKeyName.IsNullOrEmpty())
-            {
-                attributes.Add(new AttributeDefinition
-                    {
-                        AttributeName = RangeKeyName,
-                        AttributeType = RangeKeyType
-                    }
-                );
-            }
-
-            return attributes;
-        }
+    public enum CreateTableResult
+    {
+        Created,
+        Exists,
+        Error
     }
 }

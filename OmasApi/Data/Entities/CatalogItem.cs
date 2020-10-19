@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Amazon.DynamoDBv2.DataModel;
 
-namespace OmasApi.Data
+namespace OmasApi.Data.Entities
 {
     [DynamoDBTable("Omas_CatalogItems")]
     public class CatalogItem
@@ -48,6 +50,29 @@ namespace OmasApi.Data
                 Sequence = oldData.Sequence,
                 CategoryId = oldData.CategoryId
             };
+        }
+
+        public List<CatalogItem> Import(IEnumerable<string> lines)
+        {
+            return lines
+                .Select(line => line.Split('\t'))
+                .Where(fields => fields.Length == 13)
+                .Select(fields => new CatalogItem
+                {
+                    CatalogId = fields[0],
+                    Name = fields[1],
+                    Sku = fields[2],
+                    OrderPer = fields[3],
+                    PricePer = fields[4],
+                    Price = decimal.Parse(fields[5]),
+                    Multiplier = decimal.Parse(fields[6]),
+                    Weight = decimal.Parse(fields[7]),
+                    Sequence = int.Parse(fields[8]),
+                    CategoryId = fields[9],
+                    New = bool.Parse(fields[10]),
+                    Featured = bool.Parse(fields[11]),
+                    Discontinued = bool.Parse(fields[12])
+                }).ToList();
         }
     }
 }

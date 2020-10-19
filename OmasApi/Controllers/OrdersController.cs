@@ -5,7 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Entities;
+using OmasApi.Data.Repositories;
 using OmasApi.Models;
 using OmasApi.Services;
 
@@ -70,16 +71,7 @@ namespace OmasApi.Controllers
         public async Task<Order> GetOrderForUser([FromRoute] string batchId)
         {
             var userId = await GetUserId();
-
-            var order = await _repo.Get(batchId, userId);
-            var orderLines = await _lineRepo.GetByOrder(batchId, userId);
-
-            if (orderLines != null)
-            {
-                order.LineItems = order.LineItems.OrderBy(l => l.Sequence).ToList();
-            }
-
-            return order;
+            return await _repo.Get(batchId, userId, includeNavigationProperties: true, includeLineItems: true);
         }
 
         [HttpPut("confirm")]
@@ -88,7 +80,7 @@ namespace OmasApi.Controllers
             var userId = await GetUserId();
             var batchId = _orderBatchService.CurrentBatchId;
 
-            var order = await _repo.Get(batchId, userId);
+            var order = await _repo.Get(batchId, userId, includeNavigationProperties: false);
 
             if (order != null)
             {
@@ -219,7 +211,7 @@ namespace OmasApi.Controllers
 
         private async Task CreateOrderIfNoneExists(string batchId, string userId)
         {
-            var order = await _repo.Get(batchId, userId);
+            var order = await _repo.Get(batchId, userId, includeNavigationProperties: false);
 
             if (order == null)
             {

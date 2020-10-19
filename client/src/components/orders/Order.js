@@ -48,7 +48,7 @@ const Order = () => {
 
   const getSavedOrder = async () => {
     const data = await api.getCurrentOrder();
-    const savedOrderObj = fns.arrayToObject(data.lineItems, 'sku');
+    const savedOrderObj = fns.arrayToObject(data?.lineItems ?? [], 'sku');
     setCart(makeCart(savedOrderObj));
     return savedOrderObj;
   };
@@ -66,16 +66,6 @@ const Order = () => {
     enabled: isSuccess, // wait until cart has been fetched and built
   });
 
-  /*
-  const handleChangeQuantity = React.useCallback((item, quantity) => {
-    setCart(c => {
-      return {
-        ...c,
-        [item.sku]: { price: item.price, quantity, multiplier: item.multiplier },
-      };
-    });
-  }, []);
-  */
   const handleChangeQuantity = (item, quantity) => {
     setCart(c => {
       return {

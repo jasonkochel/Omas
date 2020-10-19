@@ -4,7 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Entities;
+using OmasApi.Data.Repositories;
 
 namespace OmasApi.Controllers
 {
@@ -23,7 +24,7 @@ namespace OmasApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Category>> GetAll([FromQuery] bool includeItems = false, [FromQuery] bool includeVirtual = false)
+        public async Task<List<Category>> GetAll([FromQuery] bool includeItems = false, [FromQuery] bool includeVirtual = false)
         {
             var results = await _repo.Scan();
 

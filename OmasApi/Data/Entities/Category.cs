@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using Amazon.DynamoDBv2.DataModel;
 
-namespace OmasApi.Data
+namespace OmasApi.Data.Entities
 {
     [DynamoDBTable("Omas_Categories")]
     public class Category
@@ -22,5 +22,19 @@ namespace OmasApi.Data
 
         [DynamoDBIgnore]
         public List<CatalogItem> CatalogItems { get; set; }
+
+        public List<Category> Import(IEnumerable<string> lines)
+        {
+            return lines
+                .Select(line => line.Split('\t'))
+                .Where(fields => fields.Length == 4)
+                .Select(fields => new Category
+                {
+                    CategoryId = fields[0],
+                    Name = fields[1],
+                    Description = fields[2],
+                    Sequence = int.Parse(fields[3])
+                }).ToList();
+        }
     }
 }

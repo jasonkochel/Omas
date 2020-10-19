@@ -29,15 +29,18 @@ namespace OmasApi.Data.Repositories
         {
             var order = await _db.LoadAsync<Order>(batchId, userId);
 
-            if (includeNavigationProperties)
+            if (order != null)
             {
-                order.OrderBatch = await _batchRepo.Get(batchId);
-                order.User = await _userRepo.Get(userId);
-            }
+                if (includeNavigationProperties)
+                {
+                    order.OrderBatch = await _batchRepo.Get(batchId);
+                    order.User = await _userRepo.Get(userId);
+                }
 
-            if (includeLineItems)
-            {
-                order.LineItems = (await _lineRepo.GetByOrder(batchId, userId))?.OrderBy(l => l.Sequence).ToList();
+                if (includeLineItems)
+                {
+                    order.LineItems = (await _lineRepo.GetByOrder(batchId, userId))?.OrderBy(l => l.Sequence).ToList();
+                }
             }
 
             return order;

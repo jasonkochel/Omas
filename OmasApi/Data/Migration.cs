@@ -277,9 +277,11 @@ namespace OmasApi.Data
                 def.EntityType.Name + ".txt"
             );
 
+            _logger.LogInformation($"Looking for data file '{fileName}'");
+
             if (File.Exists(fileName))
             {
-                _logger.LogInformation($"Populating table '{request.TableName}'");
+                _logger.LogInformation($"Data file found; populating table '{request.TableName}'");
 
                 dynamic entityClass = Activator.CreateInstance(entityType);
                 var entities = entityClass.Import(File.ReadLines(fileName));

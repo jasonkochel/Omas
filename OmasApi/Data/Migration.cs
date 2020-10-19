@@ -273,7 +273,7 @@ namespace OmasApi.Data
 
             var fileName = Path.Join(
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                "Data\\Migration",
+                "Data", "Migration",
                 def.EntityType.Name + ".txt"
             );
 

@@ -90,7 +90,7 @@ namespace OmasApi
             var migrator = app.ApplicationServices.GetService<Migration>();
             if (!migrator.Migrate().Result)
             {
-                throw new Exception("Migration failed.  See log for details.");
+                throw new Exception("Migration failed. See log for details.");
             }
         }
 

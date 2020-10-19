@@ -220,7 +220,7 @@ namespace OmasApi.Data
 
         private async Task<CreateTableResult> CreateTableAsync(CreateTableRequest request)
         {
-            _logger.LogInformation($"Creating a new table named {request.TableName}");
+            _logger.LogInformation($"Creating a new table named '{request.TableName}'");
             if (await CheckTableExistenceAsync(request.TableName))
             {
                 return CreateTableResult.Exists;
@@ -234,7 +234,7 @@ namespace OmasApi.Data
             var tableList = await _client.ListTablesAsync();
             if (tableList.TableNames.Contains(tableName))
             {
-                _logger.LogInformation($"A table named {tableName} already exists in DynamoDB");
+                _logger.LogInformation($"A table named '{tableName}' already exists in DynamoDB");
 
                 try
                 {
@@ -279,7 +279,7 @@ namespace OmasApi.Data
 
             if (File.Exists(fileName))
             {
-                _logger.LogInformation($"Populating table {request.TableName}");
+                _logger.LogInformation($"Populating table '{request.TableName}'");
 
                 dynamic entityClass = Activator.CreateInstance(entityType);
                 var entities = entityClass.Import(File.ReadLines(fileName));

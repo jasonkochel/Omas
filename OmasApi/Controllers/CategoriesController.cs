@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Entities;
+using OmasApi.Data.Repositories;
 
 namespace OmasApi.Controllers
 {
@@ -14,55 +14,59 @@ namespace OmasApi.Controllers
     [Route("[controller]")]
     public class CategoriesController : ControllerBase
     {
-        private readonly OmasDbContext _db;
+        private readonly CategoryRepository _repo;
+        private readonly CatalogItemRepository _catalogItemRepo;
 
-        public CategoriesController(OmasDbContext db)
+        public CategoriesController(CategoryRepository repo, CatalogItemRepository catalogItemRepo)
         {
-            _db = db;
+            _repo = repo;
+            _catalogItemRepo = catalogItemRepo;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Category>> GetAll([FromQuery] bool includeItems = false, [FromQuery] bool includeVirtual = false)
+        public async Task<List<Category>> GetAll([FromQuery] bool includeItems = false, [FromQuery] bool includeVirtual = false)
         {
-            var query = _db.Categories.AsQueryable();
+            var results = await _repo.Scan();
 
-            if (includeItems)
+            var items = new List<CatalogItem>();
+            if (includeItems || includeVirtual)
             {
-                query = query.Include(c => c.CatalogItems);
+                items = await _catalogItemRepo.Scan();
             }
-
-            var results = await query.OrderBy(c => c.Sequence).ToListAsync();
 
             if (includeItems)
             {
                 foreach (var r in results)
                 {
-                    r.CatalogItems = r.CatalogItems.Where(i => !i.Discontinued).OrderBy(ci => ci.Sequence).ToList();
+                    r.CatalogItems = items.Where(i => i.CategoryId == r.CategoryId && !i.Discontinued)
+                        .OrderBy(i => i.Sequence).ToList();
                 }
             }
+
+            results.Sort((a, b) => a.Sequence - b.Sequence);
 
             if (includeVirtual)
             {
                 results.Insert(0, new Category
                 {
                     Name = "Featured Items",
-                    CategoryId = -1,
+                    CategoryId = "FeaturedItems",
                     Sequence = 0,
-                    CatalogItems = _db.CatalogItems.Where(i => i.Featured).OrderBy(ci => ci.Sequence).ToList()
+                    CatalogItems = items.Where(i => i.Featured).OrderBy(i => i.Sequence).ToList()
                 });
                 results.Insert(0, new Category
                 {
                     Name = "New Items",
-                    CategoryId = -2,
+                    CategoryId = "NewItems",
                     Sequence = 0,
-                    CatalogItems = _db.CatalogItems.Where(i => i.New).OrderBy(ci => ci.Sequence).ToList()
+                    CatalogItems = items.Where(i => i.New).OrderBy(i => i.Sequence).ToList()
                 });
                 results.Add(new Category
                 {
                     Name = "Discontinued Items",
-                    CategoryId = -3,
+                    CategoryId = "DiscontinuedItems",
                     Sequence = 99,
-                    CatalogItems = _db.CatalogItems.Where(i => i.Discontinued).OrderBy(ci => ci.Sequence).ToList()
+                    CatalogItems = items.Where(i => i.Discontinued).OrderBy(i => i.Sequence).ToList()
                 });
             }
 
@@ -71,9 +75,10 @@ namespace OmasApi.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<Category> Get(int id)
+        public async Task<Category> Get(string id)
         {
-            var category = await _db.Categories.FindAsync(id);
+            var category = await _repo.Get(id);
+
             if (category == null)
             {
                 throw new NotFoundException($"Category ID '{id}' does not exist");
@@ -85,83 +90,82 @@ namespace OmasApi.Controllers
         [HttpPost]
         public async Task<Category> Post([FromBody] Category category)
         {
+            category.CategoryId = Guid.NewGuid().ToString();
+
             // Put the new category at the top of the list by setting Sequence = 0...
             category.Sequence = 0;
 
-            _db.Categories.Add(category);
-            await _db.SaveChangesAsync();
+            await _repo.Put(category);
 
             // ...then incrementing Sequence of entire table
-            _db.Database.ExecuteSqlRaw("UPDATE Categories SET Sequence = Sequence + 1");
+            await _repo.BulkUpdateSequence(0, 1);
 
+            // simulate new sequence in memory for return value
+            category.Sequence = 1;
             return category;
         }
 
         [HttpPut("{id}")]
-        public async Task<Category> Put(int id, [FromBody] Category category)
+        public async Task<Category> Put(string id, [FromBody] Category category)
         {
             if (id != category.CategoryId)
             {
                 throw new BadRequestException("Route CategoryID does not match request body");
             }
 
-            _db.Categories.Update(category);
-            await _db.SaveChangesAsync();
+            await _repo.Put(category);
 
             return category;
         }
 
         [HttpDelete("{id}")]
-        public async Task Delete(int id)
+        public async Task Delete(string id)
         {
-            if (_db.CatalogItems.Any(i => i.CategoryId == id))
+            if ((await _catalogItemRepo.GetByCategory(id)).Any())
             {
                 throw new ReferentialIntegrityException("This category is in use and cannot be deleted");
             }
 
             var category = await Get(id);
 
-            if (category == null)
-            {
-                throw new NotFoundException($"Category ID {id} does not exist");
-            }
+            await _repo.Delete(id);
 
-            _db.Categories.Remove(category);
-            await _db.SaveChangesAsync();
-
-            var sql = (FormattableString)$"UPDATE Categories SET Sequence = Sequence - 1 WHERE Sequence > {category.Sequence}";
-            await _db.Database.ExecuteSqlInterpolatedAsync(sql);
+            // decrement the sequence of everything after the deleted item, so there are no gaps
+            await _repo.BulkUpdateSequence(category.Sequence, -1);
         }
 
         [HttpPatch("{id}/up")]
-        public async Task MoveUp(int id)
+        public async Task MoveUp(string id)
         {
             await SwapSequence(id, SwapDirection.Up);
         }
 
         [HttpPatch("{id}/down")]
-        public async Task MoveDown(int id)
+        public async Task MoveDown(string id)
         {
             await SwapSequence(id, SwapDirection.Down);
         }
 
-        private async Task SwapSequence(int id, SwapDirection direction)
+        private async Task SwapSequence(string id, SwapDirection direction)
         {
-            var category = _db.Categories.SingleOrDefault(c => c.CategoryId == id);
+            var category = await Get(id);
+
             if (category != null)
             {
                 // Find the record that was in the slot that "id" is being moved to...
-                var otherCategory = _db.Categories.SingleOrDefault(c => c.Sequence == category.Sequence + (int)direction);
+                var otherCategory = await _repo.GetBySequence(category.Sequence + (int)direction);
+
                 if (otherCategory != null)
                 {
                     // ...move it into "id"'s old slot...
                     otherCategory.Sequence = category.Sequence;
                     // ...and move "id" up/down
                     category.Sequence += (int)direction;
+
+                    await _repo.Put(otherCategory);
+                    await _repo.Put(category);
                 }
             }
-
-            await _db.SaveChangesAsync();
         }
 
         private enum SwapDirection

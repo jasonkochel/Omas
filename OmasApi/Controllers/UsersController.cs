@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Entities;
+using OmasApi.Data.Repositories;
 using OmasApi.Models;
 using OmasApi.Services;
 
@@ -16,83 +13,89 @@ namespace OmasApi.Controllers
     [Route("[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly OmasDbContext _db;
+        private readonly UserRepository _repo;
         private readonly UserIdentity _identity;
         private readonly UserService _userService;
 
-        public UsersController(OmasDbContext db, UserIdentity identity, UserService userService)
+        public UsersController(UserRepository repo, UserIdentity identity, UserService userService)
         {
-            _db = db;
+            _repo = repo;
             _identity = identity;
             _userService = userService;
         }
 
         [AdminOnly]
         [HttpGet]
-        public Task<List<User>> GetAll()
+        public async Task<List<User>> GetAll()
         {
-            return _db.Users.Select(u => new User
-            {
-                UserId = u.UserId,
-                Name = u.Name,
-                Email = u.Email
-            }).ToListAsync();
+            return await _repo.Scan();
         }
 
         [HttpGet("{cognitoId}")]
-        public UserModel Get([FromRoute] Guid cognitoId)
+        public async Task<UserModel> Get([FromRoute] string cognitoId)
         {
             if (cognitoId != _identity.CognitoId)
             {
                 throw new UnauthorizedException("Specified User ID does not match logged in user");
             }
 
-            var userMapping = _userService.GetByCognitoId(cognitoId);
-            var user = _db.Users.SingleOrDefault(u => u.CognitoId == cognitoId);
-            var impersonatingUser = _db.Users.SingleOrDefault(u => u.UserId == userMapping.ImpersonatingUserId);
+            var user = await _repo.Get(cognitoId);
 
-            return new UserModel
+            if (user == null)
             {
-                Name = user?.Name,
-                Email = user?.Email,
-                ImpersonatingName = impersonatingUser?.Name,
-                ImpersonatingEmail = impersonatingUser?.Email,
+                throw new NotFoundException($"User ID '{cognitoId}' does not exist");
+            }
+
+            var userModel = new UserModel
+            {
+                Name = user.Name,
+                Email = user.Email,
                 IsAdmin = _identity.Admin
             };
+
+            var userMapping = await _userService.GetByCognitoId(cognitoId);
+
+            if (!userMapping.ImpersonatingUserId.IsNullOrEmpty())
+            {
+                var impersonatingUser = await _repo.Get(userMapping.ImpersonatingUserId);
+                userModel.ImpersonatingName = impersonatingUser?.Name;
+                userModel.ImpersonatingEmail = impersonatingUser?.Email;
+            }
+
+            return userModel;
         }
 
         [HttpPost]
-        public void Post()
+        public async Task Post()
         {
-            var user = _db.Users.SingleOrDefault(u => u.CognitoId == _identity.CognitoId);
+            var user = await _repo.Get(_identity.CognitoId);
 
             if (user == null)
             {
                 user = new User
                 {
-                    CognitoId = _identity.CognitoId,
+                    UserId = _identity.CognitoId,
                     Email = _identity.Email,
                     Name = _identity.Name,
                     Phone = _identity.Phone
                 };
 
-                _db.Users.Add(user);
-                _db.SaveChanges();
+                await _repo.Put(user);
             }
         }
 
         [AdminOnly]
         [HttpPost("admin/impersonation")]
-        public UserModel SetImpersonation([FromQuery] int? userId, [FromQuery] bool impersonate)
+        public async Task<UserModel> SetImpersonation([FromQuery] string userId, [FromQuery] bool impersonate)
         {
             if (impersonate && userId == null)
             {
                 throw new BadRequestException("No User ID was specified to impersonate");
             }
 
-            _userService.Impersonate(_identity.CognitoId, impersonate ? userId : null);
+            await _userService.Impersonate(_identity.CognitoId, impersonate ? userId : null);
 
-            return Get(_identity.CognitoId);
+            return await Get(_identity.CognitoId);
         }
     }
 }

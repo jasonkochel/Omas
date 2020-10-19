@@ -1,36 +1,50 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Entities;
+using OmasApi.Data.Repositories;
 
 namespace OmasApi.Services
 {
     public class OrderBatchService
     {
         private readonly IMemoryCache _cache;
-        private readonly OmasDbContext _db;
+        private readonly OrderBatchRepository _repo;
 
-        public int CurrentBatchId =>
-            _cache.TryGetValue("CurrentBatchId", out int batchId) ? batchId : RefreshCurrentBatchCache();
+        public string CurrentBatchId =>
+            _cache.TryGetValue("CurrentBatchId", out string batchId) ? batchId : RefreshCurrentBatchCache().Result;
 
-        public OrderBatchService(IMemoryCache cache, OmasDbContext db)
+        public OrderBatchService(IMemoryCache cache, OrderBatchRepository repo)
         {
             _cache = cache;
-            _db = db;
+            _repo = repo;
         }
 
-        public int RefreshCurrentBatchCache()
+        public async Task<string> RefreshCurrentBatchCache()
         {
-            var batchId = _db.OrderBatches.SingleOrDefault(ob => ob.IsOpen)?.BatchId ??
-                          _db.OrderBatches.OrderByDescending(ob => ob.DeliveryDate).FirstOrDefault()?.BatchId;
+            var batches = _repo.Scan().Result;
+
+            var batchId = batches.SingleOrDefault(ob => ob.IsOpen)?.BatchId ??
+                          batches.OrderByDescending(ob => ob.DeliveryDate).FirstOrDefault()?.BatchId;
 
             if (batchId == null)
             {
-                throw new InternalException("Current Order Batch ID could not be determined");
+                batchId = Guid.NewGuid().ToString();
+
+                // initial "seed" batch if table is empty
+                await _repo.Put(new OrderBatch
+                {
+                    BatchId = batchId,
+                    DeliveryDate = DateTime.Today.AddDays(7),
+                    OrderDate = DateTime.Today,
+                    IsOpen = true
+                });
             }
 
-            _cache.Set("CurrentBatchId", batchId.Value);
-            return batchId.Value;
+            _cache.Set("CurrentBatchId", batchId);
+            return batchId;
         }
     }
 }

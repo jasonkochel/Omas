@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using OmasApi.Data;
+using Newtonsoft.Json;
 
 namespace OmasApi.Controllers.Middleware
 {
@@ -19,7 +19,7 @@ namespace OmasApi.Controllers.Middleware
 
         public AuthorizationFilter(IOptions<AppSettings> appSettings)
         {
-            _jwks = new JsonWebKeySet(appSettings.Value.Jwks);
+            _jwks = new JsonWebKeySet(JsonConvert.SerializeObject(appSettings.Value.Jwks));
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
@@ -32,7 +32,7 @@ namespace OmasApi.Controllers.Middleware
             var token = ValidateJwt(jwt);
 
             var userIdentity = (UserIdentity)context.HttpContext.RequestServices.GetService(typeof(UserIdentity));
-            userIdentity.CognitoId = Guid.Parse(token.Payload.Sub);
+            userIdentity.CognitoId = token.Payload.Sub;
             userIdentity.Email = token.Claims.SingleOrDefault(c => c.Type == "email")?.Value;
             userIdentity.Name = token.Claims.SingleOrDefault(c => c.Type == "name")?.Value ?? "";
             userIdentity.Phone = token.Claims.SingleOrDefault(c => c.Type == "phone_number")?.Value ?? "";

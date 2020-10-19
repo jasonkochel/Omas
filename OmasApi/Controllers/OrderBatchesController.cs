@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Entities;
+using OmasApi.Data.Repositories;
 using OmasApi.Models;
 using OmasApi.Services;
 
@@ -17,41 +17,45 @@ namespace OmasApi.Controllers
     [Route("[controller]")]
     public class OrderBatchesController : ControllerBase
     {
-        private readonly OmasDbContext _db;
-        private readonly ViewRenderService _viewRenderService;
+        private readonly OrderBatchRepository _repo;
+        private readonly OrderRepository _orderRepo;
+        private readonly OrderLineRepository _lineRepo;
+        private readonly UserRepository _userRepo;
+
         private readonly EmailService _emailService;
-        private readonly EmailSettings _emailSettings;
         private readonly OrderBatchService _orderBatchService;
 
-        public OrderBatchesController(OmasDbContext db, ViewRenderService viewRenderService, EmailService emailService, IOptions<AppSettings> appSettings, OrderBatchService orderBatchService)
+        public OrderBatchesController(OrderBatchRepository repo, EmailService emailService,
+            OrderBatchService orderBatchService, OrderLineRepository lineRepo, OrderRepository orderRepo,
+            UserRepository userRepo)
         {
-            _db = db;
-            _viewRenderService = viewRenderService;
+            _repo = repo;
             _emailService = emailService;
             _orderBatchService = orderBatchService;
-            _emailSettings = appSettings.Value.EmailSettings;
+            _lineRepo = lineRepo;
+            _orderRepo = orderRepo;
+            _userRepo = userRepo;
         }
 
         [HttpGet]
-        public Task<List<OrderBatch>> GetAll()
+        public async Task<List<OrderBatch>> GetAll()
         {
-            return _db.OrderBatches
-                .AsNoTracking()
-                .OrderByDescending(b => b.DeliveryDate)
-                .ToListAsync();
+            var batches = await _repo.Scan();
+            batches.Sort((a, b) => a.DeliveryDate.CompareTo(b.DeliveryDate) * -1);  // sort descending
+            return batches;
         }
 
-
-        [HttpGet("{id}")]
-        public async Task<OrderBatchModel> Get(int id)
+        [HttpGet("{batchId}")]
+        public async Task<OrderBatchModel> GetOrderBatchSummary(string batchId)
         {
-            var batch = await _db.OrderBatches.Include(b => b.Orders).ThenInclude(o => o.LineItems)
-                .SingleOrDefaultAsync(b => b.BatchId == id);
+            var batch = await _repo.Get(batchId);
 
             if (batch == null)
             {
-                throw new NotFoundException($"Batch '{id}' does not exist");
+                throw new NotFoundException($"Batch '{batchId}' does not exist");
             }
+
+            var orderLines = await _lineRepo.GetByBatch(batchId);
 
             var model = new OrderBatchModel
             {
@@ -59,116 +63,104 @@ namespace OmasApi.Controllers
                 OrderDate = batch.OrderDate,
                 DeliveryDate = batch.DeliveryDate,
                 IsOpen = batch.IsOpen,
-                CustomerCount = batch.Orders.Select(i => i.UserId).Distinct().Count(),
-                Total = batch.Orders.SelectMany(o => o.LineItems).Sum(li => li.Price * li.Quantity)
+                CustomerCount = orderLines.Select(i => i.UserId).Distinct().Count(),
+                Total = orderLines.Sum(i => i.Price * i.Quantity)
             };
 
             return model;
         }
 
-        [HttpGet("{id}/orders")]
-        public async Task<List<Order>> GetOrders(int id)
+        [HttpGet("{batchId}/orders")]
+        public async Task<List<Order>> GetAllOrderDetailsForBatch(string batchId)
         {
-            var orders = await _db.Orders
-                .Include(o => o.LineItems)
-                .ThenInclude(l => l.CatalogItem)
-                .Include(o => o.User)
-                .Where(o => o.BatchId == id && o.Confirmed)
-                .ToListAsync();
+            var orders = await _orderRepo.GetAllForBatch(batchId);
+            var orderLines = await _lineRepo.GetByBatch(batchId);
+            var users = await _userRepo.Scan();
 
-            return orders.Select(order =>
+            return orders.Where(o => o.Confirmed).Select(order =>
             {
-                order.LineItems = order.LineItems.OrderBy(l => l.CatalogItem.Sequence).ToList();
+                order.LineItems = orderLines.Where(l => l.UserId == order.UserId).OrderBy(l => l.Sequence).ToList();
+                order.User = users.Find(u => u.UserId == order.UserId);
                 return order;
             }).ToList();
         }
 
-        [HttpGet("{id}/consolidated")]
+        [HttpGet("{batchId}/consolidated")]
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public List<OrderLine> GetConsolidatedOrder(int id)
+        public async Task<List<OrderLine>> GetConsolidatedOrder(string batchId)
         {
-            return _db.OrderLines
-                .Include(ol => ol.CatalogItem)
-                .Where(ol => ol.Order.BatchId == id && ol.Order.Confirmed)
-                .AsEnumerable()
+            var orders = await _orderRepo.GetAllForBatch(batchId);
+            var orderLines = await _lineRepo.GetByBatch(batchId);
+
+            var confirmedOrderUsers = orders.Where(o => o.Confirmed).Select(o => o.UserId).ToList();
+            
+            return orderLines
+                .Where(ol => confirmedOrderUsers.Contains(ol.UserId))
                 .GroupBy(
                     ol => ol.Sku,
                     (sku, lines) =>
                         new OrderLine
                         {
-                            // Stealing this property to use as sorting key
-                            LineId = lines.First().CatalogItem.Sequence,
                             Sku = sku,
                             Name = lines.First().Name,
                             Quantity = lines.Sum(l => l.Quantity),
-                            Price = lines.Sum(l => l.Price * l.Quantity * l.Multiplier)
+                            Price = lines.Sum(l => l.Price * l.Quantity * l.Multiplier),
+                            Sequence = lines.First().Sequence,
                         })
-                .OrderBy(ol => ol.LineId)
+                .OrderBy(ol => ol.Sequence)
                 .ToList();
         }
 
         [HttpPost]
         public async Task<OrderBatch> Post([FromBody] OrderBatch batch)
         {
-            _db.OrderBatches.Add(batch);
-            await _db.SaveChangesAsync();
+            batch.BatchId = Guid.NewGuid().ToString();
+            await _repo.Put(batch);
 
             _orderBatchService.RefreshCurrentBatchCache();
 
             return batch;
         }
 
-        [HttpPut("{id}")]
-        public async Task<OrderBatch> Put(int id, [FromBody] OrderBatch batch)
+        [HttpPut("{batchId}")]
+        public async Task<OrderBatch> Put(string batchId, [FromBody] OrderBatch batch)
         {
-            if (!_db.OrderBatches.Any(b => b.BatchId == id))
-            {
-                throw new NotFoundException($"Batch '{id}' does not exist");
-            }
-
-            if (id != batch.BatchId)
+            if (batchId != batch.BatchId)
             {
                 throw new BadRequestException("Route BatchID does not match request body");
             }
 
-            _db.OrderBatches.Update(batch);
-            await _db.SaveChangesAsync();
+            await _repo.Put(batch);
 
             return batch;
         }
 
-        [HttpDelete("{id}")]
-        public async Task Delete(int id)
+        [HttpDelete("{batchId}")]
+        public async Task Delete(string batchId)
         {
-            if (_db.Orders.Any(i => i.BatchId == id))
+            if ((await _orderRepo.GetAllForBatch(batchId)).Any())
             {
-                throw new ReferentialIntegrityException($"Batch '{id}' contains orders and cannot be deleted");
+                throw new ReferentialIntegrityException($"Batch '{batchId}' contains orders and cannot be deleted");
             }
 
-            var batch = await _db.OrderBatches.FindAsync(id);
+            var batch = await _repo.Get(batchId);
 
             if (batch == null)
             {
-                throw new NotFoundException($"Batch '{id}' does not exist");
+                throw new NotFoundException($"Batch '{batchId}' does not exist");
             }
 
-            _db.OrderBatches.Remove(batch);
-            await _db.SaveChangesAsync();
+            await _repo.Delete(batchId);
         }
 
-        [HttpPost("{id}/email")]
-        public async Task EmailOrders([FromRoute] int id)
+        [HttpPost("{batchId}/email")]
+        public async Task EmailOrders([FromRoute] string batchId)
         {
-            var orders = _db.Orders
-                .Include(o => o.User)
-                .Include(o => o.LineItems)
-                .Include(o => o.OrderBatch)
-                .Where(o => o.BatchId == id);
+            var orders = await _orderRepo.GetAllForBatch(batchId);
 
             foreach (var order in orders)
             {
-                var orderHtml = await _viewRenderService.RenderViewToStringAsync("~/Views/OrderHtml.cshtml", order);
-                await _emailService.SendEmail(_emailSettings.MailFrom, order.User.Email, _emailSettings.Subject, orderHtml);
+                await _emailService.EmailOrderForUser(batchId, order.UserId);
             }
         }
     }

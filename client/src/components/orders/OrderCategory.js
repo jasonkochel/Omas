@@ -27,6 +27,11 @@ const useStyles = makeStyles(theme => ({
   title: {
     flex: '1 1 100%',
   },
+  subtitle: {
+    fontSize: '1rem',
+    marginLeft: '10px',
+    opacity: '80%',
+  },
   header: {
     backgroundColor: theme.palette.grey['200'],
   },
@@ -60,6 +65,7 @@ const OrderCategory = ({ category, cart, onChangeQuantity }) => {
       <Toolbar className={classes.titleBar}>
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
           {category.name}
+          <span className={classes.subtitle}>{category.description}</span>
         </Typography>
         <Tooltip title="Back to Top">
           <IconButton

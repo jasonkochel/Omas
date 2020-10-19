@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Entities;
+using OmasApi.Data.Repositories;
+using OmasApi.Services;
 
 namespace OmasApi.Controllers
 {
@@ -13,31 +14,33 @@ namespace OmasApi.Controllers
     [Route("[controller]")]
     public class CatalogController : ControllerBase
     {
-        private readonly OmasDbContext _db;
+        private readonly CatalogItemRepository _repo;
+        private readonly OrderBatchRepository _batchRepo;
+        private readonly OrderLineRepository _lineRepo;
 
-        public CatalogController(OmasDbContext db)
+        private readonly OrderBatchService _orderBatchService;
+
+        public CatalogController(CatalogItemRepository repo, OrderBatchService orderBatchService, OrderLineRepository lineRepo, OrderBatchRepository batchRepo)
         {
-            _db = db;
+            _repo = repo;
+            _orderBatchService = orderBatchService;
+            _lineRepo = lineRepo;
+            _batchRepo = batchRepo;
         }
 
         [HttpGet]
-        public Task<List<CatalogItem>> GetCatalog([FromQuery] int? categoryId)
+        public async Task<List<CatalogItem>> GetCatalog([FromQuery] string categoryId)
         {
-            var query = _db.CatalogItems.AsNoTracking();
-
-            if (categoryId != null)
-            {
-                query = query.Where(c => c.CategoryId == categoryId);
-            }
-
-            return query.OrderBy(c => c.Sequence).ToListAsync();
+            var results = categoryId.IsNullOrEmpty() ? await _repo.Scan() : await _repo.GetByCategory(categoryId);
+            results.Sort((a, b) => a.Sequence - b.Sequence);
+            return results;
         }
 
 
         [HttpGet("{id}")]
-        public async Task<CatalogItem> Get(int id)
+        public async Task<CatalogItem> Get(string id)
         {
-            var item = await _db.CatalogItems.FindAsync(id);
+            var item = await _repo.Get(id);
 
             if (item == null)
             {
@@ -50,115 +53,116 @@ namespace OmasApi.Controllers
         [HttpPost]
         public async Task<CatalogItem> Post([FromBody] CatalogItem catalogItem)
         {
-            // Make sequence of new item equal to sequence of first item in category
-            var firstInCategory = _db.CatalogItems.OrderBy(i => i.Sequence)
-                .FirstOrDefault(i => i.CategoryId == catalogItem.CategoryId);
+            catalogItem.CatalogId = Guid.NewGuid().ToString();
 
-            catalogItem.Sequence = firstInCategory?.Sequence ?? 0;
+            // Put the new item at the top of its category by setting Sequence = 0...
+            catalogItem.Sequence = 0;
 
-            _db.CatalogItems.Add(catalogItem);
-            await _db.SaveChangesAsync();
+            await _repo.Put(catalogItem);
 
-            // Then increment sequence of the former-first item and everything below it
-            var sql = (FormattableString)$@"
-                UPDATE Catalog 
-                SET Sequence = Sequence + 1 
-                WHERE Sequence >= {catalogItem.Sequence} 
-                AND CatalogID <> {catalogItem.CatalogId}
-            ";
-            await _db.Database.ExecuteSqlInterpolatedAsync(sql);
+            // ...then incrementing Sequence of entire category
+            await _repo.BulkUpdateSequence(catalogItem.CategoryId, 0, 1);
 
+            // simulate new sequence in memory for return value
+            catalogItem.Sequence = 1;
             return catalogItem;
         }
 
         [HttpPut("{id}")]
-        public async Task<CatalogItem> Put(int id, [FromBody] CatalogItem catalogItem)
+        public async Task<CatalogItem> Put(string id, [FromBody] CatalogItem catalogItem)
         {
             if (id != catalogItem.CatalogId)
             {
                 throw new BadRequestException("Route CatalogID does not match request body");
             }
 
-            _db.CatalogItems.Update(catalogItem);
-            await _db.SaveChangesAsync();
+            await _repo.Put(catalogItem);
 
             return catalogItem;
         }
 
 
         [HttpDelete("{id}")]
-        public async Task Delete(int id)
+        public async Task Delete(string id)
         {
-            if (_db.OrderLines.Any(l => l.CatalogItem.CatalogId == id && l.Order.OrderBatch.IsOpen))
-            {
-                throw new ReferentialIntegrityException($"Item ID {id} is in use in an open order batch");
-            }
-
             var item = await Get(id);
 
-            _db.CatalogItems.Remove(item);
-            await _db.SaveChangesAsync();
+            var currentBatch = await _batchRepo.Get(_orderBatchService.CurrentBatchId);
 
-            var sql = (FormattableString)$"UPDATE Catalog SET Sequence = Sequence - 1 WHERE Sequence > {item.Sequence}";
-            await _db.Database.ExecuteSqlInterpolatedAsync(sql);
+            if (currentBatch.IsOpen)
+            {
+                var lines = await _lineRepo.GetByBatch(_orderBatchService.CurrentBatchId);
+
+                if (lines.Any(l => l.Sku == item.Sku))
+                {
+                    throw new ReferentialIntegrityException($"Item ID {id} is in use in an open order batch");
+                }
+            }
+
+            await _repo.Delete(id);
+
+            await _repo.BulkUpdateSequence(item.CategoryId, item.Sequence, -1);
         }
 
         [HttpPatch("{id}/up")]
-        public async Task MoveUp([FromRoute] int id)
+        public async Task MoveUp([FromRoute] string id)
         {
             await SwapSequence(id, SwapDirection.Up);
         }
 
         [HttpPatch("{id}/down")]
-        public async Task MoveDown([FromRoute] int id)
+        public async Task MoveDown([FromRoute] string id)
         {
             await SwapSequence(id, SwapDirection.Down);
         }
 
         [HttpPatch("{id}/new")]
-        public async Task<CatalogItem> MarkAsNew([FromRoute] int id, [FromQuery] bool isNew)
+        public async Task<CatalogItem> MarkAsNew([FromRoute] string id, [FromQuery] bool isNew)
         {
             var item = await Get(id);
             item.New = isNew;
-            await _db.SaveChangesAsync();
+            await _repo.Put(item);
             return item;
         }
 
         [HttpPatch("{id}/featured")]
-        public async Task<CatalogItem> MarkAsFeatured([FromRoute] int id, [FromQuery] bool isFeatured)
+        public async Task<CatalogItem> MarkAsFeatured([FromRoute] string id, [FromQuery] bool isFeatured)
         {
             var item = await Get(id);
             item.Featured = isFeatured;
-            await _db.SaveChangesAsync();
+            await _repo.Put(item);
             return item;
         }
 
         [HttpPatch("{id}/discontinued")]
-        public async Task<CatalogItem> MarkAsDiscontinued([FromRoute] int id, [FromQuery] bool isDiscontinued)
+        public async Task<CatalogItem> MarkAsDiscontinued([FromRoute] string id, [FromQuery] bool isDiscontinued)
         {
             var item = await Get(id);
             item.Discontinued = isDiscontinued;
-            await _db.SaveChangesAsync();
+            await _repo.Put(item);
             return item;
         }
 
-        private async Task SwapSequence(int id, SwapDirection direction)
+        private async Task SwapSequence(string id, SwapDirection direction)
         {
-            var item = _db.CatalogItems.SingleOrDefault(c => c.CatalogId == id);
+            var item = await Get(id);
+
             if (item != null)
             {
                 // Find the record that was in the slot that "id" is being moved to...
-                var otherItem = _db.CatalogItems.SingleOrDefault(c => c.Sequence == item.Sequence + (int)direction);
+                var otherItem = await _repo.GetBySequence(item.Sequence + (int)direction);
+            
                 if (otherItem != null)
                 {
                     // ...move it into "id"'s old slot...
                     otherItem.Sequence = item.Sequence;
                     // ...and move "id" up/down
                     item.Sequence += (int)direction;
+
+                    await _repo.Put(item);
+                    await _repo.Put(otherItem);
                 }
             }
-
-            await _db.SaveChangesAsync();
         }
 
         private enum SwapDirection
@@ -166,6 +170,5 @@ namespace OmasApi.Controllers
             Up = -1,
             Down = 1
         }
-
     }
 }

@@ -1,26 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace OmasApi
+﻿namespace OmasApi
 {
     public class AppSettings
     {
-        public ConnectionStrings ConnectionStrings { get; set; }
-        public string Jwks { get; set; }
+        public JwksWrapper Jwks { get; set; }
         public EmailSettings EmailSettings { get; set; }
+        public DynamoDb DynamoDb { get; set; }
     }
 
-    public class ConnectionStrings
+    #pragma warning disable IDE1006 // Naming Styles
+    // ReSharper disable InconsistentNaming
+
+    public class JwksWrapper
     {
-        public string Default { get; set; }
+        public Jwks[] keys { get; set; }
     }
+
+    public class Jwks
+    {
+        public string alg { get; set; }
+        public string e { get; set; }
+        public string kid { get; set; }
+        public string kty { get; set; }
+        public string n { get; set; }
+        public string use { get; set; }
+    }
+
+    #pragma warning restore IDE1006 // Naming Styles
+    // ReSharper restore InconsistentNaming
 
     public class EmailSettings
     {
         public string MailFrom { get; set; }
         public string Subject { get; set; }
+    }
+
+    public class DynamoDb
+    {
+        public bool LocalMode { get; set; }
+        public string LocalServiceUrl { get; set; }
     }
 }
 

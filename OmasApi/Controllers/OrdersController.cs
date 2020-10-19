@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using OmasApi.Controllers.Middleware;
-using OmasApi.Data;
+using OmasApi.Data.Entities;
+using OmasApi.Data.Repositories;
 using OmasApi.Models;
 using OmasApi.Services;
 
@@ -18,88 +16,80 @@ namespace OmasApi.Controllers
     [Route("[controller]")]
     public class OrdersController : ControllerBase
     {
-        private readonly OmasDbContext _db;
+        private readonly OrderRepository _repo;
+        private readonly OrderLineRepository _lineRepo;
+        private readonly CatalogItemRepository _itemRepo;
+        private readonly OrderBatchRepository _batchRepo;
+        private readonly CatalogItemRepository _catalogItemRepo;
+
         private readonly UserIdentity _identity;
         private readonly UserService _userService;
         private readonly OrderBatchService _orderBatchService;
-        private readonly ViewRenderService _viewRenderService;
         private readonly EmailService _emailService;
-        private readonly EmailSettings _emailSettings;
 
-        public OrdersController(OmasDbContext db, UserIdentity identity, UserService userService,
-            OrderBatchService orderBatchService, ViewRenderService viewRenderService, EmailService emailService,
-            IOptions<AppSettings> appSettings)
+        public OrdersController(OrderRepository repo, OrderLineRepository lineRepo, UserIdentity identity, UserService userService,
+            OrderBatchService orderBatchService, EmailService emailService,
+            CatalogItemRepository itemRepo, OrderBatchRepository batchRepo, CatalogItemRepository catalogItemRepo)
         {
-            _db = db;
+            _repo = repo;
+            _lineRepo = lineRepo;
+
             _identity = identity;
             _userService = userService;
             _orderBatchService = orderBatchService;
-            _viewRenderService = viewRenderService;
             _emailService = emailService;
-            _emailSettings = appSettings.Value.EmailSettings;
+            _itemRepo = itemRepo;
+            _batchRepo = batchRepo;
+            _catalogItemRepo = catalogItemRepo;
         }
 
         [HttpGet]
-        public Task<List<OrderHistoryModel>> GetHistory()
+        public async Task<List<OrderHistoryModel>> GetHistoryForUser()
         {
-            var userId = GetUserId();
+            var userId = await GetUserId();
 
-            return _db.OrderBatches
-                .Include(b => b.Orders)
-                .ThenInclude(o => o.LineItems)
+            var orders = await _repo.GetAllForUser(userId);
+
+            return orders
                 .Select(b => new OrderHistoryModel
                 {
                     BatchId = b.BatchId,
                     DeliveryDate = b.DeliveryDate,
-                    Total = b.Orders.SingleOrDefault(o => o.UserId == userId).LineItems.Sum(i => i.Price * i.Quantity)
+                    //Total = b.Orders.SingleOrDefault(o => o.UserId == userId).LineItems.Sum(i => i.Price * i.Quantity)
                 })
-                .Where(h => h.Total > 0)
                 .OrderByDescending(h => h.DeliveryDate)
-                .ToListAsync();
+                .ToList();
         }
 
         [HttpGet("current")]
-        public Order GetCurrentOrder()
+        public async Task<Order> GetCurrentOrderForUser()
         {
-            return GetOrder(_orderBatchService.CurrentBatchId);
+            return await GetOrderForUser(_orderBatchService.CurrentBatchId);
         }
 
         [HttpGet("{batchId}")]
-        public Order GetOrder([FromRoute] int batchId)
+        public async Task<Order> GetOrderForUser([FromRoute] string batchId)
         {
-            var userId = GetUserId();
-
-            var order = _db.Orders
-                .AsNoTracking()
-                .Include(o => o.OrderBatch)
-                .Include(o => o.LineItems)
-                    .ThenInclude(l => l.CatalogItem)
-                .SingleOrDefault(i => i.BatchId == batchId && i.UserId == userId);
-
-            if (order?.LineItems != null)
-            {
-                order.LineItems = order.LineItems.OrderBy(l => l.CatalogItem.Sequence).ToList();
-            }
-
-            return order;
+            var userId = await GetUserId();
+            return await _repo.Get(batchId, userId, includeNavigationProperties: true, includeLineItems: true);
         }
 
         [HttpPut("confirm")]
         public async Task<Order> ConfirmOrder()
         {
-            var userId = GetUserId();
+            var userId = await GetUserId();
             var batchId = _orderBatchService.CurrentBatchId;
 
-            var order = _db.Orders.SingleOrDefault(i => i.BatchId == batchId && i.UserId == userId);
+            var order = await _repo.Get(batchId, userId, includeNavigationProperties: false);
 
             if (order != null)
             {
                 order.Confirmed = true;
-                _db.SaveChanges();
+                await _repo.Put(order);
 
                 try
                 {
-                    //await EmailOrder(batchId);
+                    await _emailService.EmailOrderForUser(batchId, userId);
                 }
                 catch (Exception e)
                 {
@@ -111,35 +101,39 @@ namespace OmasApi.Controllers
         }
 
         [HttpPut]
-        public void UpdateCart([FromQuery] int catalogId, [FromQuery] int quantity)
+        public async Task UpdateCart([FromQuery] string catalogId, [FromQuery] int quantity)
         {
-            var userId = GetUserId();
+            var userId = await GetUserId();
             var batchId = _orderBatchService.CurrentBatchId;
 
-            var catalogItem = _db.CatalogItems.Find(catalogId);
+            var catalogItem = await _itemRepo.Get(catalogId);
 
             if (catalogItem == null)
             {
                 throw new BadRequestException($"Catalog Item ID '{catalogId}' does not exist");
             }
 
-            var order = GetOrCreateOrder(batchId, userId);
-            var orderLine = order.LineItems?.SingleOrDefault(i => i.Sku == catalogItem.Sku);
+            var orderLine = await _lineRepo.Get(batchId, userId, catalogItem.Sku);
 
             // Delete
             if (quantity == 0 && orderLine != null)
             {
-                order.LineItems.Remove(orderLine);
+                await _lineRepo.Delete(orderLine);
             }
 
             if (quantity > 0)
             {
                 if (orderLine == null)
                 {
+                    // Might be first line item of order; make sure header record exists
+                    await CreateOrderIfNoneExists(batchId, userId);
+
                     // Insert
                     orderLine = new OrderLine
                     {
-                        OrderId = order.OrderId,
+                        BatchId = batchId,
+                        UserId = userId,
+                        UserId_Sku = $"{userId}#{catalogItem.Sku}",
                         Multiplier = catalogItem.Multiplier,
                         Name = catalogItem.Name,
                         OrderPer = catalogItem.OrderPer,
@@ -147,107 +141,92 @@ namespace OmasApi.Controllers
                         PricePer = catalogItem.PricePer,
                         Quantity = quantity,
                         Sku = catalogItem.Sku,
-                        Weight = catalogItem.Weight
+                        Weight = catalogItem.Weight,
+                        Sequence = catalogItem.Sequence
                     };
-
-                    if (order.LineItems == null) order.LineItems = new List<OrderLine>();
-                    order.LineItems.Add(orderLine);
                 }
                 else
                 {
                     // Update
                     orderLine.Quantity = quantity;
                 }
-            }
 
-            _db.SaveChanges();
+                await _lineRepo.Put(orderLine);
+            }
         }
 
         [HttpPost("{batchId}/clone")]
-        public void CloneFromHistory([FromRoute] int batchId)
+        public async Task CloneFromHistory([FromRoute] string batchId)
         {
-            var userId = GetUserId();
+            var userId = await GetUserId();
             var currentBatchId = _orderBatchService.CurrentBatchId;
 
-            var order = GetOrCreateOrder(currentBatchId, userId);
+            var currentOrderLines = await _lineRepo.GetByOrder(currentBatchId, userId);
+            var linesToClone = await _lineRepo.GetByOrder(batchId, userId);
 
-            var linesToClone = _db.OrderLines
-                .Include(l => l.CatalogItem)
-                .Where(l => l.Order.BatchId == batchId && l.Order.UserId == userId);
-
-            foreach (var line in linesToClone)
+            if (linesToClone.Any())
             {
-                var existingLine = order.LineItems.SingleOrDefault(l => l.Sku == line.Sku);
+                await CreateOrderIfNoneExists(currentBatchId, userId);
 
-                if (existingLine == null)
+                foreach (var line in linesToClone)
                 {
-                    _db.OrderLines.Add(new OrderLine
+                    var existingLine = currentOrderLines.SingleOrDefault(l => l.Sku == line.Sku);
+
+                    if (existingLine == null)
                     {
-                        OrderId = order.OrderId,
-                        Sku = line.Sku,
-                        Quantity = line.Quantity,
-                        Name = line.CatalogItem.Name,
-                        Multiplier = line.CatalogItem.Multiplier,
-                        OrderPer = line.CatalogItem.OrderPer,
-                        PricePer = line.CatalogItem.PricePer,
-                        Price = line.CatalogItem.Price,
-                        Weight = line.CatalogItem.Weight
-                    });
-                }
-                else
-                {
-                    existingLine.Quantity += line.Quantity;
+                        var catalogItem = await _catalogItemRepo.GetBySku(line.Sku);
+
+                        var newOrderLine = new OrderLine
+                        {
+                            BatchId = currentBatchId,
+                            UserId_Sku = $"{userId}#{line.Sku}",
+                            UserId = userId,
+                            Sku = line.Sku,
+                            Quantity = line.Quantity,
+                            Name = catalogItem.Name,
+                            Multiplier = catalogItem.Multiplier,
+                            OrderPer = catalogItem.OrderPer,
+                            PricePer = catalogItem.PricePer,
+                            Price = catalogItem.Price,
+                            Weight = catalogItem.Weight,
+                            Sequence = catalogItem.Sequence
+                        };
+
+                        await _lineRepo.Put(newOrderLine);
+                    }
+                    else
+                    {
+                        existingLine.Quantity += line.Quantity;
+                        await _lineRepo.Put(existingLine);
+                    }
                 }
             }
-
-            _db.SaveChanges();
         }
 
-        private async Task EmailOrder(int batchId)
+        private async Task<string> GetUserId()
         {
-            var userId = GetUserId();
-
-            var order = _db.Orders
-                .Include(o => o.User)
-                .Include(o => o.LineItems)
-                .Include(o => o.OrderBatch)
-                .SingleOrDefault(o => o.UserId == userId && o.BatchId == batchId);
-
-            if (order == null)
-            {
-                throw new NotFoundException($"No order found for User '{userId}' and Batch '{batchId}'");
-            }
-
-            var orderHtml = await _viewRenderService.RenderViewToStringAsync("~/Views/OrderHtml.cshtml", order);
-            await _emailService.SendEmail(_emailSettings.MailFrom, order.User.Email, _emailSettings.Subject, orderHtml);
-        }
-
-        private int GetUserId()
-        {
-            var user = _userService.GetByCognitoId(_identity.CognitoId);
+            var user = await _userService.GetByCognitoId(_identity.CognitoId);
             return user.ImpersonatingUserId ?? user.UserId;
         }
 
-        private Order GetOrCreateOrder(int batchId, int userId)
+        private async Task CreateOrderIfNoneExists(string batchId, string userId)
         {
-            var order = _db.Orders
-                .Include(o => o.LineItems)
-                .SingleOrDefault(i => i.BatchId == batchId && i.UserId == userId);
+            var order = await _repo.Get(batchId, userId, includeNavigationProperties: false);
 
             if (order == null)
             {
+                var batch = await _batchRepo.Get(batchId);
                 order = new Order
                 {
                     BatchId = batchId,
                     UserId = userId,
-                    Confirmed = false
+                    Confirmed = false,
+                    OrderDate = batch.OrderDate,
+                    DeliveryDate = batch.DeliveryDate
                 };
 
-                _db.Orders.Add(order);
-                _db.SaveChanges();
+                await _repo.Put(order);
             }
-
-            return order;
         }
     }
 }

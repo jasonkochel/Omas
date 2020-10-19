@@ -117,7 +117,7 @@ namespace OmasApi.Controllers
             batch.BatchId = Guid.NewGuid().ToString();
             await _repo.Put(batch);
 
-            _orderBatchService.RefreshCurrentBatchCache();
+            await _orderBatchService.RefreshCurrentBatchCache();
 
             return batch;
         }

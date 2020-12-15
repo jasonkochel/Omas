@@ -1,24 +1,30 @@
-import { CssBaseline, Typography } from '@material-ui/core';
+import Authenticator from '@jasonkochel/react-cognito-auth';
+import { CssBaseline } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Auth } from 'aws-amplify';
 import { ConfirmProvider } from 'material-ui-confirm';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ReactQueryDevtools } from 'react-query-devtools';
-import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import { HashRouter as Router, useHistory } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import api from '../../api';
-import BatchAdmin from '../batches/BatchAdmin';
-import BatchOrderList from '../batches/BatchOrderList';
-import ConsolidatedOrder from '../batches/ConsolidatedOrder';
-import ImpersonationList from '../batches/ImpersonationList';
-import CatalogItems from '../catalog/CatalogItems';
-import Categories from '../categories/Categories';
-import Order from '../orders/Order';
-import OrderHistory from '../orders/OrderHistory';
-import OrderView from '../orders/OrderView';
 import Header from './Header';
+import Routes from './Routes';
 import Sidebar from './Sidebar';
+
+const signupFields = [
+  {
+    name: 'name',
+    label: 'Name',
+    placeholder: 'Enter your full name',
+    required: true,
+  },
+  {
+    name: 'phone_number',
+    label: 'Phone Number',
+    required: true,
+  },
+];
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,21 +40,34 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const App = ({ authState }) => {
+const App = () => {
   const classes = useStyles();
+  const history = useHistory();
+
   const [authData, setAuthData] = useState();
 
-  useEffect(() => {
-    const buildAuthData = async () => {
-      const user = await Auth.currentAuthenticatedUser();
-      const idToken = user.signInUserSession.idToken;
+  const handleSignIn = useCallback(async cognitoUser => {
+    const idToken = cognitoUser?.signInUserSession?.idToken;
+
+    if (idToken) {
       await api.createUser(idToken);
       const localUser = await api.getUser(idToken.payload.sub);
-      setAuthData({ ...idToken, ...localUser });
-    };
+      setAuthData({ authenticated: true, ...idToken, ...localUser });
+    }
+  }, []);
 
-    buildAuthData();
-  }, [authState]);
+  useEffect(() => {
+    Auth.currentAuthenticatedUser()
+      .then(user => handleSignIn(user))
+      .catch(() => setAuthData({ authenticated: false }));
+  }, [handleSignIn]);
+
+  const handleSignOut = () => {
+    Auth.signOut().then(() => {
+      setAuthData({ authenticated: false });
+      history.push('/');
+    });
+  };
 
   const handleImpersonate = async (userId, impersonate) => {
     const localUser = await api.setImpersonation(userId, impersonate);
@@ -57,49 +76,27 @@ const App = ({ authState }) => {
     });
   };
 
+  if (!authData) return false;
+
   return (
     <ConfirmProvider defaultOptions={{ title: '' }}>
       <div className={classes.root}>
         <Router>
           <CssBaseline />
-          <Header authData={authData} onImpersonate={handleImpersonate} />
-          <Sidebar admin={authData?.isAdmin ?? false} />
+          <Header authData={authData} onImpersonate={handleImpersonate} onSignOut={handleSignOut} />
+
+          {authData.authenticated && <Sidebar admin={authData.isAdmin} />}
+
           <main className={classes.content}>
-            <Switch>
-              <Route exact path="/order">
-                <Order />
-              </Route>
-              <Route
-                path="/order/:batchId"
-                render={props => <OrderView batchId={props.match.params.batchId} />}
+            {authData.authenticated ? (
+              <Routes onImpersonate={handleImpersonate} />
+            ) : (
+              <Authenticator
+                onSignIn={handleSignIn}
+                signupFields={signupFields}
+                socialProviders={['Google']}
               />
-              <Route path="/history">
-                <OrderHistory />
-              </Route>
-              <Route exact path="/batches">
-                <BatchAdmin />
-              </Route>
-              <Route
-                path="/batches/:batchId/orders"
-                render={props => <BatchOrderList batchId={props.match.params.batchId} />}
-              />
-              <Route
-                path="/batches/:batchId/consolidated"
-                render={props => <ConsolidatedOrder batchId={props.match.params.batchId} />}
-              />
-              <Route path="/impersonate">
-                <ImpersonationList onImpersonate={handleImpersonate} />
-              </Route>
-              <Route path="/catalog">
-                <CatalogItems />
-              </Route>
-              <Route path="/categories">
-                <Categories />
-              </Route>
-              <Route path="*">
-                <Typography paragraph>Make a selection on the left</Typography>
-              </Route>
-            </Switch>
+            )}
           </main>
         </Router>
         <ToastContainer

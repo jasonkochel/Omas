@@ -160,7 +160,6 @@ namespace OmasApi.Data
             {
                 Conversion = DynamoDBEntryConversion.V2
             });
-
         }
 
         public async Task<bool> Migrate()

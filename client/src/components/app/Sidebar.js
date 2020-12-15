@@ -75,7 +75,6 @@ const Sidebar = ({ admin }) => {
         )}
         <ul>
           <li>Impersonate when batch is closed</li>
-          <li>Mark items new/featured/discontinued</li>
           <li>Tax and tax-exempt</li>
           <li>Admin set shipping rate</li>
           <li>Mobile-friendly</li>

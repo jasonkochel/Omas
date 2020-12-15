@@ -2,7 +2,6 @@ import { IconButton, InputAdornment, makeStyles, TextField } from '@material-ui/
 import { Add, Remove } from '@material-ui/icons';
 import clsx from 'clsx';
 import React from 'react';
-import api from '../../api';
 
 const useStyles = makeStyles(theme => ({
   shadedInput: {
@@ -36,7 +35,6 @@ const OrderQuantity = ({ item, quantity, onChangeQuantity }) => {
 
   const handleChangeQuantity = qty => {
     onChangeQuantity(item, qty);
-    api.updateOrder(item.catalogId, qty);
   };
 
   return (

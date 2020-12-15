@@ -51,13 +51,13 @@ namespace OmasApi.Controllers
             var orders = await _repo.GetAllForUser(userId);
 
             return orders
-                .Select(b => new OrderHistoryModel
-                {
-                    BatchId = b.BatchId,
-                    DeliveryDate = b.DeliveryDate,
-                    //Total = b.Orders.SingleOrDefault(o => o.UserId == userId).LineItems.Sum(i => i.Price * i.Quantity)
-                })
                 .OrderByDescending(h => h.DeliveryDate)
+                .Select(o => new OrderHistoryModel
+                {
+                    BatchId = o.BatchId,
+                    DeliveryDate = o.DeliveryDate,
+                    Total = o.SubTotal + o.Tax + o.Shipping
+                })
                 .ToList();
         }
 
@@ -100,6 +100,51 @@ namespace OmasApi.Controllers
             return order;
         }
 
+        [HttpPost("lineItems")]
+        public async Task UpdateCart([FromBody] List<OrderLineInputModel> model)
+        {
+            var userId = await GetUserId();
+            var batchId = _orderBatchService.CurrentBatchId;
+
+            var newLineItems = new List<OrderLine>();
+
+            foreach (var line in model)
+            {
+                var catalogItem = await _itemRepo.GetBySku(line.Sku);
+
+                if (catalogItem == null)
+                {
+                    throw new BadRequestException($"SKU '{line.Sku}' does not exist");
+                }
+
+                if (line.Quantity > 0)
+                {
+                    newLineItems.Add(new OrderLine
+                    {
+                        BatchId = batchId,
+                        UserId = userId,
+                        UserId_Sku = $"{userId}#{catalogItem.Sku}",
+                        Multiplier = catalogItem.Multiplier,
+                        Name = catalogItem.Name,
+                        OrderPer = catalogItem.OrderPer,
+                        Price = catalogItem.Price,
+                        PricePer = catalogItem.PricePer,
+                        Quantity = line.Quantity,
+                        Sku = catalogItem.Sku,
+                        Weight = catalogItem.Weight,
+                        Sequence = catalogItem.Sequence
+                    });
+                }
+            }
+
+            await CreateOrderIfNoneExists(batchId, userId);     // upsert header record
+            await _lineRepo.DeleteByOrder(batchId, userId);     // delete old
+            await _lineRepo.PutMany(newLineItems);              // insert new
+
+            await UpdateOrderHeader(batchId, userId);
+        }
+
+        /*
         [HttpPut]
         public async Task UpdateCart([FromQuery] string catalogId, [FromQuery] int quantity)
         {
@@ -154,6 +199,7 @@ namespace OmasApi.Controllers
                 await _lineRepo.Put(orderLine);
             }
         }
+        */
 
         [HttpPost("{batchId}/clone")]
         public async Task CloneFromHistory([FromRoute] string batchId)
@@ -216,17 +262,31 @@ namespace OmasApi.Controllers
             if (order == null)
             {
                 var batch = await _batchRepo.Get(batchId);
-                order = new Order
+
+                await _repo.Put(new Order
                 {
                     BatchId = batchId,
                     UserId = userId,
                     Confirmed = false,
                     OrderDate = batch.OrderDate,
                     DeliveryDate = batch.DeliveryDate
-                };
-
-                await _repo.Put(order);
+                });
             }
+        }
+
+        private async Task UpdateOrderHeader(string batchId, string userId)
+        {
+            var batch = await _batchRepo.Get(batchId);
+            var order = await _repo.Get(batchId, userId, includeLineItems: true, includeNavigationProperties: false);
+
+            var subTotal = order.LineItems.Sum(l => l.Price * l.Quantity);
+            var weight = order.LineItems.Sum(l => l.Weight * l.Quantity);
+
+            order.SubTotal = subTotal;
+            order.Tax = decimal.Round(subTotal * batch.TaxRate, 2);
+            order.Shipping = decimal.Round(weight * batch.ShippingRate, 2);
+
+            await _repo.Put(order);
         }
     }
 }

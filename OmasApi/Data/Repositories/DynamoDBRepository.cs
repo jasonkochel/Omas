@@ -9,13 +9,15 @@ namespace OmasApi.Data.Repositories
 {
     public class DynamoDBRepository<T>
     {
-        private readonly DynamoDBContext _db;
+        // ReSharper disable once InconsistentNaming
+        protected readonly DynamoDBContext _db;
 
         public DynamoDBRepository(IAmazonDynamoDB client)
         {
             _db = new DynamoDBContext(client, new DynamoDBContextConfig
             {
-                Conversion = DynamoDBEntryConversion.V2
+                Conversion = DynamoDBEntryConversion.V2,
+                ConsistentRead = true
             });
         }
 

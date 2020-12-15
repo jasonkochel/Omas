@@ -14,6 +14,8 @@ namespace OmasApi.Data.Entities
         public DateTime OrderDate { get; set; }
         public DateTime DeliveryDate { get; set; }
         public bool IsOpen { get; set; }
+        public decimal TaxRate { get; set; }
+        public decimal ShippingRate { get; set; }
 
         public List<OrderBatch> Import(IEnumerable<string> lines)
         {

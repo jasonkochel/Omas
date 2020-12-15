@@ -72,7 +72,7 @@ const moveCategoryUp = id => client.patch(`/categories/${id}/up`);
 
 const moveCategoryDown = id => client.patch(`/categories/${id}/down`);
 
-// ITEMS
+// CATALOG
 
 const addItem = (categoryId, item) => {
   const data = { categoryId, ...item };
@@ -105,8 +105,7 @@ const getOrderHistory = () => client.get('/orders').then(res => res.data);
 
 const getOrder = (queryKey, batchId) => client.get(`/orders/${batchId}`).then(res => res.data);
 
-const updateOrder = (catalogId, quantity) =>
-  client.put(`/orders?catalogId=${catalogId}&quantity=${quantity}`);
+const replaceOrderLines = cart => client.post(`/orders/lineItems`, cart);
 
 const confirmOrder = () => client.put('/orders/confirm').then(res => res.data);
 
@@ -117,6 +116,8 @@ const emailOrder = batchId => client.post(`/orders/${batchId}/email`);
 // BATCHES
 
 const getBatches = () => client.get('/orderBatches').then(res => res.data);
+
+const getCurrentBatchId = () => client.get('/orderBatches/current').then(res => res.data);
 
 const getBatch = (queryKey, id) => client.get(`/orderBatches/${id}`).then(res => res.data);
 
@@ -149,6 +150,7 @@ export default {
   getCategories,
   getConsolidatedOrder,
   getCurrentOrder,
+  getCurrentBatchId,
   getItemsByCategoryId,
   getOrder,
   getOrderHistory,
@@ -161,9 +163,9 @@ export default {
   moveCategoryUp,
   moveItemDown,
   moveItemUp,
+  replaceOrderLines,
   setImpersonation,
   updateBatch,
   updateCategory,
   updateItem,
-  updateOrder,
 };

@@ -8,6 +8,11 @@ import fns from '../../fns';
 import JumpLinks from './JumpLinks';
 import OrderCategory from './OrderCategory';
 
+const queryConfig = {
+  cacheTime: 0, // re-fetch every time the screen loads, so latest savedOrder is respected
+  staleTime: Infinity, // never re-fetch after initial fetch (per screen load)
+};
+
 const makeCart = order => {
   let cart = {};
   for (const sku of Object.keys(order)) {
@@ -28,6 +33,8 @@ const totalCart = cart => {
 
   return total;
 };
+
+const cartToArray = cart => Object.keys(cart).map(sku => ({ sku, quantity: cart[sku].quantity }));
 
 const useStyles = makeStyles(theme => ({
   fab: {
@@ -55,14 +62,12 @@ const Order = () => {
 
   const getCategories = () => api.getCategories(null, true, true);
 
-  const { isSuccess } = useQuery('SavedOrder', getSavedOrder, {
-    cacheTime: 0, // re-fetch every time the screen loads, so latest savedOrder is respected
-    staleTime: Infinity, // never re-fetch after initial fetch (per screen load)
-  });
+  const { data: batchId } = useQuery('CurrentBatchId', () => api.getCurrentBatchId(), queryConfig);
+
+  const { isSuccess } = useQuery('SavedOrder', getSavedOrder, queryConfig);
 
   const { data: catalog } = useQuery('Catalog', getCategories, {
-    cacheTime: 0, // re-fetch every time the screen loads, so latest savedOrder is respected
-    staleTime: Infinity, // never re-fetch after initial fetch (per screen load)
+    ...queryConfig,
     enabled: isSuccess, // wait until cart has been fetched and built
   });
 
@@ -70,13 +75,18 @@ const Order = () => {
     setCart(c => {
       return {
         ...c,
-        [item.sku]: { price: item.price, quantity, multiplier: item.multiplier },
+        [item.sku]: {
+          price: item.price,
+          quantity,
+          multiplier: item.multiplier,
+        },
       };
     });
   };
 
   const handleConfirmOrder = () => {
-    api.confirmOrder().then(order => history.push(`/order/${order.batchId}`));
+    // TODO: show modal confirmation dialog that you are committing to ordering
+    api.replaceOrderLines(cartToArray(cart)).then(() => history.push(`/order/${batchId}`));
   };
 
   return (

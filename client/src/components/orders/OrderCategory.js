@@ -77,7 +77,7 @@ const OrderCategory = ({ category, cart, onChangeQuantity }) => {
         </Tooltip>
       </Toolbar>
       <TableContainer>
-        <Table className={classes.table} aria-label="simple table">
+        <Table>
           <TableHead>
             <TableRow className={classes.header}>
               <TableCell className={classes.colSku}>SKU</TableCell>

@@ -45,6 +45,12 @@ namespace OmasApi.Controllers
             return batches;
         }
 
+        [HttpGet("current")]
+        public string GetCurrentBatch()
+        {
+            return _orderBatchService.CurrentBatchId;
+        }
+
         [HttpGet("{batchId}")]
         public async Task<OrderBatchModel> GetOrderBatchSummary(string batchId)
         {
@@ -55,7 +61,7 @@ namespace OmasApi.Controllers
                 throw new NotFoundException($"Batch '{batchId}' does not exist");
             }
 
-            var orderLines = await _lineRepo.GetByBatch(batchId);
+            var orders = await GetAllOrderDetailsForBatch(batchId, OrderMode.All);
 
             var model = new OrderBatchModel
             {
@@ -63,39 +69,35 @@ namespace OmasApi.Controllers
                 OrderDate = batch.OrderDate,
                 DeliveryDate = batch.DeliveryDate,
                 IsOpen = batch.IsOpen,
-                CustomerCount = orderLines.Select(i => i.UserId).Distinct().Count(),
-                Total = orderLines.Sum(i => i.Price * i.Quantity)
+                CustomerCount = orders.Where(o => o.Confirmed).SelectMany(o => o.LineItems).Select(i => i.UserId).Distinct().Count(),
+                Total = orders.Where(o => o.Confirmed).SelectMany(o => o.LineItems).Sum(i => i.Price * i.Quantity),
+                UnconfirmedCustomerCount = orders.Where(o => !o.Confirmed).SelectMany(o => o.LineItems).Select(i => i.UserId).Distinct().Count(),
+                UnconfirmedTotal = orders.Where(o => !o.Confirmed).SelectMany(o => o.LineItems).Sum(i => i.Price * i.Quantity),
             };
 
             return model;
         }
 
         [HttpGet("{batchId}/orders")]
-        public async Task<List<Order>> GetAllOrderDetailsForBatch(string batchId)
+        public async Task<List<Order>> GetConfirmedOrderDetailsForBatch(string batchId)
         {
-            var orders = await _orderRepo.GetAllForBatch(batchId);
-            var orderLines = await _lineRepo.GetByBatch(batchId);
-            var users = await _userRepo.Scan();
+            return await GetAllOrderDetailsForBatch(batchId, OrderMode.Confirmed);
+        }
 
-            return orders.Where(o => o.Confirmed).Select(order =>
-            {
-                order.LineItems = orderLines.Where(l => l.UserId == order.UserId).OrderBy(l => l.Sequence).ToList();
-                order.User = users.Find(u => u.UserId == order.UserId);
-                return order;
-            }).ToList();
+        [HttpGet("{batchId}/unconfirmedOrders")]
+        public async Task<List<Order>> GetUnconfirmedOrderDetailsForBatch(string batchId)
+        {
+            return await GetAllOrderDetailsForBatch(batchId, OrderMode.Unconfirmed);
         }
 
         [HttpGet("{batchId}/consolidated")]
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
         public async Task<List<OrderLine>> GetConsolidatedOrder(string batchId)
         {
-            var orders = await _orderRepo.GetAllForBatch(batchId);
-            var orderLines = await _lineRepo.GetByBatch(batchId);
+            var newOrders = await GetAllOrderDetailsForBatch(batchId, OrderMode.Confirmed);
+            var newOrderLines = newOrders.SelectMany(o => o.LineItems);
 
-            var confirmedOrderUsers = orders.Where(o => o.Confirmed).Select(o => o.UserId).ToList();
-            
-            return orderLines
-                .Where(ol => confirmedOrderUsers.Contains(ol.UserId))
+            return newOrderLines
                 .GroupBy(
                     ol => ol.Sku,
                     (sku, lines) =>
@@ -109,6 +111,21 @@ namespace OmasApi.Controllers
                         })
                 .OrderBy(ol => ol.Sequence)
                 .ToList();
+        }
+
+        private async Task<List<Order>> GetAllOrderDetailsForBatch(string batchId, OrderMode mode)
+        {
+            var orders = await _orderRepo.GetAllForBatch(batchId);
+            var orderLines = await _lineRepo.GetByBatch(batchId);
+            var users = await _userRepo.Scan();
+
+            return orders.Where(o => mode == OrderMode.All || o.Confirmed == (mode == OrderMode.Confirmed)).Select(
+                order =>
+                {
+                    order.LineItems = orderLines.Where(l => l.UserId == order.UserId).OrderBy(l => l.Sequence).ToList();
+                    order.User = users.Find(u => u.UserId == order.UserId);
+                    return order;
+                }).ToList();
         }
 
         [HttpPost]
@@ -162,6 +179,13 @@ namespace OmasApi.Controllers
             {
                 await _emailService.EmailOrderForUser(batchId, order.UserId);
             }
+        }
+
+        private enum OrderMode
+        {
+            All,
+            Confirmed,
+            Unconfirmed
         }
     }
 }

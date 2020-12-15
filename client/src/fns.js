@@ -30,7 +30,7 @@ function validateDecimal(length, precision) {
   };
 
   return this.moreThan(0, 'Min 0.01')
-    .lessThan(1000000, 'Max 999,999.99') // TODO respect length
+    .lessThan(1000000, 'Max 999,999.99') // TODO: respect length
     .test('is-decimal', `Max ${precision} decimal places`, val =>
       validatePrecision(val, precision)
     );

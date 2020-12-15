@@ -2,7 +2,8 @@ import '@aws-amplify/ui/dist/style.css';
 import Amplify from 'aws-amplify';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AuthenticatedApp from './components/app/AuthenticatedApp';
+import 'react-toastify/dist/ReactToastify.css';
+import App from './components/app/App';
 import './index.css';
 
 const config = {
@@ -22,4 +23,4 @@ const config = {
 
 Amplify.configure(config);
 
-ReactDOM.render(<AuthenticatedApp />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));

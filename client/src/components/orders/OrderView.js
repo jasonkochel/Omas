@@ -6,13 +6,12 @@ import api from '../../api';
 import fns from '../../fns';
 import StyledTable from '../shared/StyledTable';
 
-const totalOrder = order => {
-  return order.reduce((acc, i) => (acc += i.price * i.quantity), 0);
-};
-
 const useStyles = makeStyles(theme => ({
   rightAlign: {
     textAlign: 'right',
+  },
+  rightMargin: {
+    marginRight: '1em',
   },
 }));
 
@@ -28,11 +27,17 @@ const OrderView = ({ batchId }) => {
 
   if (isLoading) return null;
 
+  const { isOpen, deliveryDate } = order?.orderBatch ?? {};
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <StyledTable
-          title={`Your Order from ${fns.formatDate(order?.orderBatch?.deliveryDate, 'PPP')}`}
+          title={
+            isOpen
+              ? `Your Current Order (Delivery on ${fns.formatDate(deliveryDate, 'PPP')})`
+              : `Your Order from ${fns.formatDate(deliveryDate, 'PPP')}`
+          }
           loading={isLoading}
           data={order.lineItems}
           columns={[
@@ -63,12 +68,7 @@ const OrderView = ({ batchId }) => {
         />
       </Grid>
       <Grid item xs={6}>
-        <Typography variant="h6">
-          Total: {fns.formatCurrency(totalOrder(order.lineItems))}
-        </Typography>
-      </Grid>
-      <Grid item xs={6} className={classes.rightAlign}>
-        {order?.orderBatch?.isOpen ? (
+        {isOpen ? (
           <Button variant="contained" color="primary" onClick={() => history.push('/order')}>
             Modify Order
           </Button>
@@ -77,6 +77,16 @@ const OrderView = ({ batchId }) => {
             Re-Order These Items
           </Button>
         )}
+      </Grid>
+      <Grid item xs={6} className={classes.rightAlign}>
+        <Typography variant="h6">
+          Sub-Total: {fns.formatCurrency(order.subTotal)}
+          <br />
+          Tax: {fns.formatCurrency(order.tax)}
+          <br />S &amp; H: {fns.formatCurrency(order.shipping)}
+          <br />
+          Total: {fns.formatCurrency(order.subTotal + order.tax + order.shipping)}
+        </Typography>
       </Grid>
     </Grid>
   );

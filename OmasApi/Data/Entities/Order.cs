@@ -18,6 +18,10 @@ namespace OmasApi.Data.Entities
         public DateTime OrderDate { get; set; }
         public DateTime DeliveryDate { get; set; }
 
+        public decimal SubTotal { get; set; }
+        public decimal Tax { get; set; }
+        public decimal Shipping { get; set; }
+
         [DynamoDBIgnore]
         public OrderBatch OrderBatch { get; set; }
 
@@ -48,6 +52,5 @@ namespace OmasApi.Data.Entities
                     OrderDate = DateTime.Parse(fields[4])
                 }).ToList();
         }
-
     }
 }

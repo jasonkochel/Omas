@@ -2,14 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
 using OmasApi.Data.Entities;
 
 namespace OmasApi.Data.Repositories
 {
     public class OrderRepository : DynamoDBRepository<Order>
     {
-        private readonly DynamoDBContext _db;
         private readonly OrderBatchRepository _batchRepo;
         private readonly OrderLineRepository _lineRepo;
         private readonly UserRepository _userRepo;
@@ -19,10 +17,6 @@ namespace OmasApi.Data.Repositories
             _batchRepo = batchRepo;
             _lineRepo = lineRepo;
             _userRepo = userRepo;
-            _db = new DynamoDBContext(client, new DynamoDBContextConfig
-            {
-                Conversion = DynamoDBEntryConversion.V2
-            });
         }
 
         public async Task<Order> Get(string batchId, string userId, bool includeNavigationProperties, bool includeLineItems = false)

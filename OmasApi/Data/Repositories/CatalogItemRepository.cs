@@ -10,15 +10,7 @@ namespace OmasApi.Data.Repositories
 {
     public class CatalogItemRepository : DynamoDBRepository<CatalogItem>
     {
-        private readonly DynamoDBContext _db;
-
-        public CatalogItemRepository(IAmazonDynamoDB client) : base(client)
-        {
-            _db = new DynamoDBContext(client, new DynamoDBContextConfig
-            {
-                Conversion = DynamoDBEntryConversion.V2
-            });
-        }
+        public CatalogItemRepository(IAmazonDynamoDB client) : base(client) { }
 
         public async Task<List<CatalogItem>> GetByCategory(string categoryId)
         {

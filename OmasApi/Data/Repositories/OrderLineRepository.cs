@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using OmasApi.Data.Entities;
 
@@ -9,15 +9,7 @@ namespace OmasApi.Data.Repositories
 {
     public class OrderLineRepository : DynamoDBRepository<OrderLine>
     {
-        private readonly DynamoDBContext _db;
-
-        public OrderLineRepository(IAmazonDynamoDB client) : base(client)
-        {
-            _db = new DynamoDBContext(client, new DynamoDBContextConfig
-            {
-                Conversion = DynamoDBEntryConversion.V2
-            });
-        }
+        public OrderLineRepository(IAmazonDynamoDB client) : base(client) { }
 
         public async Task<OrderLine> Get(string batchId, string userId, string sku)
         {
@@ -33,6 +25,25 @@ namespace OmasApi.Data.Repositories
         public async Task<List<OrderLine>> GetByBatch(string batchId)
         {
             return await _db.QueryAsync<OrderLine>(batchId).GetRemainingAsync();
+        }
+
+        public async Task PutMany(List<OrderLine> lines)
+        {
+            var batch = _db.CreateBatchWrite<OrderLine>();
+            batch.AddPutItems(lines);
+            await batch.ExecuteAsync();
+        }
+
+        public async Task DeleteByOrder(string batchId, string userId)
+        {
+            var itemsToDelete = await GetByOrder(batchId, userId);
+
+            if (itemsToDelete.Any())
+            {
+                var batch = _db.CreateBatchWrite<OrderLine>();
+                batch.AddDeleteItems(itemsToDelete);
+                await batch.ExecuteAsync();
+            }
         }
     }
 }

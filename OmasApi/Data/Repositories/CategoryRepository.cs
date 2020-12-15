@@ -11,15 +11,7 @@ namespace OmasApi.Data.Repositories
 {
     public class CategoryRepository : DynamoDBRepository<Category>
     {
-        private readonly DynamoDBContext _db;
-
-        public CategoryRepository(IAmazonDynamoDB client) : base(client)
-        {
-            _db = new DynamoDBContext(client, new DynamoDBContextConfig
-            {
-                Conversion = DynamoDBEntryConversion.V2
-            });
-        }
+        public CategoryRepository(IAmazonDynamoDB client) : base(client) { }
 
         public async Task<Category> GetBySequence(int sequence)
         {

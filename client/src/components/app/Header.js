@@ -1,6 +1,5 @@
 import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Auth } from 'aws-amplify';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -16,7 +15,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Header = ({ authData, onImpersonate }) => {
+const Header = ({ authData, onImpersonate, onSignOut }) => {
   const classes = useStyles();
   const history = useHistory();
 
@@ -51,15 +50,17 @@ const Header = ({ authData, onImpersonate }) => {
               STOP IMPERSONATING
             </Button>
           )}
-          <Button
-            type="button"
-            variant="outlined"
-            color="inherit"
-            className={classes.button}
-            onClick={() => Auth.signOut()}
-          >
-            LOG OUT
-          </Button>
+          {authData.authenticated && (
+            <Button
+              type="button"
+              variant="outlined"
+              color="inherit"
+              className={classes.button}
+              onClick={onSignOut}
+            >
+              LOG OUT
+            </Button>
+          )}
         </Typography>
       </Toolbar>
     </AppBar>

@@ -90,9 +90,9 @@ namespace OmasApi.Controllers.Middleware
             if (context.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
             {
                 var controllerAttributes = actionDescriptor.ControllerTypeInfo.GetCustomAttributes(inherit: true);
-                var actionAttributes = actionDescriptor.MethodInfo.GetCustomAttributes(inherit: true);
+                var methodAttributes = actionDescriptor.MethodInfo.GetCustomAttributes(inherit: true);
 
-                if (actionAttributes.Any(a => a.GetType() == typeof(AdminOnlyAttribute)) ||
+                if (methodAttributes.Any(a => a.GetType() == typeof(AdminOnlyAttribute)) ||
                     controllerAttributes.Any(a => a.GetType() == typeof(AdminOnlyAttribute)))
                 {
                     return true;

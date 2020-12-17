@@ -1,4 +1,3 @@
-import { Typography } from '@material-ui/core';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import BatchAdmin from '../batches/BatchAdmin';
@@ -11,6 +10,7 @@ import Order from '../orders/Order';
 import OrderHistory from '../orders/OrderHistory';
 import OrderView from '../orders/OrderView';
 import Settings from '../settings/Settings';
+import Welcome from './Welcome';
 
 const Routes = ({ onImpersonate }) => (
   <Switch>
@@ -48,7 +48,7 @@ const Routes = ({ onImpersonate }) => (
       <Settings />
     </Route>
     <Route path="*">
-      <Typography paragraph>Make a selection on the left</Typography>
+      <Welcome />
     </Route>
   </Switch>
 );

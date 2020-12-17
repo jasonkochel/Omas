@@ -56,6 +56,7 @@ namespace OmasApi
             services.AddScoped<OrderRepository, OrderRepository>();
             services.AddScoped<OrderLineRepository, OrderLineRepository>();
             services.AddScoped<OrderBatchRepository, OrderBatchRepository>();
+            services.AddScoped<SettingsRepository, SettingsRepository>();
 
             services.AddTransient<ViewRenderService, ViewRenderService>();
 

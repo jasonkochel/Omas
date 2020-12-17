@@ -149,6 +149,16 @@ namespace OmasApi.Data
                     HashKeyName = "UserId",
                     HashKeyType = ScalarAttributeType.S
                 }
+            },
+            new CreateTableDefinition
+            {
+                TableName = "Omas_Settings",
+                EntityType = typeof(Settings),
+                Keys = new KeyDefinition
+                {
+                    HashKeyName = "SettingsId",
+                    HashKeyType = ScalarAttributeType.S
+                }
             }
         };
 

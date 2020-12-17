@@ -10,6 +10,7 @@ import Categories from '../categories/Categories';
 import Order from '../orders/Order';
 import OrderHistory from '../orders/OrderHistory';
 import OrderView from '../orders/OrderView';
+import Settings from '../settings/Settings';
 
 const Routes = ({ onImpersonate }) => (
   <Switch>
@@ -42,6 +43,9 @@ const Routes = ({ onImpersonate }) => (
     </Route>
     <Route path="/categories">
       <Categories />
+    </Route>
+    <Route path="/settings">
+      <Settings />
     </Route>
     <Route path="*">
       <Typography paragraph>Make a selection on the left</Typography>

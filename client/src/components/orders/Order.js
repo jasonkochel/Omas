@@ -1,6 +1,7 @@
-import { Fab, makeStyles } from '@material-ui/core';
+import { CircularProgress, Fab, makeStyles } from '@material-ui/core';
 import { ShoppingCart } from '@material-ui/icons';
-import React, { useState } from 'react';
+import { useConfirm } from 'material-ui-confirm';
+import React, { useCallback, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useHistory } from 'react-router-dom';
 import api from '../../api';
@@ -45,18 +46,23 @@ const useStyles = makeStyles(theme => ({
   extendedIcon: {
     marginRight: theme.spacing(1),
   },
+  centeredDiv: {
+    width: '100%',
+    textAlign: 'center',
+  },
 }));
 
 const Order = () => {
   const classes = useStyles();
   const history = useHistory();
+  const confirm = useConfirm();
 
   const [cart, setCart] = useState({});
 
   const getSavedOrder = async () => {
     const data = await api.getCurrentOrder();
-    const savedOrderObj = fns.arrayToObject(data?.lineItems ?? [], 'sku');
-    setCart(makeCart(savedOrderObj));
+    const savedOrderObj = makeCart(fns.arrayToObject(data?.lineItems ?? [], 'sku'));
+    setCart(savedOrderObj);
     return savedOrderObj;
   };
 
@@ -64,14 +70,18 @@ const Order = () => {
 
   const { data: batchId } = useQuery('CurrentBatchId', () => api.getCurrentBatchId(), queryConfig);
 
-  const { isSuccess } = useQuery('SavedOrder', getSavedOrder, queryConfig);
+  const { isSuccess: savedOrderLoaded, data: savedCart } = useQuery(
+    'SavedOrder',
+    getSavedOrder,
+    queryConfig
+  );
 
-  const { data: catalog } = useQuery('Catalog', getCategories, {
+  const { isSuccess: categoriesLoaded, data: catalog } = useQuery('Catalog', getCategories, {
     ...queryConfig,
-    enabled: isSuccess, // wait until cart has been fetched and built
+    enabled: savedOrderLoaded, // wait until cart has been fetched and built
   });
 
-  const handleChangeQuantity = (item, quantity) => {
+  const handleChangeQuantity = useCallback((item, quantity) => {
     setCart(c => {
       return {
         ...c,
@@ -82,15 +92,28 @@ const Order = () => {
         },
       };
     });
-  };
+  }, []);
 
   const handleConfirmOrder = () => {
-    // TODO: show modal confirmation dialog that you are committing to ordering
-    api.replaceOrderLines(cartToArray(cart)).then(() => history.push(`/order/${batchId}`));
+    confirm({
+      description: 'By clicking "Place Order" you are committing to ordering this food.  Continue?',
+      confirmationText: 'Place Order',
+    })
+      .then(async () => {
+        api.replaceOrderLines(cartToArray(cart)).then(() => history.push(`/order/${batchId}`));
+      })
+      .catch(() => fns.noop);
   };
 
+  if (!categoriesLoaded)
+    return (
+      <div className={classes.centeredDiv}>
+        <CircularProgress disableShrink />
+      </div>
+    );
+
   return (
-    isSuccess &&
+    categoriesLoaded &&
     !!catalog && (
       <div>
         <JumpLinks catalog={catalog} />
@@ -100,7 +123,7 @@ const Order = () => {
             <div id={`cat-${category.categoryId}`}></div>
             <OrderCategory
               category={category}
-              cart={cart}
+              cart={savedCart}
               onChangeQuantity={handleChangeQuantity}
             />
           </React.Fragment>

@@ -106,7 +106,7 @@ const OrderCategory = ({ category, cart, onChangeQuantity }) => {
                   ) : (
                     <OrderQuantity
                       item={c}
-                      quantity={cart[c.sku]?.quantity}
+                      initialQuantity={cart[c.sku]?.quantity}
                       onChangeQuantity={onChangeQuantity}
                     />
                   )}
@@ -120,4 +120,4 @@ const OrderCategory = ({ category, cart, onChangeQuantity }) => {
   );
 };
 
-export default OrderCategory;
+export default React.memo(OrderCategory);

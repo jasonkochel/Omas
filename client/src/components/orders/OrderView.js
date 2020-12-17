@@ -1,10 +1,11 @@
-import { Button, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Button, Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
 import { useQuery } from 'react-query';
 import { useHistory } from 'react-router-dom';
 import api from '../../api';
 import fns from '../../fns';
 import StyledTable from '../shared/StyledTable';
+import OrderTotals from './OrderTotals';
 
 const useStyles = makeStyles(theme => ({
   rightAlign: {
@@ -12,6 +13,15 @@ const useStyles = makeStyles(theme => ({
   },
   rightMargin: {
     marginRight: '1em',
+  },
+  totalTable: {
+    width: 'fit-content',
+    position: 'relative',
+    float: 'right',
+  },
+  totalHeaderCol: {
+    backgroundColor: theme.palette.grey['200'],
+    fontWeight: 'bold',
   },
 }));
 
@@ -79,14 +89,7 @@ const OrderView = ({ batchId }) => {
         )}
       </Grid>
       <Grid item xs={6} className={classes.rightAlign}>
-        <Typography variant="h6">
-          Sub-Total: {fns.formatCurrency(order.subTotal)}
-          <br />
-          Tax: {fns.formatCurrency(order.tax)}
-          <br />S &amp; H: {fns.formatCurrency(order.shipping)}
-          <br />
-          Total: {fns.formatCurrency(order.subTotal + order.tax + order.shipping)}
-        </Typography>
+        <OrderTotals order={order} />
       </Grid>
     </Grid>
   );

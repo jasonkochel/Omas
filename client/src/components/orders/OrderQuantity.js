@@ -1,7 +1,7 @@
 import { IconButton, InputAdornment, makeStyles, TextField } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
   shadedInput: {
@@ -16,8 +16,10 @@ const useStyles = makeStyles(theme => ({
 
 const quantityToDisplayQty = quantity => (quantity && quantity > 0 ? quantity.toString() : '');
 
-const OrderQuantity = ({ item, quantity, onChangeQuantity }) => {
+const OrderQuantity = ({ item, initialQuantity, onChangeQuantity }) => {
   const classes = useStyles();
+
+  const [quantity, setQuantity] = useState(initialQuantity);
 
   const handleIncrement = delta => {
     const oldQuantity = quantity ? Number.parseInt(quantity) : 0;
@@ -33,8 +35,9 @@ const OrderQuantity = ({ item, quantity, onChangeQuantity }) => {
     handleChangeQuantity(newQuantity);
   };
 
-  const handleChangeQuantity = qty => {
-    onChangeQuantity(item, qty);
+  const handleChangeQuantity = newQuantity => {
+    setQuantity(newQuantity);
+    onChangeQuantity(item, newQuantity);
   };
 
   return (
@@ -64,4 +67,4 @@ const OrderQuantity = ({ item, quantity, onChangeQuantity }) => {
   );
 };
 
-export default OrderQuantity;
+export default React.memo(OrderQuantity);

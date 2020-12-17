@@ -79,7 +79,9 @@ const App = () => {
   if (!authData) return false;
 
   return (
-    <ConfirmProvider defaultOptions={{ title: '' }}>
+    <ConfirmProvider
+      defaultOptions={{ title: '', confirmationButtonProps: { variant: 'contained' } }}
+    >
       <div className={classes.root}>
         <Router>
           <CssBaseline />

@@ -17,6 +17,12 @@ const formatDateLong = date => formatDate(date, 'PPPP');
 const formatCurrency = val =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
 
+const formatNumber = (val, precision) =>
+  val.toLocaleString(undefined, {
+    maximumFractionDigits: precision,
+    minimumFractionDigits: precision,
+  });
+
 const sortArray = (array, sortKey, direction = sortDir.ASC) => {
   const sortVal = direction === sortDir.DESC ? 1 : -1;
   return array.sort((a, b) => (a[sortKey] < b[sortKey] ? sortVal : sortVal * -1));
@@ -40,9 +46,10 @@ const noop = () => {};
 
 export default {
   arrayToObject,
+  formatCurrency,
   formatDate,
   formatDateLong,
-  formatCurrency,
+  formatNumber,
   validateDecimal,
   noop,
   sortArray,

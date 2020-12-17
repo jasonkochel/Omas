@@ -8,7 +8,14 @@ import {
   ListSubheader,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Category, DateRange, History, LocalOffer, ShoppingCart } from '@material-ui/icons';
+import {
+  Category,
+  DateRange,
+  History,
+  LocalOffer,
+  Settings,
+  ShoppingCart,
+} from '@material-ui/icons';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -71,6 +78,7 @@ const Sidebar = ({ admin }) => {
             <ListItemLink to="/batches" primary="Manage Ordering" icon={<DateRange />} />
             <ListItemLink to="/catalog" primary="Manage Catalog" icon={<LocalOffer />} />
             <ListItemLink to="/categories" primary="Manage Categories" icon={<Category />} />
+            <ListItemLink to="/settings" primary="Settings" icon={<Settings />} />
           </List>
         )}
         <ul>

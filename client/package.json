@@ -12,6 +12,7 @@
     "date-fns": "^2.16.1",
     "material-table": "1.57.2",
     "material-ui-confirm": "^2.1.1",
+    "mui-rte": "^1.26.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-hook-form": "^6.13.0",

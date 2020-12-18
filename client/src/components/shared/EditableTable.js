@@ -16,7 +16,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const WideTextField = props => (
-  <TextField value={props.value} fullWidth={true} onChange={e => props.onChange(e.target.value)} />
+  <TextField
+    value={props.value || ''}
+    fullWidth={true}
+    onChange={e => props.onChange(e.target.value)}
+  />
 );
 
 const EditableTable = ({
@@ -37,7 +41,10 @@ const EditableTable = ({
   const theme = useTheme();
   const queryClient = useQueryClient();
 
-  const { isLoading, data: tableData } = useQuery(queryKey, getData, { staleTime: Infinity });
+  const { isLoading, data: tableData } = useQuery(queryKey, getData, {
+    cacheTime: 0, // re-fetch every time the screen loads, so latest savedOrder is respected
+    staleTime: Infinity, // never re-fetch after initial fetch (per screen load)
+  });
 
   const { mutateAsync: handleAdd } = useMutation(onAdd, {
     onSuccess: res => queryClient.setQueryData(queryKey, oldData => [res, ...oldData]),

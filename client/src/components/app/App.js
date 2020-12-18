@@ -116,7 +116,7 @@ const App = () => {
             draggable={false}
             closeButton={false}
           />
-          {true && <ReactQueryDevtools />}
+          {false && <ReactQueryDevtools />}
         </div>
       </ConfirmProvider>
     </QueryClientProvider>

@@ -10,7 +10,7 @@
     "aws-amplify": "^3.3.13",
     "clsx": "^1.1.1",
     "date-fns": "^2.16.1",
-    "material-table": "1.57.2",
+    "material-table": "^1.69.2",
     "material-ui-confirm": "^2.1.1",
     "mui-rte": "^1.26.2",
     "react": "^17.0.1",

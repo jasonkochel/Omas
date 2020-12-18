@@ -15,8 +15,9 @@ import EditItemModal from './EditItemModal';
 const CatalogItems = () => {
   const queryClient = useQueryClient();
 
-  const { data: categories } = useQuery(`Categories`, api.getCategories, {
-    staleTime: Infinity,
+  const { data: categories } = useQuery(`Categories`, () => api.getCategories(false, false), {
+    cacheTime: 0, // re-fetch every time the screen loads, so latest savedOrder is respected
+    staleTime: Infinity, // never re-fetch after initial fetch (per screen load)
   });
 
   const handleMarkNew = (e, data) =>

@@ -14,7 +14,7 @@ const Categories = () => (
       },
     ]}
     idField="categoryId"
-    getData={api.getCategories}
+    getData={() => api.getCategories(false, false)}
     onAdd={api.addCategory}
     onUpdate={api.updateCategory}
     onDelete={api.deleteCategory}

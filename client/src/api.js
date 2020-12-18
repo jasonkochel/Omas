@@ -51,7 +51,7 @@ const setImpersonation = (userId, impersonate) =>
 
 // CATEGORIES
 
-const getCategories = (queryKey, includeItems = false, includeVirtual = false) =>
+const getCategories = (includeItems = false, includeVirtual = false) =>
   client
     .get(`/categories?includeItems=${includeItems}&includeVirtual=${includeVirtual}`)
     .then(res => res.data);
@@ -103,7 +103,7 @@ const getCurrentOrder = () => client.get('/orders/current').then(res => res.data
 
 const getOrderHistory = () => client.get('/orders').then(res => res.data);
 
-const getOrder = (queryKey, batchId) => client.get(`/orders/${batchId}`).then(res => res.data);
+const getOrder = batchId => client.get(`/orders/${batchId}`).then(res => res.data);
 
 const replaceOrderLines = cart => client.post(`/orders/lineItems`, cart);
 
@@ -119,13 +119,12 @@ const getBatches = () => client.get('/orderBatches').then(res => res.data);
 
 const getCurrentBatchId = () => client.get('/orderBatches/current').then(res => res.data);
 
-const getBatch = (queryKey, id) => client.get(`/orderBatches/${id}`).then(res => res.data);
+const getBatch = id => client.get(`/orderBatches/${id}`).then(res => res.data);
 
-const getConsolidatedOrder = (queryKey, id) =>
+const getConsolidatedOrder = id =>
   client.get(`/orderBatches/${id}/consolidated`).then(res => res.data);
 
-const getBatchOrders = (queryKey, id) =>
-  client.get(`/orderBatches/${id}/orders`).then(res => res.data);
+const getBatchOrders = id => client.get(`/orderBatches/${id}/orders`).then(res => res.data);
 
 const createBatch = data => client.post('/orderBatches', data).then(res => res.data);
 
@@ -137,11 +136,9 @@ const emailBatch = id => client.post(`/orderBatches/${id}/email`);
 
 const getSettings = () => client.get('/settings').then(res => res.data);
 
-//'{"blocks":[{"key":"7po5","text":"My Other Title","type":"header-two","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"apv19","text":"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem:","type":"unstyled","depth":0,"inlineStyleRanges":[{"offset":6,"length":5,"style":"BOLD"},{"offset":192,"length":16,"style":"UNDERLINE"}],"entityRanges":[],"data":{}},{"key":"98bf8","text":"One","type":"ordered-list-item","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"dmupr","text":"Two","type":"ordered-list-item","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"fv85t","text":"Three","type":"ordered-list-item","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}',
-
 const updateSettings = data => client.post('/settings', data);
 
-export default {
+const api = {
   addCategory,
   addItem,
   cloneOrder,
@@ -179,3 +176,5 @@ export default {
   updateItem,
   updateSettings,
 };
+
+export default api;

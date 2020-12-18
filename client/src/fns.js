@@ -44,7 +44,7 @@ function validateDecimal(length, precision) {
 
 const noop = () => {};
 
-export default {
+const api = {
   arrayToObject,
   formatCurrency,
   formatDate,
@@ -55,3 +55,5 @@ export default {
   sortArray,
   sortDir,
 };
+
+export default api;

@@ -1,19 +1,31 @@
-import { yupResolver } from '@hookform/resolvers';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import DateField from '../shared/DateField';
 
 const schema = yup.object().shape({
   orderDate: yup.date().typeError('Invalid Date').required('Required'),
-  deliveryDate: yup.date().typeError('Invalid Date').required('Required'),
+  deliveryDate: yup
+    .date()
+    .typeError('Invalid Date')
+    .required('Required')
+    .min(yup.ref('orderDate'), 'Must be after Order Date'),
 });
 
 const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, errors, watch, trigger } = useForm({
     resolver: yupResolver(schema),
   });
+
+  // this is needed to force re-validation when *either* field value is changed
+  const watches = watch();
+
+  useEffect(() => {
+    trigger();
+  }, [watches.orderDate, watches.deliveryDate, trigger]);
+  // end
 
   const handleSave = formData => {
     onSave({ ...data, ...formData });

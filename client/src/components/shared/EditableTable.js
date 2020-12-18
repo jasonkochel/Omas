@@ -1,7 +1,7 @@
 import { makeStyles, TextField, useTheme } from '@material-ui/core';
 import MaterialTable, { MTableToolbar } from 'material-table';
 import React from 'react';
-import { queryCache, useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 const useStyles = makeStyles(theme => ({
   toolbarWrapper: {
@@ -35,31 +35,32 @@ const EditableTable = ({
 }) => {
   const classes = useStyles();
   const theme = useTheme();
+  const queryClient = useQueryClient();
 
   const { isLoading, data: tableData } = useQuery(queryKey, getData, { staleTime: Infinity });
 
-  const [handleAdd] = useMutation(onAdd, {
-    onSuccess: res => queryCache.setQueryData(queryKey, oldData => [res, ...oldData]),
+  const { mutateAsync: handleAdd } = useMutation(onAdd, {
+    onSuccess: res => queryClient.setQueryData(queryKey, oldData => [res, ...oldData]),
   });
 
-  const [handleUpdate] = useMutation(onUpdate, {
+  const { mutateAsync: handleUpdate } = useMutation(onUpdate, {
     onSuccess: res =>
-      queryCache.setQueryData(queryKey, oldData =>
+      queryClient.setQueryData(queryKey, oldData =>
         oldData.map(row => (row[idField] === res[idField] ? res : row))
       ),
   });
 
-  const [handleDelete] = useMutation(onDelete, {
+  const { mutateAsync: handleDelete } = useMutation(onDelete, {
     onSuccess: (_, id) =>
-      queryCache.setQueryData(queryKey, oldData => oldData.filter(row => row[idField] !== id)),
+      queryClient.setQueryData(queryKey, oldData => oldData.filter(row => row[idField] !== id)),
   });
 
   const handleMoveUp = data => {
-    return onMoveUp(data[idField]).then(() => queryCache.invalidateQueries(queryKey));
+    return onMoveUp(data[idField]).then(() => queryClient.invalidateQueries(queryKey));
   };
 
   const handleMoveDown = data => {
-    return onMoveDown(data[idField]).then(() => queryCache.invalidateQueries(queryKey));
+    return onMoveDown(data[idField]).then(() => queryClient.invalidateQueries(queryKey));
   };
 
   const components = {

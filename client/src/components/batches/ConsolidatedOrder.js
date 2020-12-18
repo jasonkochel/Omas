@@ -31,7 +31,9 @@ const ConsolidatedOrder = ({ batchId }) => {
   const classes = useStyles();
   const history = useHistory();
 
-  const { isLoading, data } = useQuery(['ConsolidatedOrder', batchId], api.getConsolidatedOrder);
+  const { isLoading, data } = useQuery(['ConsolidatedOrder', batchId], () =>
+    api.getConsolidatedOrder(batchId)
+  );
 
   return (
     <>

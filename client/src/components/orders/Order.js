@@ -66,8 +66,6 @@ const Order = () => {
     return savedOrderObj;
   };
 
-  const getCategories = () => api.getCategories(null, true, true);
-
   const { data: batchId } = useQuery('CurrentBatchId', () => api.getCurrentBatchId(), queryConfig);
 
   const { isSuccess: savedOrderLoaded, data: savedCart } = useQuery(
@@ -76,10 +74,14 @@ const Order = () => {
     queryConfig
   );
 
-  const { isSuccess: categoriesLoaded, data: catalog } = useQuery('Catalog', getCategories, {
-    ...queryConfig,
-    enabled: savedOrderLoaded, // wait until cart has been fetched and built
-  });
+  const { isSuccess: categoriesLoaded, data: catalog } = useQuery(
+    'Catalog',
+    () => api.getCategories(true, true),
+    {
+      ...queryConfig,
+      enabled: !!savedOrderLoaded, // wait until cart has been fetched and built
+    }
+  );
 
   const handleChangeQuantity = useCallback((item, quantity) => {
     setCart(c => {

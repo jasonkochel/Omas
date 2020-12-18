@@ -1,7 +1,7 @@
 import { Grid, makeStyles } from '@material-ui/core';
 import { useConfirm } from 'material-ui-confirm';
 import React, { useState } from 'react';
-import { queryCache, useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { toast } from 'react-toastify';
 import api from '../../api';
 import fns from '../../fns';
@@ -18,6 +18,7 @@ const useStyles = makeStyles(theme => ({
 
 const BatchAdmin = () => {
   const classes = useStyles();
+  const queryClient = useQueryClient();
 
   const [selectedBatchId, setSelectedBatchId] = useState();
   const [editingDates, setEditingDates] = useState(false);
@@ -32,20 +33,24 @@ const BatchAdmin = () => {
 
   const { isLoading, data: batchHistory } = useQuery('BatchHistory', getBatches);
 
-  const { data: selectedBatch } = useQuery(['BatchHistory', selectedBatchId], api.getBatch, {
-    enabled: selectedBatchId,
-  });
+  const { data: selectedBatch } = useQuery(
+    ['BatchHistory', selectedBatchId],
+    () => api.getBatch(selectedBatchId),
+    {
+      enabled: !!selectedBatchId,
+    }
+  );
 
   const handleCloseOrdering = () =>
     confirm({ description: 'Are you sure you want to close ordering?' }).then(async () => {
       await api.updateBatch({ ...selectedBatch, isOpen: false });
-      queryCache.invalidateQueries('BatchHistory');
+      queryClient.invalidateQueries('BatchHistory');
     });
 
   const handleOpenOrdering = () =>
     confirm({ description: 'Are you sure you want to re-open ordering?' }).then(async () => {
       await api.updateBatch({ ...selectedBatch, isOpen: true });
-      queryCache.invalidateQueries('BatchHistory');
+      queryClient.invalidateQueries('BatchHistory');
     });
 
   const handleCreateNewBatch = () =>
@@ -68,7 +73,7 @@ const BatchAdmin = () => {
     } else {
       await api.updateBatch(data);
     }
-    queryCache.invalidateQueries('BatchHistory');
+    queryClient.invalidateQueries('BatchHistory');
   };
 
   const handleEmailBatch = async () => {

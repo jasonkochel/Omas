@@ -7,12 +7,14 @@ import {
   StarBorderOutlined,
 } from '@material-ui/icons';
 import React from 'react';
-import { queryCache, useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import api from '../../api';
 import EditableTable from '../shared/EditableTable';
 import EditItemModal from './EditItemModal';
 
 const CatalogItems = () => {
+  const queryClient = useQueryClient();
+
   const { data: categories } = useQuery(`Categories`, api.getCategories, {
     staleTime: Infinity,
   });
@@ -20,17 +22,17 @@ const CatalogItems = () => {
   const handleMarkNew = (e, data) =>
     api
       .markNew(data.catalogId, !data.new)
-      .then(() => queryCache.invalidateQueries(`CatalogItems-${data.categoryId}`));
+      .then(() => queryClient.invalidateQueries(`CatalogItems-${data.categoryId}`));
 
   const handleMarkFeatured = (e, data) =>
     api
       .markFeatured(data.catalogId, !data.featured)
-      .then(() => queryCache.invalidateQueries(`CatalogItems-${data.categoryId}`));
+      .then(() => queryClient.invalidateQueries(`CatalogItems-${data.categoryId}`));
 
   const handleMarkDiscontinued = (e, data) =>
     api
       .markDiscontinued(data.catalogId, !data.discontinued)
-      .then(() => queryCache.invalidateQueries(`CatalogItems-${data.categoryId}`));
+      .then(() => queryClient.invalidateQueries(`CatalogItems-${data.categoryId}`));
 
   if (!categories || !Array.isArray(categories)) return null;
 

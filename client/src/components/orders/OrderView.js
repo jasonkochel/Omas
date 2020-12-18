@@ -29,7 +29,9 @@ const OrderView = ({ batchId }) => {
   const classes = useStyles();
   const history = useHistory();
 
-  const { isLoading, data: order } = useQuery(['OrderHistory', batchId], api.getOrder);
+  const { isLoading, data: order } = useQuery(['OrderHistory', batchId], () =>
+    api.getOrder(batchId)
+  );
 
   const handleReOrder = () => {
     api.cloneOrder(batchId).then(() => history.push('/order'));

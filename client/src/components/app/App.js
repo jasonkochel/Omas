@@ -4,7 +4,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Auth } from 'aws-amplify';
 import { ConfirmProvider } from 'material-ui-confirm';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ReactQueryDevtools } from 'react-query-devtools';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import { HashRouter as Router, useHistory } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import api from '../../api';
@@ -39,6 +40,8 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
   },
 }));
+
+const queryClient = new QueryClient();
 
 const App = () => {
   const classes = useStyles();
@@ -79,38 +82,44 @@ const App = () => {
   if (!authData) return false;
 
   return (
-    <ConfirmProvider
-      defaultOptions={{ title: '', confirmationButtonProps: { variant: 'contained' } }}
-    >
-      <div className={classes.root}>
-        <Router>
-          <CssBaseline />
-          <Header authData={authData} onImpersonate={handleImpersonate} onSignOut={handleSignOut} />
+    <QueryClientProvider client={queryClient}>
+      <ConfirmProvider
+        defaultOptions={{ title: '', confirmationButtonProps: { variant: 'contained' } }}
+      >
+        <div className={classes.root}>
+          <Router>
+            <CssBaseline />
+            <Header
+              authData={authData}
+              onImpersonate={handleImpersonate}
+              onSignOut={handleSignOut}
+            />
 
-          {authData.authenticated && <Sidebar admin={authData.isAdmin} />}
+            {authData.authenticated && <Sidebar admin={authData.isAdmin} />}
 
-          <main className={classes.content}>
-            {authData.authenticated ? (
-              <Routes onImpersonate={handleImpersonate} />
-            ) : (
-              <Authenticator
-                onSignIn={handleSignIn}
-                signupFields={signupFields}
-                socialProviders={['Google']}
-              />
-            )}
-          </main>
-        </Router>
-        <ToastContainer
-          position="bottom-right"
-          newestOnTop
-          toastClassName={classes.toast}
-          draggable={false}
-          closeButton={false}
-        />
-        {false && <ReactQueryDevtools />}
-      </div>
-    </ConfirmProvider>
+            <main className={classes.content}>
+              {authData.authenticated ? (
+                <Routes onImpersonate={handleImpersonate} />
+              ) : (
+                <Authenticator
+                  onSignIn={handleSignIn}
+                  signupFields={signupFields}
+                  socialProviders={['Google']}
+                />
+              )}
+            </main>
+          </Router>
+          <ToastContainer
+            position="bottom-right"
+            newestOnTop
+            toastClassName={classes.toast}
+            draggable={false}
+            closeButton={false}
+          />
+          {true && <ReactQueryDevtools />}
+        </div>
+      </ConfirmProvider>
+    </QueryClientProvider>
   );
 };
 

@@ -22,7 +22,7 @@ const BatchOrderList = ({ batchId }) => {
   const history = useHistory();
   const classes = useStyles();
 
-  const { isLoading, data } = useQuery(['OrderList', batchId], api.getBatchOrders);
+  const { isLoading, data } = useQuery(['OrderList', batchId], () => api.getBatchOrders(batchId));
 
   return (
     !!data && (

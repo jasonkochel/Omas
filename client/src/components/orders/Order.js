@@ -102,7 +102,10 @@ const Order = () => {
       confirmationText: 'Place Order',
     })
       .then(async () => {
-        api.replaceOrderLines(cartToArray(cart)).then(() => history.push(`/order/${batchId}`));
+        api
+          .replaceOrderLines(cartToArray(cart))
+          .then(() => api.confirmOrder())
+          .then(() => history.push(`/order/${batchId}`));
       })
       .catch(() => fns.noop);
   };

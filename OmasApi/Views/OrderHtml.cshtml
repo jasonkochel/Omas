@@ -2,10 +2,6 @@
 @* ReSharper disable Html.Obsolete *@
 @* ReSharper disable MissingHeadTag *@
 @{
-    var totalPrice = Model.LineItems.Sum(l => l.Price * l.Quantity * l.Multiplier);
-    var totalWeight = Model.LineItems.Sum(l => l.Weight);
-    var shippingCost = totalWeight * 0.20M;
-
     string FormatNumber(decimal num, int precision = 2) => num.ToString($"F{precision}");
     string FormatCurrency(decimal num) => num.ToString("C");
 
@@ -47,19 +43,19 @@
             </tr>
             <tr>
                 <td colspan="5" align="right"><b>Subtotal:</b></td>
-                <td align="right">@FormatCurrency(totalPrice)</td>
+                <td align="right">@FormatCurrency(Model.SubTotal)</td>
             </tr>
             <tr>
-                <td colspan="5" align="right"><b>Weight:</b></td>
-                <td colspan="1" align="right">@FormatNumber(totalWeight) lbs</td>
+                <td colspan="5" align="right"><b>Tax:</b></td>
+                <td align="right">@FormatCurrency(Model.Tax)</td>
             </tr>
             <tr>
                 <td colspan="5" align="right"><b>Shipping & Handling:</b></td>
-                <td colspan="1" align="right">@FormatCurrency(shippingCost)</td>
+                <td colspan="1" align="right">@FormatCurrency(Model.Shipping)</td>
             </tr>
             <tr>
                 <td colspan="5" align="right"><b>Total:</b></td>
-                <td colspan="1" align="right">@FormatCurrency(totalPrice + shippingCost)</td>
+                <td colspan="1" align="right">@FormatCurrency(Model.SubTotal + Model.Tax + Model.Shipping)</td>
             </tr>
         </table>
 </body>

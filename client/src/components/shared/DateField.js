@@ -13,6 +13,9 @@ const DateField = ({ name, label, defaultValue, register, errors }) => (
     inputRef={register}
     error={!!errors[name]}
     helperText={errors[name]?.message}
+    InputLabelProps={{
+      shrink: true,
+    }}
   />
 );
 

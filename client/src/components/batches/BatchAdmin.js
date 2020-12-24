@@ -31,6 +31,8 @@ const BatchAdmin = () => {
     return fns.sortArray(data, 'deliveryDate', fns.sortDir.DESC).slice(0, 10);
   };
 
+  const { data: settings } = useQuery('Settings', api.getSettings);
+
   const { isLoading, data: batchHistory } = useQuery('BatchHistory', getBatches);
 
   const { data: selectedBatch } = useQuery(
@@ -56,7 +58,14 @@ const BatchAdmin = () => {
   const handleCreateNewBatch = () =>
     confirm({ description: 'Are you sure you want to create a new ordering cycle?' }).then(
       async () => {
-        setEditDatesData({ batchId: 0, orderDate: null, deliveryDate: null, isOpen: true });
+        setEditDatesData({
+          batchId: 0,
+          orderDate: null,
+          deliveryDate: null,
+          isOpen: true,
+          taxRate: settings.taxRate,
+          shippingRate: settings.shippingRate,
+        });
         setEditingDates(true);
       }
     );

@@ -1,5 +1,5 @@
 import { Button, makeStyles, Typography } from '@material-ui/core';
-import { ArrowBack, Redo, SaveAlt } from '@material-ui/icons';
+import { ArrowBack, Print, SaveAlt } from '@material-ui/icons';
 import clsx from 'clsx';
 import React from 'react';
 import { useQuery } from 'react-query';
@@ -17,9 +17,13 @@ const useStyles = makeStyles(theme => ({
   },
   paddedButton: {
     marginRight: '15px',
+    marginBottom: '15px',
   },
   rightAlignText: {
     textAlign: 'right',
+  },
+  pointer: {
+    cursor: 'pointer',
   },
 }));
 
@@ -47,10 +51,14 @@ const ConsolidatedOrder = ({ batchId }) => {
         >
           Back
         </Button>
-        This shows the total quantity and price of each item, across all of your customers, for this
-        ordering cycle. You can download this data into Excel by clicking the
-        <SaveAlt className={classes.paddedIcon} />
-        icon on the right below <Redo className={classes.paddedIcon} />
+        <p>
+          This shows the total quantity and price of each item, across all of your customers, for
+          this ordering cycle. You can print
+          <Print onClick={window.print} className={clsx(classes.paddedIcon, classes.pointer)} />
+          this page, or download to Excel by clicking the
+          <SaveAlt className={classes.paddedIcon} />
+          icon on the right below
+        </p>
       </Typography>
       <StyledTable
         title="Consolidated Order Form"

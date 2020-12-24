@@ -1,4 +1,5 @@
 import { makeStyles, Paper, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import clsx from 'clsx';
 import React from 'react';
 import fns from '../../fns';
 
@@ -46,7 +47,7 @@ const OrderTotals = ({ order }) => {
             <TableCell align="right">{fns.formatCurrency(order.shipping)}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className={`${classes.totalHeaderCol} ${classes.totalRow}`} align="right">
+            <TableCell className={clsx(classes.totalHeaderCol, classes.totalRow)} align="right">
               Total:
             </TableCell>
             <TableCell className={classes.totalRow} align="right">

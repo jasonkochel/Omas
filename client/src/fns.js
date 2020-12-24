@@ -18,7 +18,7 @@ const formatCurrency = val =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
 
 const formatNumber = (val, precision) =>
-  val.toLocaleString(undefined, {
+  val?.toLocaleString(undefined, {
     maximumFractionDigits: precision,
     minimumFractionDigits: precision,
   });
@@ -52,6 +52,7 @@ const api = {
   formatNumber,
   validateDecimal,
   noop,
+  serializePhone,
   sortArray,
   sortDir,
 };

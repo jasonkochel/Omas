@@ -279,11 +279,11 @@ namespace OmasApi.Controllers
             var batch = await _batchRepo.Get(batchId);
             var order = await _repo.Get(batchId, userId, includeLineItems: true, includeNavigationProperties: false);
 
-            var subTotal = order.LineItems.Sum(l => l.Price * l.Quantity);
+            var subTotal = order.LineItems.Sum(l => l.Price * l.Quantity * l.Multiplier);
             var weight = order.LineItems.Sum(l => l.Weight * l.Quantity);
 
             order.SubTotal = subTotal;
-            order.Tax = decimal.Round(subTotal * batch.TaxRate, 2);
+            order.Tax = decimal.Round(subTotal * (batch.TaxRate / 100.0M), 2);
             order.Shipping = decimal.Round(weight * batch.ShippingRate, 2);
 
             await _repo.Put(order);

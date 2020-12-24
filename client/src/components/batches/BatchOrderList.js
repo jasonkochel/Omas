@@ -8,13 +8,13 @@ import api from '../../api';
 import fns from '../../fns';
 import StyledTable from '../shared/StyledTable';
 
-const totalOrder = order => {
-  return order.reduce((acc, i) => (acc += i.price * i.quantity), 0);
-};
-
 const useStyles = makeStyles(theme => ({
   paddedButton: {
     marginBottom: '15px',
+  },
+  subTotal: {
+    fontSize: '1.0rem',
+    marginRight: '15px',
   },
 }));
 
@@ -65,12 +65,20 @@ const BatchOrderList = ({ batchId }) => {
                 title: 'Extended Price',
                 type: 'numeric',
                 width: '15%',
-                render: rowData => fns.formatCurrency(rowData.price * rowData.quantity),
+                render: rowData =>
+                  fns.formatCurrency(rowData.price * rowData.quantity * rowData.multiplier),
               },
             ]}
             actions={[
               {
-                icon: props => <span>{fns.formatCurrency(totalOrder(order.lineItems))}</span>,
+                icon: () => (
+                  <span>
+                    <span className={classes.subTotal}>{`(${fns.formatCurrency(
+                      order.subTotal
+                    )} + Tax + Shipping)`}</span>
+                    {fns.formatCurrency(order.subTotal + order.tax + order.shipping)}
+                  </span>
+                ),
                 isFreeAction: true,
                 onClick: fns.noop,
               },

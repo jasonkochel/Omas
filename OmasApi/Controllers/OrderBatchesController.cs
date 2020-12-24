@@ -21,13 +21,14 @@ namespace OmasApi.Controllers
         private readonly OrderRepository _orderRepo;
         private readonly OrderLineRepository _lineRepo;
         private readonly UserRepository _userRepo;
+        private readonly SettingsRepository _settingsRepo;
 
         private readonly EmailService _emailService;
         private readonly OrderBatchService _orderBatchService;
 
         public OrderBatchesController(OrderBatchRepository repo, EmailService emailService,
             OrderBatchService orderBatchService, OrderLineRepository lineRepo, OrderRepository orderRepo,
-            UserRepository userRepo)
+            UserRepository userRepo, SettingsRepository settingsRepo)
         {
             _repo = repo;
             _emailService = emailService;
@@ -35,6 +36,7 @@ namespace OmasApi.Controllers
             _lineRepo = lineRepo;
             _orderRepo = orderRepo;
             _userRepo = userRepo;
+            _settingsRepo = settingsRepo;
         }
 
         [HttpGet]
@@ -69,10 +71,12 @@ namespace OmasApi.Controllers
                 OrderDate = batch.OrderDate,
                 DeliveryDate = batch.DeliveryDate,
                 IsOpen = batch.IsOpen,
-                CustomerCount = orders.Where(o => o.Confirmed).SelectMany(o => o.LineItems).Select(i => i.UserId).Distinct().Count(),
-                Total = orders.Where(o => o.Confirmed).SelectMany(o => o.LineItems).Sum(i => i.Price * i.Quantity),
-                UnconfirmedCustomerCount = orders.Where(o => !o.Confirmed).SelectMany(o => o.LineItems).Select(i => i.UserId).Distinct().Count(),
-                UnconfirmedTotal = orders.Where(o => !o.Confirmed).SelectMany(o => o.LineItems).Sum(i => i.Price * i.Quantity),
+                TaxRate = batch.TaxRate,
+                ShippingRate = batch.ShippingRate,
+                CustomerCount = orders.Where(o => o.Confirmed).Select(o => o.UserId).Distinct().Count(),
+                Total = orders.Where(o => o.Confirmed).Sum(o => o.SubTotal),
+                UnconfirmedCustomerCount = orders.Where(o => !o.Confirmed).Select(o => o.UserId).Distinct().Count(),
+                UnconfirmedTotal = orders.Where(o => !o.Confirmed).Sum(o => o.SubTotal),
             };
 
             return model;
@@ -131,7 +135,12 @@ namespace OmasApi.Controllers
         [HttpPost]
         public async Task<OrderBatch> Post([FromBody] OrderBatch batch)
         {
+            var settings = await _settingsRepo.Get(_settingsRepo.SettingsId);
+
             batch.BatchId = Guid.NewGuid().ToString();
+            batch.TaxRate = settings.TaxRate;
+            batch.ShippingRate = settings.ShippingRate;
+
             await _repo.Put(batch);
 
             await _orderBatchService.RefreshCurrentBatchCache();

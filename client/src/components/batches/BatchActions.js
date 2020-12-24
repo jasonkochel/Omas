@@ -43,13 +43,6 @@ const BatchActions = ({
               onClick={onStartEditingDates}
             />
           </Grid>
-          <Grid item xs={4}>
-            <ActionCard
-              buttonText="Impersonate User"
-              caption="Create, change, or view an order on a customer's behalf"
-              onClick={() => history.push('/impersonate')}
-            />
-          </Grid>
         </>
       )}
 
@@ -59,6 +52,16 @@ const BatchActions = ({
             buttonText="Re-Open Ordering"
             caption="Re-Open system to new orders"
             onClick={onOpenOrdering}
+          />
+        </Grid>
+      )}
+
+      {isLatest && (
+        <Grid item xs={4}>
+          <ActionCard
+            buttonText="Impersonate User"
+            caption="Create, change, or view an order on a customer's behalf"
+            onClick={() => history.push('/impersonate')}
           />
         </Grid>
       )}

@@ -14,6 +14,8 @@ namespace OmasApi.Models
         public DateTime? OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public bool IsOpen { get; set; }
+        public decimal TaxRate { get; set; }
+        public decimal ShippingRate { get; set; }
         public int CustomerCount { get; set; }
         public decimal Total { get; set; }
         public int UnconfirmedCustomerCount { get; set; }

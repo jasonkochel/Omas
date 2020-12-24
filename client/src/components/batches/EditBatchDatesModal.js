@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import DateField from '../shared/DateField';
+import fns from './../../fns';
 
 const schema = yup.object().shape({
   orderDate: yup.date().typeError('Invalid Date').required('Required'),
@@ -24,7 +25,7 @@ const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
 
   useEffect(() => {
     trigger();
-  }, [watches.orderDate, watches.deliveryDate, trigger]);
+  }, [data.batchId, watches.orderDate, watches.deliveryDate, trigger]);
   // end
 
   const handleSave = formData => {
@@ -54,6 +55,12 @@ const EditBatchDatesModal = ({ open, data, onSave, onCancel }) => {
                 register={register}
                 errors={errors}
               />
+            </Grid>
+            <Grid item xs={12}>
+              This order will use the current tax rate of {fns.formatNumber(data.taxRate, 2)}% and
+              shipping rate of {fns.formatCurrency(data.shippingRate)}/lb.{' '}
+              {data.batchId === 0 &&
+                'If you want to change these, click Cancel, go to Settings, and change them there before opening a new order cycle.'}
             </Grid>
           </Grid>
         </form>

@@ -13,7 +13,8 @@ namespace OmasApi.Data.Repositories
         {
             TaxRate = 0.00M,
             ShippingRate = 0.00M,
-            WelcomeMessage = "{\"blocks\":[{\"key\":\"1u95g\",\"text\":\"Welcome to the site\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}"
+            WelcomeMessage = "{\"blocks\":[{\"key\":\"1u95g\",\"text\":\"Welcome to the site\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+            LoginMessage = "{\"blocks\":[{\"key\":\"1u95g\",\"text\":\"Welcome to the site\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
         };
     }
 }

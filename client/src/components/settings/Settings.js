@@ -14,9 +14,26 @@ import MUIRichTextEditor from 'mui-rte';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
+import { useHistory } from 'react-router-dom';
 import * as yup from 'yup';
 import api from '../../api';
 import fns from '../../fns';
+
+const editorControls = [
+  'title',
+  'bold',
+  'italic',
+  'underline',
+  'strikethrough',
+  'highlight',
+  'undo',
+  'redo',
+  'link',
+  'media',
+  'numberList',
+  'bulletList',
+  'clear',
+];
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -51,6 +68,7 @@ const schema = yup.object().shape({
 
 const Settings = () => {
   const classes = useStyles();
+  const history = useHistory();
 
   const { register, handleSubmit, errors, setValue } = useForm({
     resolver: yupResolver(schema),
@@ -58,12 +76,16 @@ const Settings = () => {
 
   const { isLoading, data } = useQuery('Settings', api.getSettings);
 
-  const handleEditorChange = editorState => {
+  const handleWelcomeMessageChange = editorState => {
     setValue('welcomeMessage', JSON.stringify(convertToRaw(editorState.getCurrentContent())));
   };
 
+  const handleLoginMessageChange = editorState => {
+    setValue('loginMessage', JSON.stringify(convertToRaw(editorState.getCurrentContent())));
+  };
+
   const handleSave = formData => {
-    api.updateSettings(formData);
+    api.updateSettings(formData).then(() => history.push('/batches'));
   };
 
   if (isLoading) return null;
@@ -118,6 +140,22 @@ const Settings = () => {
           </Grid>
           <Grid item xs={2}>
             <InputLabel className={classes.formLabel} htmlFor="welcomePage">
+              Login Page Text
+            </InputLabel>
+          </Grid>
+          <Grid item xs={10}>
+            <div className={classes.editorContainer}>
+              <input type="hidden" name="loginMessage" ref={register} />
+              <MUIRichTextEditor
+                id="loginEditor"
+                defaultValue={data.loginMessage}
+                onChange={handleLoginMessageChange}
+                controls={editorControls}
+              />
+            </div>
+          </Grid>
+          <Grid item xs={2}>
+            <InputLabel className={classes.formLabel} htmlFor="welcomePage">
               Welcome Page Text
             </InputLabel>
           </Grid>
@@ -127,22 +165,8 @@ const Settings = () => {
               <MUIRichTextEditor
                 id="welcomeEditor"
                 defaultValue={data.welcomeMessage}
-                onChange={handleEditorChange}
-                controls={[
-                  'title',
-                  'bold',
-                  'italic',
-                  'underline',
-                  'strikethrough',
-                  'highlight',
-                  'undo',
-                  'redo',
-                  'link',
-                  'media',
-                  'numberList',
-                  'bulletList',
-                  'clear',
-                ]}
+                onChange={handleWelcomeMessageChange}
+                controls={editorControls}
               />
             </div>
           </Grid>

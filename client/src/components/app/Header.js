@@ -1,5 +1,6 @@
-import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Button, IconButton, Toolbar, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import MenuIcon from '@material-ui/icons/Menu';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -13,14 +14,25 @@ const useStyles = makeStyles(theme => ({
   button: {
     marginLeft: '10px',
   },
+  menuButton: {
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.up('md')]: {
+      display: 'none',
+    },
+  },
 }));
 
-const Header = ({ authData, onImpersonate, onSignOut }) => {
+const Header = ({ authData, onImpersonate, onSignOut, onToggleSidebar }) => {
   const classes = useStyles();
   const history = useHistory();
 
   const name = authData?.name || authData?.email;
   const impersonatingName = authData?.impersonatingName || authData?.impersonatingEmail;
+
+  const handleSignOut = () => {
+    onSignOut();
+    history.push('/');
+  };
 
   const handleStopImpersonating = () => {
     onImpersonate(null, false);
@@ -30,8 +42,18 @@ const Header = ({ authData, onImpersonate, onSignOut }) => {
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar>
+        {authData.authenticated && (
+          <IconButton
+            color="inherit"
+            edge="start"
+            onClick={onToggleSidebar}
+            className={classes.menuButton}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
         <Typography variant="h6" className={classes.title}>
-          Omas Pride Raw Food Ordering
+          Omas Pride Ordering
         </Typography>
         {name && (
           <Typography variant="h6" className={classes.title}>
@@ -56,7 +78,7 @@ const Header = ({ authData, onImpersonate, onSignOut }) => {
               variant="outlined"
               color="inherit"
               className={classes.button}
-              onClick={onSignOut}
+              onClick={handleSignOut}
             >
               LOG OUT
             </Button>

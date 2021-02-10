@@ -35,8 +35,17 @@ function validateDecimal(length, precision) {
     return (value + '').match(re);
   };
 
-  return this.moreThan(0, 'Min 0.01')
-    .lessThan(1000000, 'Max 999,999.99') // TODO: respect length
+  /*
+  (5,2) => max 99.99
+  (5,1) => max 999.9
+  (5,0) => max 99999  // special case
+  */
+
+  const decimalLength = precision === 0 ? 0 : precision + 1;
+  const maxVal = Math.pow(10, length - decimalLength);
+
+  return this.moreThan(0, 'Must be greater than zero')
+    .lessThan(maxVal, `Must be less than ${maxVal}`)
     .test('is-decimal', `Max ${precision} decimal places`, val =>
       validatePrecision(val, precision)
     );
@@ -52,7 +61,6 @@ const api = {
   formatNumber,
   validateDecimal,
   noop,
-  serializePhone,
   sortArray,
   sortDir,
 };

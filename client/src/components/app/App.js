@@ -1,4 +1,3 @@
-import Authenticator from '@jasonkochel/react-cognito-auth';
 import { CssBaseline } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Auth } from 'aws-amplify';
@@ -6,26 +5,13 @@ import { ConfirmProvider } from 'material-ui-confirm';
 import React, { useCallback, useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-import { HashRouter as Router, useHistory } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import api from '../../api';
 import Header from './Header';
+import Login from './Login';
 import Routes from './Routes';
 import Sidebar from './Sidebar';
-
-const signupFields = [
-  {
-    name: 'name',
-    label: 'Name',
-    placeholder: 'Enter your full name',
-    required: true,
-  },
-  {
-    name: 'phone_number',
-    label: 'Phone Number',
-    required: true,
-  },
-];
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,12 +31,12 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const classes = useStyles();
-  const history = useHistory();
 
   const [authData, setAuthData] = useState();
 
   const handleSignIn = useCallback(async cognitoUser => {
     const idToken = cognitoUser?.signInUserSession?.idToken;
+    console.log(idToken);
 
     if (idToken) {
       await api.createUser(idToken);
@@ -66,10 +52,7 @@ const App = () => {
   }, [handleSignIn]);
 
   const handleSignOut = () => {
-    Auth.signOut().then(() => {
-      setAuthData({ authenticated: false });
-      history.push('/');
-    });
+    Auth.signOut().then(() => setAuthData({ authenticated: false }));
   };
 
   const handleImpersonate = async (userId, impersonate) => {
@@ -78,6 +61,11 @@ const App = () => {
       return { ...state, ...localUser };
     });
   };
+
+  // Controls for responsive sidebar with toggle in header
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const handleToggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   if (!authData) return false;
 
@@ -93,19 +81,22 @@ const App = () => {
               authData={authData}
               onImpersonate={handleImpersonate}
               onSignOut={handleSignOut}
+              onToggleSidebar={handleToggleSidebar}
             />
 
-            {authData.authenticated && <Sidebar admin={authData.isAdmin} />}
+            {authData.authenticated && (
+              <Sidebar
+                admin={authData.isAdmin}
+                sidebarOpen={sidebarOpen}
+                onToggleSidebar={handleToggleSidebar}
+              />
+            )}
 
             <main className={classes.content}>
               {authData.authenticated ? (
                 <Routes onImpersonate={handleImpersonate} />
               ) : (
-                <Authenticator
-                  onSignIn={handleSignIn}
-                  signupFields={signupFields}
-                  socialProviders={['Google']}
-                />
+                <Login onSignIn={handleSignIn} />
               )}
             </main>
           </Router>

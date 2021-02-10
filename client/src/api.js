@@ -15,7 +15,7 @@ client.interceptors.request.use(config =>
       return Promise.resolve(config);
     })
     .catch(error => {
-      return Promise.reject(error);
+      return Promise.resolve(config);
     })
 );
 

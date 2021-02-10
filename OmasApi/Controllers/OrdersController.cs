@@ -144,63 +144,6 @@ namespace OmasApi.Controllers
             await UpdateOrderHeader(batchId, userId);
         }
 
-        /*
-        [HttpPut]
-        public async Task UpdateCart([FromQuery] string catalogId, [FromQuery] int quantity)
-        {
-            var userId = await GetUserId();
-            var batchId = _orderBatchService.CurrentBatchId;
-
-            var catalogItem = await _itemRepo.Get(catalogId);
-
-            if (catalogItem == null)
-            {
-                throw new BadRequestException($"Catalog Item ID '{catalogId}' does not exist");
-            }
-
-            var orderLine = await _lineRepo.Get(batchId, userId, catalogItem.Sku);
-
-            // Delete
-            if (quantity == 0 && orderLine != null)
-            {
-                await _lineRepo.Delete(orderLine);
-            }
-
-            if (quantity > 0)
-            {
-                if (orderLine == null)
-                {
-                    // Might be first line item of order; make sure header record exists
-                    await CreateOrderIfNoneExists(batchId, userId);
-
-                    // Insert
-                    orderLine = new OrderLine
-                    {
-                        BatchId = batchId,
-                        UserId = userId,
-                        UserId_Sku = $"{userId}#{catalogItem.Sku}",
-                        Multiplier = catalogItem.Multiplier,
-                        Name = catalogItem.Name,
-                        OrderPer = catalogItem.OrderPer,
-                        Price = catalogItem.Price,
-                        PricePer = catalogItem.PricePer,
-                        Quantity = quantity,
-                        Sku = catalogItem.Sku,
-                        Weight = catalogItem.Weight,
-                        Sequence = catalogItem.Sequence
-                    };
-                }
-                else
-                {
-                    // Update
-                    orderLine.Quantity = quantity;
-                }
-
-                await _lineRepo.Put(orderLine);
-            }
-        }
-        */
-
         [HttpPost("{batchId}/clone")]
         public async Task CloneFromHistory([FromRoute] string batchId)
         {
@@ -246,6 +189,8 @@ namespace OmasApi.Controllers
                         await _lineRepo.Put(existingLine);
                     }
                 }
+
+                await UpdateOrderHeader(currentBatchId, userId);
             }
         }
 

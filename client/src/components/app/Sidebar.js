@@ -1,6 +1,7 @@
 import {
   Divider,
   Drawer,
+  Hidden,
   List,
   ListItem,
   ListItemIcon,
@@ -33,7 +34,10 @@ const useStyles = makeStyles(theme => ({
   },
   drawerContainer: {
     overflow: 'auto',
-    marginTop: 64,
+    marginTop: 0,
+    [theme.breakpoints.up('md')]: {
+      marginTop: 64,
+    },
   },
 }));
 
@@ -55,40 +59,59 @@ function ListItemLink(props) {
   );
 }
 
-const Sidebar = ({ admin }) => {
+const Sidebar = ({ admin, onToggleSidebar, sidebarOpen }) => {
   const classes = useStyles();
 
-  return (
-    <Drawer
-      className={classes.drawer}
-      variant="permanent"
-      classes={{
-        paper: classes.drawerPaper,
-      }}
-    >
-      <div className={classes.drawerContainer}>
+  const drawerContents = (
+    <div className={classes.drawerContainer}>
+      <List>
+        <ListItemLink to="/order" primary="Place an Order" icon={<ShoppingCart />} />
+        <ListItemLink to="/history" primary="View Order History" icon={<History />} />
+      </List>
+      <Divider />
+      {admin && (
         <List>
-          <ListItemLink to="/order" primary="Place an Order" icon={<ShoppingCart />} />
-          <ListItemLink to="/history" primary="View Order History" icon={<History />} />
+          <ListSubheader>Administration</ListSubheader>
+          <ListItemLink to="/batches" primary="Manage Ordering" icon={<DateRange />} />
+          <ListItemLink to="/catalog" primary="Manage Catalog" icon={<LocalOffer />} />
+          <ListItemLink to="/categories" primary="Manage Categories" icon={<Category />} />
+          <ListItemLink to="/settings" primary="Settings" icon={<Settings />} />
         </List>
-        <Divider />
-        {admin && (
-          <List>
-            <ListSubheader>Administration</ListSubheader>
-            <ListItemLink to="/batches" primary="Manage Ordering" icon={<DateRange />} />
-            <ListItemLink to="/catalog" primary="Manage Catalog" icon={<LocalOffer />} />
-            <ListItemLink to="/categories" primary="Manage Categories" icon={<Category />} />
-            <ListItemLink to="/settings" primary="Settings" icon={<Settings />} />
-          </List>
-        )}
-        <ul>
-          <li>Impersonate when batch is closed</li>
-          <li>Tax and tax-exempt</li>
-          <li>Admin set shipping rate</li>
-          <li>Mobile-friendly</li>
-        </ul>
-      </div>
-    </Drawer>
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      <Hidden mdUp implementation="css">
+        <Drawer
+          variant="temporary"
+          anchor="left"
+          open={sidebarOpen}
+          onClose={onToggleSidebar}
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+        >
+          {drawerContents}
+        </Drawer>
+      </Hidden>
+      <Hidden smDown implementation="css">
+        <Drawer
+          className={classes.drawer}
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+          variant="permanent"
+          open
+        >
+          {drawerContents}
+        </Drawer>
+      </Hidden>
+    </>
   );
 };
 

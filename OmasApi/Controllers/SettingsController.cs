@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data.Entities;
@@ -7,7 +8,6 @@ using OmasApi.Data.Repositories;
 namespace OmasApi.Controllers
 {
     [ApiController]
-    [AdminOnly]
     [Route("[controller]")]
     public class SettingsController : ControllerBase
     {
@@ -18,12 +18,14 @@ namespace OmasApi.Controllers
             _repo = repo;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<Settings> Get()
         {
             return await _repo.Get(_repo.SettingsId) ?? await Post(_repo.DefaultSettings);
         }
 
+        [AdminOnly]
         [HttpPost]
         public async Task<Settings> Post([FromBody] Settings settings)
         {

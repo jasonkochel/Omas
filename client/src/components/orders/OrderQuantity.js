@@ -1,4 +1,4 @@
-import { IconButton, InputAdornment, makeStyles, TextField } from '@material-ui/core';
+import { Hidden, IconButton, InputAdornment, makeStyles, TextField } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
 import clsx from 'clsx';
 import React, { useState } from 'react';
@@ -49,18 +49,22 @@ const OrderQuantity = ({ item, initialQuantity, onChangeQuantity }) => {
       onChange={handleManualInput}
       InputProps={{
         startAdornment: (
-          <InputAdornment position="start">
-            <IconButton onClick={() => handleIncrement(-1)}>
-              <Remove fontSize="small" />
-            </IconButton>
-          </InputAdornment>
+          <Hidden mdDown>
+            <InputAdornment position="start">
+              <IconButton onClick={() => handleIncrement(-1)}>
+                <Remove fontSize="small" />
+              </IconButton>
+            </InputAdornment>
+          </Hidden>
         ),
         endAdornment: (
-          <InputAdornment position="end">
-            <IconButton onClick={() => handleIncrement(1)}>
-              <Add fontSize="small" />
-            </IconButton>
-          </InputAdornment>
+          <Hidden mdDown>
+            <InputAdornment position="end">
+              <IconButton onClick={() => handleIncrement(1)}>
+                <Add fontSize="small" />
+              </IconButton>
+            </InputAdornment>
+          </Hidden>
         ),
       }}
     />

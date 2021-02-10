@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -28,6 +29,10 @@ namespace OmasApi.Controllers.Middleware
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
+            var accessLevel = GetControllerAccessLevel(context);
+
+            if (accessLevel == AccessLevel.Anonymous) return;
+
             var jwt = GetJwt(context);
             var token = ValidateJwt(jwt);
 
@@ -38,7 +43,7 @@ namespace OmasApi.Controllers.Middleware
             userIdentity.Phone = token.Claims.SingleOrDefault(c => c.Type == "phone_number")?.Value ?? "";
             userIdentity.Admin = token.Claims.Any(c => c.Type == "cognito:groups" && c.Value == "administrators");
 
-            if (RequiresAdmin(context) && !userIdentity.Admin)
+            if (accessLevel == AccessLevel.Admin && !userIdentity.Admin)
             {
                 throw new UnauthorizedException("This method requires administrator access");
             }
@@ -85,7 +90,7 @@ namespace OmasApi.Controllers.Middleware
             }
         }
 
-        private static bool RequiresAdmin(ActionContext context)
+        private static AccessLevel GetControllerAccessLevel(ActionContext context)
         {
             if (context.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
             {
@@ -95,11 +100,25 @@ namespace OmasApi.Controllers.Middleware
                 if (methodAttributes.Any(a => a.GetType() == typeof(AdminOnlyAttribute)) ||
                     controllerAttributes.Any(a => a.GetType() == typeof(AdminOnlyAttribute)))
                 {
-                    return true;
+                    return AccessLevel.Admin;
                 }
+
+                if (methodAttributes.Any(a => a.GetType() == typeof(AllowAnonymousAttribute)) ||
+                    controllerAttributes.Any(a => a.GetType() == typeof(AllowAnonymousAttribute)))
+                {
+                    return AccessLevel.Anonymous;
+                }
+
             }
 
-            return false;
+            return AccessLevel.User;
+        }
+
+        private enum AccessLevel
+        {
+            Anonymous,
+            User,
+            Admin
         }
     }
 }

@@ -41,9 +41,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function ListItemLink(props) {
-  const { icon, primary, to } = props;
-
+const ListItemLink = ({ icon, primary, to }) => {
   const renderLink = React.useMemo(
     () => React.forwardRef((itemProps, ref) => <RouterLink to={to} ref={ref} {...itemProps} />),
     [to]
@@ -57,13 +55,13 @@ function ListItemLink(props) {
       </ListItem>
     </li>
   );
-}
+};
 
 const Sidebar = ({ admin, onToggleSidebar, sidebarOpen }) => {
   const classes = useStyles();
 
-  const drawerContents = (
-    <div className={classes.drawerContainer}>
+  const drawerContents = mobile => (
+    <div className={classes.drawerContainer} onClick={() => mobile && onToggleSidebar()}>
       <List>
         <ListItemLink to="/order" primary="Place an Order" icon={<ShoppingCart />} />
         <ListItemLink to="/history" primary="View Order History" icon={<History />} />
@@ -96,7 +94,7 @@ const Sidebar = ({ admin, onToggleSidebar, sidebarOpen }) => {
             keepMounted: true, // Better open performance on mobile.
           }}
         >
-          {drawerContents}
+          {drawerContents(true)}
         </Drawer>
       </Hidden>
       <Hidden smDown implementation="css">
@@ -108,7 +106,7 @@ const Sidebar = ({ admin, onToggleSidebar, sidebarOpen }) => {
           variant="permanent"
           open
         >
-          {drawerContents}
+          {drawerContents(false)}
         </Drawer>
       </Hidden>
     </>

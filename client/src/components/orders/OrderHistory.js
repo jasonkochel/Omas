@@ -21,8 +21,11 @@ const OrderHistory = () => {
   }
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={2}>
+    <Grid container spacing={3} direction="row-reverse">
+      <Grid item xs={12} md={9}>
+        {selectedBatchId && <OrderView batchId={selectedBatchId} />}
+      </Grid>
+      <Grid item xs={12} md={3}>
         <StyledTable
           title="Last 10 Orders"
           isLoading={isLoading}
@@ -51,9 +54,6 @@ const OrderHistory = () => {
             }),
           }}
         />
-      </Grid>
-      <Grid item xs={10}>
-        {selectedBatchId && <OrderView batchId={selectedBatchId} />}
       </Grid>
     </Grid>
   );

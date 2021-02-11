@@ -86,8 +86,12 @@ const BatchAdmin = () => {
   };
 
   const handleEmailBatch = async () => {
-    await api.emailBatch(selectedBatchId);
-    toast.info('Emails Sent');
+    confirm({ description: 'Are you sure you want to send an email reminder to EVERYONE?' }).then(
+      async () => {
+        await api.emailBatch(selectedBatchId);
+        toast.info('Emails Sent');
+      }
+    );
   };
 
   if (selectedBatchId == null && batchHistory?.length > 0) {
@@ -97,7 +101,7 @@ const BatchAdmin = () => {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid item xs={4}>
+        <Grid item xs={6} lg={4}>
           {Array.isArray(batchHistory) && batchHistory[0].isOpen ? null : (
             <ActionCard
               className={classes.paddedCard}
@@ -113,7 +117,7 @@ const BatchAdmin = () => {
             onSelect={setSelectedBatchId}
           />
         </Grid>
-        <Grid item xs={8}>
+        <Grid item xs={6} lg={8}>
           {selectedBatch && (
             <Grid container spacing={3}>
               <BatchActions

@@ -1,4 +1,4 @@
-import { Chip } from '@material-ui/core';
+import { Lock, LockOpen } from '@material-ui/icons';
 import React from 'react';
 import fns from '../../fns';
 import StyledTable from '../shared/StyledTable';
@@ -22,12 +22,14 @@ const BatchHistory = ({ loading, data, selectedId, onSelect }) => (
       {
         title: '',
         field: 'isOpen',
-        render: rowData => (
-          <Chip
-            label={rowData.isOpen ? 'OPEN' : 'CLOSED'}
-            color={rowData.isOpen ? 'primary' : 'secondary'}
-          />
-        ),
+        width: 50,
+        render: rowData => {
+          return rowData.isOpen ? (
+            <LockOpen style={{ color: 'green' }} />
+          ) : (
+            <Lock color="secondary" />
+          );
+        },
       },
     ]}
     onRowClick={(_, data) => onSelect(data.batchId)}

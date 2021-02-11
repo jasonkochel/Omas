@@ -1,4 +1,4 @@
-import { AppBar, Button, IconButton, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Button, Hidden, IconButton, Toolbar, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import React from 'react';
@@ -55,12 +55,14 @@ const Header = ({ authData, onImpersonate, onSignOut, onToggleSidebar }) => {
         <Typography variant="h6" className={classes.title}>
           Omas Pride Ordering
         </Typography>
-        {name && (
-          <Typography variant="h6" className={classes.title}>
-            Welcome, {name}
-            {impersonatingName && ` (On Behalf of ${impersonatingName})`}
-          </Typography>
-        )}
+        <Hidden smDown>
+          {name && (
+            <Typography variant="h6" className={classes.title}>
+              Welcome, {name}
+              {impersonatingName && ` (On Behalf of ${impersonatingName})`}
+            </Typography>
+          )}
+        </Hidden>
         <Typography variant="h6">
           {impersonatingName && (
             <Button

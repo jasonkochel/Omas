@@ -29,14 +29,14 @@ const BatchActions = ({
 
       {batch.isOpen && (
         <>
-          <Grid item xs={4}>
+          <Grid item xs={12} lg={4}>
             <ActionCard
               buttonText="Close Ordering"
               caption="Close the system to new orders"
               onClick={onCloseOrdering}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} lg={4}>
             <ActionCard
               buttonText="Edit Dates"
               caption="Edit the Order-By and Delivery dates"
@@ -47,7 +47,7 @@ const BatchActions = ({
       )}
 
       {isLatest && !batch.isOpen && (
-        <Grid item xs={4}>
+        <Grid item xs={12} lg={4}>
           <ActionCard
             buttonText="Re-Open Ordering"
             caption="Re-Open system to new orders"
@@ -57,7 +57,7 @@ const BatchActions = ({
       )}
 
       {isLatest && (
-        <Grid item xs={4}>
+        <Grid item xs={12} lg={4}>
           <ActionCard
             buttonText="Impersonate User"
             caption="Create, change, or view an order on a customer's behalf"
@@ -66,7 +66,7 @@ const BatchActions = ({
         </Grid>
       )}
 
-      <Grid item xs={4}>
+      <Grid item xs={12} lg={4}>
         <ActionCard
           buttonText="View Orders"
           caption="View or print each customer's order"
@@ -74,7 +74,7 @@ const BatchActions = ({
         />
       </Grid>
 
-      <Grid item xs={4}>
+      <Grid item xs={12} lg={4}>
         <ActionCard
           buttonText="View Consolidated Order"
           caption="View or print total orders by SKU"
@@ -83,7 +83,7 @@ const BatchActions = ({
       </Grid>
 
       {isLatest && (
-        <Grid item xs={4}>
+        <Grid item xs={12} lg={4}>
           <ActionCard
             buttonText="Send Reminders"
             caption="Email each customer a reminder message with their order details and total due"

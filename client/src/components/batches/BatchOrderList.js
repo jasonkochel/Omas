@@ -73,9 +73,9 @@ const BatchOrderList = ({ batchId }) => {
               {
                 icon: () => (
                   <span>
-                    <span className={classes.subTotal}>{`(${fns.formatCurrency(
-                      order.subTotal
-                    )} + Tax + Shipping)`}</span>
+                    <span className={classes.subTotal}>{`(${fns.formatCurrency(order.subTotal)} ${
+                      Math.round(order.tax * 100) > 0 ? '+ Tax' : ''
+                    } + S/H)`}</span>
                     {fns.formatCurrency(order.subTotal + order.tax + order.shipping)}
                   </span>
                 ),

@@ -16,6 +16,8 @@ namespace OmasApi.Data.Entities
         [MaxLength(200)]
         public string Name { get; set; }
 
+        public string Description { get; set; }
+
         [MaxLength(10)]
         [Required]
         public string Sku { get; set; }
@@ -35,28 +37,11 @@ namespace OmasApi.Data.Entities
         public bool Featured { get; set; }
         public bool Discontinued { get; set; }
 
-        public static CatalogItem MapForUpdate(CatalogItem oldData, CatalogItem newData)
-        {
-            return new CatalogItem
-            {
-                CatalogId = oldData.CatalogId,
-                Name = newData.Name.NullIfEmpty() ?? oldData.Name,
-                Sku = newData.Sku.NullIfEmpty() ?? oldData.Sku,
-                Price = newData.Price,
-                PricePer = newData.PricePer.NullIfEmpty() ?? oldData.PricePer,
-                Weight = newData.Weight,
-                OrderPer = newData.OrderPer.NullIfEmpty() ?? newData.PricePer.NullIfEmpty() ?? oldData.OrderPer,
-                Multiplier = newData.Multiplier == 0.0M ? 1.0M : newData.Multiplier,
-                Sequence = oldData.Sequence,
-                CategoryId = oldData.CategoryId
-            };
-        }
-
         public List<CatalogItem> Import(IEnumerable<string> lines)
         {
             return lines
                 .Select(line => line.Split('\t'))
-                .Where(fields => fields.Length == 13)
+                .Where(fields => fields.Length == 14)
                 .Select(fields => new CatalogItem
                 {
                     CatalogId = fields[0],
@@ -71,7 +56,8 @@ namespace OmasApi.Data.Entities
                     CategoryId = fields[9],
                     New = bool.Parse(fields[10]),
                     Featured = bool.Parse(fields[11]),
-                    Discontinued = bool.Parse(fields[12])
+                    Discontinued = bool.Parse(fields[12]),
+                    Description = fields[13],
                 }).ToList();
         }
     }

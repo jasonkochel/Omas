@@ -16,6 +16,14 @@ import { VerticalAlignTop } from '@material-ui/icons';
 import React from 'react';
 import OrderQuantity from './OrderQuantity';
 
+const buildNameAndDescription = (name, description) => (
+  <span>
+    {name}
+    {!!description && <br />}
+    {!!description && <i>{description}</i>}
+  </span>
+);
+
 const useStyles = makeStyles(theme => ({
   paper: {
     margin: '0 0 20px 0',
@@ -39,16 +47,16 @@ const useStyles = makeStyles(theme => ({
     color: 'white',
   },
   colSku: {
-    width: '15%',
+    width: '12%',
   },
   colName: {
-    width: '35%',
+    width: '40%',
   },
   colPrice: {
     width: '15%',
   },
   colWeight: {
-    width: '15%',
+    width: '13%',
   },
   colQty: {
     width: '20%',
@@ -58,7 +66,7 @@ const useStyles = makeStyles(theme => ({
 const OrderCategory = ({ category, cart, onChangeQuantity }) => {
   const classes = useStyles();
 
-  if (!category?.catalogItems) return;
+  if (!category?.catalogItems || category.catalogItems.length === 0) return null;
 
   return (
     <Paper className={classes.paper}>
@@ -93,7 +101,9 @@ const OrderCategory = ({ category, cart, onChangeQuantity }) => {
             {category.catalogItems.map(c => (
               <TableRow key={c.catalogId}>
                 <TableCell className={classes.colSku}>{c.sku}</TableCell>
-                <TableCell className={classes.colName}>{c.name}</TableCell>
+                <TableCell className={classes.colName}>
+                  {buildNameAndDescription(c.name, c.description)}
+                </TableCell>
                 <TableCell className={classes.colPrice}>
                   {Number(c.price).toFixed(2) + ' per ' + c.pricePer.toLowerCase()}
                 </TableCell>

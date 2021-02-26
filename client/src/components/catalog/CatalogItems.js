@@ -1,6 +1,7 @@
 import {
   Backspace,
   BackspaceOutlined,
+  InfoOutlined,
   NewReleases,
   NewReleasesOutlined,
   Star,
@@ -51,7 +52,24 @@ const CatalogItems = () => {
               field: 'sku',
               width: '20%',
             },
-            { title: 'Name', field: 'name', width: '40%' },
+            {
+              title: 'Name',
+              field: 'name',
+              render: rowData => (
+                <span>
+                  {rowData.name}{' '}
+                  {!!rowData.description && (
+                    <InfoOutlined
+                      color="primary"
+                      fontSize="small"
+                      style={{ marginLeft: '10px' }}
+                      titleAccess="Has Additional Description"
+                    />
+                  )}
+                </span>
+              ),
+              width: '40%',
+            },
             {
               title: 'Price',
               field: 'price',

@@ -34,12 +34,14 @@ const OrderTotals = ({ order }) => {
             </TableCell>
             <TableCell align="right">{fns.formatCurrency(order.subTotal)}</TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell className={classes.totalHeaderCol} align="right">
-              Tax:
-            </TableCell>
-            <TableCell align="right">{fns.formatCurrency(order.tax)}</TableCell>
-          </TableRow>
+          {Math.round(order.tax * 100) > 0 && (
+            <TableRow>
+              <TableCell className={classes.totalHeaderCol} align="right">
+                Tax:
+              </TableCell>
+              <TableCell align="right">{fns.formatCurrency(order.tax)}</TableCell>
+            </TableRow>
+          )}
           <TableRow>
             <TableCell className={classes.totalHeaderCol} align="right">
               Shipping/Handling:

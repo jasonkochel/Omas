@@ -13,6 +13,7 @@ import {
   Category,
   DateRange,
   History,
+  Home,
   LocalOffer,
   Settings,
   ShoppingCart,
@@ -63,6 +64,7 @@ const Sidebar = ({ admin, onToggleSidebar, sidebarOpen }) => {
   const drawerContents = mobile => (
     <div className={classes.drawerContainer} onClick={() => mobile && onToggleSidebar()}>
       <List>
+        <ListItemLink to="/" primary="Home" icon={<Home />} />
         <ListItemLink to="/order" primary="Place an Order" icon={<ShoppingCart />} />
         <ListItemLink to="/history" primary="View Order History" icon={<History />} />
       </List>

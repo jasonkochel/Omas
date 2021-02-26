@@ -12,7 +12,7 @@ import {
   TextField,
 } from '@material-ui/core';
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import fns from '../../fns';
 
@@ -50,7 +50,7 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
     ? { ...data, price: Number(data.price).toFixed(2), useMultiplier: data.multiplier !== 1.0 }
     : { price: '0.00', multiplier: 1.0, useMultiplier: false };
 
-  const { register, handleSubmit, errors, watch } = useForm({
+  const { register, handleSubmit, errors, watch, control } = useForm({
     mode: 'onBlur',
     defaultValues: defaultValues,
     resolver: yupResolver(schema),
@@ -157,8 +157,36 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
                 />
               </Grid>
               <Grid item xs={12}>
+                <TextField
+                  type="text"
+                  name="description"
+                  label="Additional Description"
+                  helperText={
+                    (!!errors.description ? errors.description.message + ' ' : '') +
+                    '(ingredients, usage, etc)'
+                  }
+                  margin="normal"
+                  variant="filled"
+                  fullWidth={true}
+                  inputRef={register}
+                  error={!!errors.description}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
                 <FormControlLabel
-                  control={<Checkbox name="useMultiplier" inputRef={register} />}
+                  control={
+                    <Controller
+                      name="useMultiplier"
+                      control={control}
+                      render={props => (
+                        <Checkbox
+                          onChange={e => props.onChange(e.target.checked)}
+                          checked={props.value}
+                        />
+                      )}
+                    />
+                  }
                   label="This item is priced by one unit (e.g. lbs) but ordered by another (e.g. each)"
                 />
               </Grid>

@@ -1,109 +1,107 @@
-17290	2 LB CHICKEN & VEG	1732	ea	ea	5.16	1.00	2.00	1	1	True	False	False
-17291	5 LB CHICKEN & VEG	1998	ea	ea	11.55	1.00	5.00	2	1	True	False	False
-17294	2 LB TURKEY & VEG	1775	ea	ea	5.55	1.00	2.00	4	1	False	True	False
-17295	5 LB TURKEY & VEG	2002	ea	ea	12.80	1.00	5.00	5	1	False	False	True
-17298	2 LB LAMB & VEG	1804	ea	ea	10.20	1.00	2.00	6	1	False	False	True
-17299	5 LB LAMB & VEG	1799	ea	ea	24.40	1.00	5.00	7	1	False	False	False
-17301	2 LB BEEF & VEG	1754	ea	ea	6.55	1.00	2.00	8	1	False	False	False
-17302	5 LB BEEF & VEG	1788	ea	ea	15.95	1.00	5.00	9	1	False	False	False
-17304	10# BOX   CHICKEN & VEG PATTIES	876	CASE	CASE	33.80	1.00	10.00	13	1	False	False	False
-17305	10# BOX   TURKEY & VEG PATTIES	877	CASE	CASE	35.15	1.00	10.00	15	1	False	False	False
-17306	10# BOX   BEEF & VEG PATTIES	878	CASE	CASE	37.70	1.00	10.00	12	1	False	False	False
-17307	10# BOX   LAMB & VEG PATTIES	879	CASE	CASE	57.35	1.00	10.00	14	1	False	False	False
-17310	WOOF COMPLETE CANINE CHICKEN MEAL 12 OZ	1117	ea	ea	4.30	1.00	1.00	18	2	False	False	False
-17311	WOOF COMPLETE CANINE CHICKEN MEAL 4 LB.	1118	ea	ea	11.60	1.00	4.00	19	2	False	False	False
-17313	POULTRY BLEND 2 LB GROUND (CHICKEN & TURKEY)	1121	ea	ea	6.55	1.00	2.00	22	3	False	False	False
-17317	5# GROUND CHICKEN FRAMES	2004	ea	ea	9.10	1.00	5.00	23	4	False	False	False
-17320	10# BAG CHICKEN BACKS 	494	bag	bag	13.10	1.00	10.00	27	4	False	False	False
-17322	40# BULK CASE CHICKEN BACKS      BULK	493C	CASE	CASE	25.50	1.00	40.00	28	4	False	False	False
-17324	5# BAG CHICKEN NECKS SKINNED	1741	ea	ea	6.45	1.00	5.00	29	4	False	False	False
-17325	10# BAG  CHICKEN    NECKS    SKINNED	1740	ea	ea	12.80	1.00	10.00	30	4	False	False	False
-17327	40# BULK CASE CHICKEN NECKS SKINNED     BULK	78C	CASE	CASE	33.00	1.00	40.00	31	4	False	False	False
-17328	2# GROUND  CHICKEN    NECKS     SKINNED	1736	ea	ea	4.50	1.00	2.00	25	4	False	False	False
-17331	2# GROUND CHICKEN GIZZARDS & HEARTS	3247	ea	ea	5.50	1.00	2.00	24	4	False	False	False
-17334	5# BAG  TURKEY NECKS 	1735	bag	bag	8.00	1.00	5.00	41	5	False	False	False
-17335	30# CASE BULK  TURKEY NECKS HEN    BULK	1727	CASE	CASE	38.00	1.00	30.00	42	5	False	False	False
-17336	2#  GROUND TURKEY NECK 	1734	ea	ea	4.60	1.00	2.00	39	5	False	False	False
-17337	5#   GROUND TURKEY FRAME 	2000	ea	ea	11.60	1.00	5.00	35	5	False	False	False
-17338	5# BAG   TURKEY HEARTS WHOLE 	1133	bag	bag	17.55	1.00	5.00	37	5	False	False	False
-17339	40#  CASE  TURKEY HEARTS WHOLE    BULK	1122	CASE	CASE	70.25	1.00	40.00	38	5	False	False	False
-17341	1#    GROUND TURKEY BY THE CASE   (12 PER CASE)	2097c	CASE	CASE	31.90	1.00	12.00	36	5	False	False	False
-17344	2 # TUBE  GROUND TURKEY ORGAN MEAT (gizzard, liver heart)	498	ea	ea	4.25	1.00	2.00	40	5	False	False	False
-17352	5# BAG  DUCK NECKS SKINLESS     cost per pound	2100	bag	bag	16.50	1.00	5.00	45	6	False	False	False
-17353	30# CASE  DUCK NECKS SKINLESS   cost per pound	2206	CASE	case	70.25	1.00	30.00	46	6	False	False	False
-17354	2#   GROUND DUCK MEAT & BONE	1124	ea	ea	6.65	1.00	2.00	43	6	False	False	False
-17356	2#   GROUND QUAIL FRAMES 	2102	ea	ea	5.55	1.00	2.00	47	6	False	False	False
-17358	5# BRAVO COARSELY GROUND BEEF	7049	tube	tube	12.35	1.00	5.00	48	7	False	False	False
-17360	2# TUBE  GROUND BEEF ORGAN MEAT   (beef heart, liver, kidney)	3235	ea	ea	5.60	1.00	2.00	49	7	False	False	False
-17364	10# GROUND PORK	6149	ea	tube	36.95	1.00	10.00	50	7	False	False	False
-17366	2#   GROUND LAMB & BONE	1802	ea	ea	11.50	1.00	2.00	51	8	False	False	False
-17370	1#  GROUND ELK	1016	ea	ea	12.75	1.00	1.00	53	9	False	False	False
-17372	1#   GROUND VENISON 	1015	ea	ea	12.50	1.00	1.00	54	9	False	False	False
-17374	2#   GROUND RABBIT with bone 	RABB	ea	ea	10.35	1.00	2.00	55	9	False	False	False
-17379	2#   BRAVO GREEN TRIPE	1013	ea	ea	7.95	1.00	2.00	56	10	False	False	False
-17380	5#   BRAVO GREEN TRIPE	1014	ea	ea	17.55	1.00	5.00	57	10	False	False	False
-17381	3#   THIN SLICED BRAVO GREEN TRIPE PORTIONS	TRPT	ea	ea	14.25	1.00	3.00	58	10	False	False	False
-17382	2#  BRAVO PERFORMANCE	1134	ea	ea	6.25	1.00	2.00	59	10	False	False	False
-17383	5#   BRAVO PERFORMANCE	1130	ea	ea	14.00	1.00	5.00	60	10	False	False	False
-17384	3#   THIN SLICED BRAVO PERFORMANCE  PORTIONS	PRPT	ea	ea	12.25	1.00	3.00	61	10	False	False	False
-17385	2#   BRAVO TRACHEA	1138	ea	ea	6.15	1.00	2.00	62	10	False	False	False
-17387	10#  BOX OF 2-3 INCH BEEF MARROW BONES 	2009	10#	BOX	37.80	1.00	10.00	63	11	False	False	False
-17388	4-6"  BEEF MARROW BONES    order by the each	1730	EA	EA	6.25	1.00	2.00	64	11	False	False	False
-17390	BEEF SPLIT KNUCKLE BONE     order by the each	8095	EA	EA	6.00	1.25	2.00	65	11	False	False	False
-17391	BEEF KNUCKLE BONE	8096	EA	EA	8.00	2.50	4.00	66	11	False	False	False
-17395	CASE OF WHOLE MACKERAL  approx 22#	2079	CASE	case	57.45	1.00	22.00	68	12	False	False	False
-17396	1#   GROUND SALMON (no bones)	1125	ea	ea	4.25	1.00	1.00	69	12	False	False	False
-17397	5#   GROUND SALMON  (no bones)	1979	ea	ea	18.55	1.00	5.00	70	12	False	False	False
-17398	2# BAG  WHOLE SARDINES	2072	ea	ea	11.50	1.00	2.00	71	12	False	False	False
-17402	SALMON OIL - 16 oz	8345	ea	ea	15.50	1.00	1.00	72	13	False	False	False
-17412	2#  3-WAY VEGGIE MIX    (Butternut-Broccoli-Kale)	1822	ea	ea	5.30	1.00	2.00	73	14	False	False	False
-17422	BEEF BULLY STICKS 6 INCHES	1051	ea	ea	2.60	1.00	.20	74	15	False	False	False
-17423	BEEF BULLY STICKS 12 INCHES	1050	ea	ea	4.55	1.00	.20	75	15	False	False	False
-17424	BEEF TRACHEA 6 INCHES	1061	ea	ea	2.50	1.00	.20	76	15	False	False	False
-17425	BEEF TRACHEA 12 INCHES	1060	ea	ea	4.15	1.00	.20	77	15	False	False	False
-17428	LAMB LUNG DEHYDRATED 1 LB. BAG	1054	EA	EA	25.35	1.00	1.00	79	15	False	False	False
-17431	MOOSE ANTLER FLAT Medium Chew	1146	ea	ea	14.40	1.00	.25	81	15	False	False	False
-17434	LAMB EAR CHEWS (3 PER BAG)	1070	EA	EA	5.10	1.00	.25	78	15	False	False	False
-17436	8 oz  O'Paws FUNDAMENTAL VITALITY	9024	ea	ea	15.90	1.00	.50	82	16	False	False	False
-17437	2#  O'Paws FUNDAMENTAL VITALITY	9002	ea	ea	46.00	1.00	2.00	83	16	False	False	False
-17442	8 oz   O'Paws ADVANCED MOBILITY	9021	ea	ea	17.35	1.00	.50	84	16	False	False	False
-17443	2#   O'Paws ADVANCED MOBILITY	9010	ea	ea	48.55	1.00	2.00	85	16	False	False	False
-17452	8 OZ   O'Paws DIGESTIVE PERFORMANCE	8002	ea	ea	19.15	1.00	.50	86	16	False	False	False
-17459	O'Paws ELECTROLYTE REPLENISHER 30 gm Gel	8005	ea	ea	10.85	1.00	.25	87	16	False	False	False
-17460	O'Paws ELECTROLYTE REPLENISHER 1#	8006	ea	ea	10.85	1.00	1.00	88	16	False	False	False
-17496	FREEZE DRIED SALMON - 9 DISC	2143	PKG	PKG	11.50	1.00	.25	90	17	False	False	False
-17501	FD BEEF TRIPE - ROUNDS	5124	pouch	pouch	10.20	1.00	.25	93	17	False	False	False
-17503	FD CHICKEN BREAST CHUNK TREATS	1239	pouch	pouch	12.30	1.00	.25	95	17	False	False	False
-17505	FD SLICED TURKEY HEART TREATS	1234	pouch	pouch	10.20	1.00	.25	102	17	False	False	False
-17506	FD CASE OF SLICED TURKEY HEART TREATS  (12 EA)	1232	CASE	CASE	108.90	1.00	3.00	103	17	False	False	False
-17507	FD SLICED TURKEY HEARTS 16 oz BAG BULK	5118	BAG	BAG	37.40	1.00	1.00	104	17	False	False	False
-17508	FD SLICED TURKEY HEARTS 16 oz BAG  BULK (CASE 6 BAGS)	5119	CASE	CASE	213.00	1.00	6.00	105	17	False	False	False
-17511	FD CHICKEN HEART TREATS	1238	pouch	pouch	10.20	1.00	.25	97	17	False	False	False
-17512	FD CASE OF CHICKEN HEART TREATS   (12 EA)	1246	CASE	CASE	108.90	1.00	3.00	99	17	False	False	False
-17517	FD TURKEY BREAST CHUNK TREATS	1092	pouch	pouch	13.40	1.00	.25	100	17	False	False	False
-17532	BAGS PLASTIC ZIPLOC     9X12    100 COUNT	2203	bag	bag	21.80	1.00	1.00	108	18	False	False	False
-17534	YUCCA FLEA & TICK SPRAY	YUC	ea	ea	18.00	1.00	.50	109	18	False	False	False
-19709	PURR COMPLETE FELINE POULTRY MEAL 12 OZ	1075	ea	ea	4.00	1.00	1.00	20	2	False	False	False
-19710	PURR COMPLETE FELINE POULTRY MEAL 2 LB	1076	ea	ea	7.80	1.00	2.00	21	2	False	False	False
-20510	5# BAG CHICKEN BACKS	492	BAG	BAG	7.05	1.00	5.00	26	4	False	False	False
-20862	10 LB BOX OF WOOF PATTIES	881	BOX	BOX	37.70	1.00	10.00	16	1	False	False	False
-20863	10 LB BOX OF PURR PATTIES	882	BOX	BOX	42.80	1.00	10.00	17	1	False	False	False
-20864	5# DUCK MEAT & BONE - GROUND	1767	EA	EA	15.50	1.00	5.00	44	6	False	False	False
-20868	FREEZE DRIED WOOF BULK BAG 16 OZ	1326	BAG	BAG	28.38	1.00	1.00	89	17	False	False	False
-20869	FD BEEF TRIPE ROUNDS BULK BAG (16 OZ)	5137	BAG	BAG	32.80	1.00	1.00	94	17	False	False	False
-21058	2# FINELY GROUND TURKEY MEAT & BONE	TURK	EA	EA	4.80	1.00	2.00	33	5	False	False	False
-21244	1#  WILD BOAR	BOAR	EA	EA	11.50	1.00	1.00	52	9	False	False	False
-21245	FD DUCK HEART ROUNDS	2196	EA	POUCH	12.15	1.00	.25	106	17	False	False	False
-21819	FD CHICKEN BREAST CHUNKS BULK (16 OZ)	5188	BAG	BAG	39.45	1.00	1.00	97	17	False	False	False
-21823	FD CHICKEN HEARTS BULK (16 OZ)	5190	BAG	BAG	32.80	1.00	1.00	99	17	False	False	False
-21826	FD TURKEY BREAST CHUNKS BULK (16 OZ)	5180	BAG	BAG	43.60	1.00	1.00	101	17	False	False	False
-21828	FD DUCK HEART ROUNDS BULK (16 OZ)	5184	BAG	BAG	39.45	1.00	1.00	107	17	False	False	False
-24637	10# BOX BRAVO PERFORMANCE PATTIES	1141C	CASE	CASE	40.45	1.00	10.00	11	1	False	False	False
-24638	10# BOX BRAVO TRIPE PATTIES	1140C	CASE	CASE	47.40	1.00	10.00	10	1	False	False	False
-25005	10 LB CHICKEN & VEG	1823	Ea	Each	21.20	1.00	10.00	3	1	True	False	False
-26074	OCEAN BLEND (salmon mackeral sardines) l LB	2066	ea	lb	5.30	1.00	1.00	67	12	False	False	False
-27538	BEEF LUNG DEHYDRATED 1 LB. BAG	1059	EA	EA	23.40	1.00	1.00	80	15	False	False	False
-27853	2# GROUND TURKEY FRAME	2005	EA	EA	4.00	1.00	2.00	34	5	False	False	False
-28157	2/10#   TUBES GROUND TURKEY BY THE CASE NO VEG  (2 TUBES PER CASE)	2096C	CASE	CASE	38.10	1.00	20.00	32	5	False	False	False
-28612	FD BEEF LIVER	1532	EACH	POUCH	11.90	1.00	.25	91	17	False	False	False
-28613	FD BEEF LIVER BULK (16 OZ)	1533	EACH	BAG	36.75	1.00	1.00	92	17	False	False	False
+8d03c28e-ee77-4781-832c-1edd3af80b94	Chicken & Veggie Signature Mix - 2 lb	F-CV-2-15	ea	ea	5.66	1	2	1	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	broccoli, butternut squash, kale
+abf607c1-dd67-42e2-811d-995bdfc3917a	Chicken & Veggie Signature Mix - 5 lb	F-CV-5-6	ea	ea	13.19	1	5	2	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	broccoli, butternut squash, kale
+690b977c-a412-4bff-8f62-a22d7a5b23f9	Chicken & Veggie Signature Mix - 10 lb box of patties	F-CVP-10	box	box	41.62	1	10	3	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	broccoli, butternut squash, kale
+59a81a07-2292-420f-9784-14ef776cb791	Turkey & Veggie Signature Mix - 2 lb	F-TV-2-15	ea	ea	6.24	1	2	4	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	green beens, okra, yellow squash
+bb8c64ae-6200-4dd5-b9ca-dafe127d7588	Turkey & Veggie Signature Mix - 5 lb	F-TV-5-6	ea	ea	14.78	1	5	5	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	green beens, okra, yellow squash
+89dde75a-11d0-43ed-b752-144da56857eb	Turkey & Veggie Signature Mix - 10 lb box of patties	F-TVP-10	box	box	43.12	1	10	6	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	green beens, okra, yellow squash
+0ca5f604-4cca-4dfe-8a4d-bdf375e39999	Beef & Veggie Signature Mix - 2 lb	F-BV-2-15	ea	ea	8.35	1	2	7	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	broccoli, butternut squash, kale
+6f35dc26-8fc5-4644-85ab-ea80f73dbed9	Beef & Veggie Signature Mix - 5 lb	F-BV-5-6	ea	ea	19.91	1	5	8	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	broccoli, butternut squash, kale
+698ffab1-07a8-4d21-af3a-f55204410e78	Beef & Veggie Signature Mix - 10 lb box of patties	F-BVP-10	box	box	59.55	1	10	9	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	broccoli, butternut squash, kale
+8520f385-60d0-4276-afbd-42c2a2aebb54	Lamb & Veggie Signature Mix - 2 lb	F-LV-2-15	ea	ea	12.22	1	2	10	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	carrots, zucchini, parsley
+f87be541-58fb-468c-912d-05cbfad6943c	Lamb & Veggie Signature Mix - 5 lb	F-LV-5-6	ea	ea	30.13	1	5	11	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	carrots, zucchini, parsley
+0569847e-73a7-4c66-9039-d162f70807b0	Lamb & Veggie Signature Mix - 10 lb box of patties	F-LVP-10	box	box	83.32	1	10	12	612daad4-9192-4f23-973c-98ffc0c1c942	False	False	False	carrots, zucchini, parsley
+5f61736e-bac8-40db-bfa1-2e25cc2c2b32	Woof Canine Complete Chicken Meal - 12 oz	F-WOOF-12OZ	ea	ea	4.52	1	0.75	1	4b4bf1a5-ff0e-4306-8d72-a6eb6b4e0303	False	False	False	
+9adbde95-4360-46e8-861e-1ab185c58aa3	Woof Canine Complete Chicken Meal - 4 lb	F-WOOF-4-8	ea	ea	13.13	1	4	2	4b4bf1a5-ff0e-4306-8d72-a6eb6b4e0303	False	False	False	
+cf8fae1a-a3b8-43ea-80cb-79f798f775ed	Woof Canine Complete Chicken Meal - 10 lb box of patties	F-WOOF-P-10	box	box	47.10	1	10	3	4b4bf1a5-ff0e-4306-8d72-a6eb6b4e0303	False	False	False	
+99f02d08-b356-4bdb-8f4d-083c409ae700	Purr Feline Complete Poultry Meal - 12 oz	F-PURR-12OZ-14	ea	ea	4.43	1	0.75	4	4b4bf1a5-ff0e-4306-8d72-a6eb6b4e0303	False	False	False	
+8bc3582f-a81d-4e84-a407-39b747d40a2e	Purr Feline Complete Poultry Meal - 2 lb	F-PURR-2-5	ea	ea	8.66	1	2	5	4b4bf1a5-ff0e-4306-8d72-a6eb6b4e0303	False	False	False	
+b7e6968c-f88f-4247-8a82-25a660af847e	Purr Feline Complete Poultry Meal - 10 lb box of patties	F-PURR-P-10	box	box	50.87	1	10	6	4b4bf1a5-ff0e-4306-8d72-a6eb6b4e0303	False	False	False	
+62ab0f0b-e4d5-4a47-8d50-28dba31805e9	Ground Chicken Frames	F-GCF-5-6	ea	ea	10.45	1	5	1	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+3f6cd7bd-5517-4db2-9d26-5a5332be4853	Ground Chicken Organ gizzards, hearts	F-GCO-2-5	ea	ea	6.78	1	2	2	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+6d8d7cae-3ef5-4dc6-888b-08dde44f7a6d	Ground Chicken Necks	F-GCN-2-15	ea	ea	5.81	1	2	3	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+40700ee2-7091-448c-896f-9af2e388310a	Whole Chicken Backs - 5 lb	F-CB-5-4	ea	ea	10.14	1	5	4	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+f8158f11-6184-4ed0-98cb-e2723f8ceae0	Whole Chicken Backs - 20 lb	R-CB-20	ea	ea	21.84	1	20	5	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+34dfb01b-167b-41f2-902d-ad708d4d8005	Whole Skinless Chicken Necks - 5 lb	F-CN-5-4	ea	ea	11.27	1	5	6	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+9d137bc6-71cc-42be-b00b-7fa0f5ce8136	Whole Skinless Chicken Necks - 20 lb	R-CN-20	ea	ea	26.65	1	20	7	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+38f80eba-1d8f-4d1d-a3cd-a7a5b9a54a6c	Whole Skinless Turkey Necks	F-TN-5-4	ea	ea	9.97	1	5	8	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+a86e5c54-9c00-4fea-aa8c-42ef2cf4bc3f	Whole Turkey Hearts	F-TH-5-4	ea	ea	20.40	1	5	9	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+139276bb-75a1-45e8-960f-a27e2fd34f3a	Ground Turkey Frames	F-GTF-5-6	ea	ea	12.86	1	5	10	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+ac4323da-0a88-49ce-81bb-d49417d92cba	Ground Skinless Turkey Necks	F-GTN-2-15	ea	ea	5.32	1	2	11	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+d7f525cf-712e-4be8-a9c4-f03af3e504c9	Ground Turkey Organ hearts, gizzards, liver	F-GTO-2-5	ea	ea	6.54	1	2	12	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+9e14cbae-76a4-4f7f-a73b-395490f1a6c7	Whole Skinless Duck Necks	F-DN-5-4	ea	ea	26.18	1	5	13	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+16c9cbb3-ae1a-4b47-bffc-cc5f82389c0e	Ground Duck Meat & Bone	F-GDMB-2-15	ea	ea	9.16	1	2	14	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	
+8fce580d-96d0-4c6c-a0f4-0a30c58b386a	Ground Poultry Blend	F-PB-2-15	ea	ea	7.30	1	2	15	53fdbd70-092f-49f7-9adb-a117f6cbe629	False	False	False	chicken meat, chicken necks, turkey hearts, turkey gizzards, turkey liver
+5f5dacc7-c04e-4022-b3be-e71e3d417ee3	Ground Beef Organ	F-GBO-2-5	ea	ea	7.76	1	2	1	f2f1578d-6c7f-429e-8202-022c59771731	False	False	False	beef hearts, beef kidney, beef liver
+4a27803c-2a59-4a4d-a224-65e8a244add7	Whole Beef Knuckle Bones	F-BKB-W-25	ea	lb	2.39	3	3	2	f2f1578d-6c7f-429e-8202-022c59771731	False	False	False	
+a3dc385d-b7f2-4299-be05-a69fffb5b02e	Split Beef Knuckle Bones	F-BKB-S-25	ea	lb	2.90	3	3	3	f2f1578d-6c7f-429e-8202-022c59771731	False	False	False	
+1960d923-9d07-4cb9-9554-6fb547013d9b	2-3 Beef Marrow Bones - 10 lb box	F-BMB-2IN-10	box	box	41.47	1	10	4	f2f1578d-6c7f-429e-8202-022c59771731	False	False	False	
+9207706d-bc7a-457b-887b-5fe914440d9b	2-3 Beef Marrow Bones	F-BMB-2IN-25	ea	lb	4.11	0.75	0.75	5	f2f1578d-6c7f-429e-8202-022c59771731	False	False	False	
+94947905-17cd-4cb8-94b8-f74c65e05d87	4-6 Beef Marrow Bones - 10 lb box	F-BMB-4IN-10	box	box	41.47	1	10	6	f2f1578d-6c7f-429e-8202-022c59771731	False	False	False	
+6d8bfd01-2078-4f21-81a3-6b1a2489ea28	4-6 Beef Marrow Bones	F-BMB-4IN-25	ea	lb	4.11	1.25	1.25	7	f2f1578d-6c7f-429e-8202-022c59771731	False	False	False	
+09ca82f8-f59b-4997-bbf7-a2101a81a7e6	4-6 Indiv. Wrapped Beef Marrow Bones	F-BMBI-4IN-15	ea	ea	3.98	1	1	8	f2f1578d-6c7f-429e-8202-022c59771731	False	False	False	
+d192ee03-6eb0-4b2d-8064-3c8509d9c4a1	Ground Lamb & Bone	F-GLB-2-15	ea	ea	13.40	1	2	9	f2f1578d-6c7f-429e-8202-022c59771731	False	False	False	
+215fa856-4ccc-47aa-98c1-54e57bf43947	Ground Quail Frames	F-GQ-2-5	ea	ea	11.85	1	2	1	8b24755f-5191-404f-8046-49438ad544bc	False	False	False	
+b8426ddb-13f3-42df-ab63-51994d10444d	Ground Elk	F-GELK-1-10	ea	ea	14.59	1	1	2	8b24755f-5191-404f-8046-49438ad544bc	False	False	False	
+b931bb04-951f-4f8b-9dee-0ecbe18e29d9	Ground Kangaroo	F-GK-1-10	ea	ea	14.58	1	1	3	8b24755f-5191-404f-8046-49438ad544bc	False	False	False	
+69e912f8-912d-4daf-a251-dc6ee94abd0b	Ground Rabbit Blend	F-GRB-2-5	ea	ea	21.12	1	2	4	8b24755f-5191-404f-8046-49438ad544bc	False	False	False	rabbit (meat & bone), liver, lung, kidney, hearts
+eb4eefdf-2e15-40f6-9c7c-55c1eae320ae	Ground Rabbit Meat & Bone	F-GRMB-2-5	ea	ea	19.36	1	2	5	8b24755f-5191-404f-8046-49438ad544bc	False	False	False	
+26190d5e-9a8b-4e08-9507-5a5845a99674	Ground Venison	F-GV-1-10	ea	ea	14.48	1	1	6	8b24755f-5191-404f-8046-49438ad544bc	False	False	False	
+faedd554-a93d-4725-99b9-2ce764ab4be9	Ground Wild Boar	F-GWB-1-10	ea	ea	13.00	1	1	7	8b24755f-5191-404f-8046-49438ad544bc	False	False	False	
+137c52b5-9b3f-46c9-991f-cd2a4f2b9cb1	Ground Salmon - 1 lb	F-GS-1-10	ea	ea	4.76	1	1	1	34dd8646-bc2b-422b-824f-75c8d33b498e	False	False	False	
+1643a9e2-faa5-487c-8fa2-cc1084b23817	Ground Salmon - 5 lb	F-GS-5-6	ea	ea	21.15	1	5	2	34dd8646-bc2b-422b-824f-75c8d33b498e	False	False	False	
+e953a887-ae01-4d70-9ad8-8725faf280c6	Ground Ocean Blend	F-OB-1-10	ea	ea	5.60	1	1	3	34dd8646-bc2b-422b-824f-75c8d33b498e	False	False	False	salmon fillet (skin-on) whole sardines, whole mackerel
+420b260e-2708-415d-a6b1-36306754fedc	Whole Sardines	F-SW-2-10	ea	ea	11.65	1	2	4	34dd8646-bc2b-422b-824f-75c8d33b498e	False	False	False	
+d9f300d7-40ed-45da-af1a-173c5dbd2321	Performance Dog - 2 lb	F-PD-2-20	ea	ea	7.23	1	2	1	f0cbb5e5-b966-483b-85a3-498544105c9a	False	False	False	beef, tripe, trachea, finely ground bone, egg, salt, limestone, trace minerals
+ec4a8261-93be-4eec-a667-c3385237e6f8	Performance Dog - 10 lb box of patties	F-PDP-10	box	box	48.28	1	10	2	f0cbb5e5-b966-483b-85a3-498544105c9a	False	False	False	beef, tripe, trachea, finely ground bone, egg, salt, limestone, trace minerals
+74477219-fccc-42e8-87f8-eed6dedad7f7	Ground Beef Tripe - 2 lb	F-FGBT-2-20	ea	ea	9.02	1	2	3	f0cbb5e5-b966-483b-85a3-498544105c9a	False	False	False	
+e901a871-8c2f-4920-a109-70bd8db7e855	Ground Beef Tripe - 10 lb box of patties	F-BTP-10	box	box	52.06	1	10	4	f0cbb5e5-b966-483b-85a3-498544105c9a	False	False	False	
+1363dfff-a914-4122-ac5d-704b13e8071e	Beef Lung (Dehydrated) - 2 oz	D-DBL-2OZ-12	ea	ea	3.94	1	0.25	1	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+92bbd703-1970-4ec4-94a3-6a8cd051b7e4	Beef Lung (Dehydrated) - 16 oz	D-DBL-16OZ-6	ea	ea	25.97	1	1	2	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+5dc6ec5b-e5fa-4a12-8bf4-539c725053e2	Beef Organ Rounds - 4 oz	D-BOR-4OZ-12	ea	ea	14.83	1	0.25	3	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	beef hearts, beef kidney, beef liver
+e869f748-1545-4cc5-a501-3a919bd002d6	Beef Organ Rounds - 16 oz	D-BOR-16OZ-6	ea	ea	55.36	1	1	4	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	beef hearts, beef kidney, beef liver
+c8907ea5-d3b6-48d8-8797-912808f2d6aa	Beef Liver - 4 oz	D-BLIV-4OZ-12	ea	ea	10.81	1	0.25	5	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+d2bf0eef-43d1-4e87-8171-5461ca4dd67c	Beef Liver - 16 oz	D-BLIV-16OZ-6	ea	ea	40.36	1	1	6	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+1fd84f8c-b726-4f78-887a-946b363ebd11	Beef Tripe Flats - 16 oz	D-BTF-16OZ-6	ea	ea	51.53	1	1	7	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+6d976097-0efb-4ce2-a79d-6520a2c3ac3d	Chicken Breast Chunks - 4 oz	D-CBC-4OZ-12	ea	ea	14.07	1	0.25	8	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+d3072932-b2bd-4b1f-a795-8993c32b42ce	Chicken Breast Chunks - 16 oz	D-CBC-16OZ-6	ea	ea	52.53	1	1	9	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+771e3e1c-0a5a-4f58-8db6-796d0f1d5cdd	Chicken Hearts - 4 oz	D-CH-4OZ-12	ea	ea	12.36	1	0.25	10	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+26a9a35f-603d-4502-a51b-673d590434ac	Chicken Hearts - 16 oz	D-CH-16OZ-6	ea	ea	46.16	1	1	11	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+73ae65aa-f19d-4b6c-b5b4-b41794b21d18	Duck Heart Rounds - 4 oz	D-DHR-4OZ-12	ea	ea	14.41	1	0.25	12	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+66cc2cd9-3350-40ff-a894-2fa1b0ea5928	Duck Heart Rounds - 16 oz	D-DHR-16OZ-6	ea	ea	53.81	1	1	13	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+877b44da-1366-4658-9504-0b90dfc5738e	Heart Medley	D-HM-4OZ-12	ea	ea	13.77	1	0.25	14	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	Sliced turkey hearts, chicken hearts, duck heart rounds
+f885595b-6f47-47e9-a098-59e430789223	Heart Medley	D-HM-16OZ-6	ea	ea	51.62	1	1	15	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	Sliced turkey hearts, chicken hearts, duck heart rounds
+0ed24dba-532c-4b83-a22a-29ff170910cc	Lamb Lung (Dehydrated) - 2 oz	D-DLL-2OZ-12	ea	ea	4.39	1	0.25	16	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+13b4f8eb-dd62-4855-9fd1-2c413cd565e5	Lamb Lung (Dehydrated) - 16 oz	D-DLL-16OZ-6	ea	ea	33.07	1	1	17	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+47611f2e-06ac-4a76-b324-85b04f40939f	Salmon Rounds - 4 oz	D-SR-4OZ-12	ea	ea	11.31	1	0.25	18	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+f7ecc500-1104-41f2-9a37-5b9e7f830fc4	Salmon Rounds - 16 oz	D-SR-16OZ-6	ea	ea	42.21	1	1	19	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+baadff86-2bf2-4a89-8e06-f5654ac37cb2	Turkey Breast Chunks - 4 oz	D-TBC-4OZ-12	ea	ea	14.57	1	0.25	20	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+b4e7df1f-8a4e-4e5b-b340-0fd51eff8c4d	Turkey Breast Chunks - 16 oz	D-TBC-16OZ-6	ea	ea	54.39	1	1	21	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+1130e873-6347-4b0c-bbac-034dbbf1cf91	Sliced Turkey Hearts - 4 oz	D-THS-4OZ-12	ea	ea	12.62	1	0.25	22	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+f438152e-729f-486a-b0a4-0f050b922296	Sliced Turkey Hearts - 16 oz	D-THS-16OZ-6	ea	ea	47.11	1	1	23	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+040e6092-80c4-4548-b9d0-c9114b31e48e	Turkey Heart Rounds - 4 oz	D-THR-4OZ-12	ea	ea	13.12	1	0.25	24	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+b2286957-1e8f-4af1-bdb1-c55686f5540f	Turkey Heart Rounds - 16 oz	D-THR-16OZ-6	ea	ea	48.99	1	1	25	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+ca9ed716-83fd-4062-afc5-34b3b6a71ea6	Purr Complete Feline Poultry Meal Discs - 4 oz	D-PURR-9PK-12	ea	ea	10.35	1	0.25	26	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+1582d69a-fe96-4446-8c3c-df234988b8e3	Woof Canine Complete Chicken Meal Rounds - 16 oz	D-WOOFR-16OZ	ea	ea	40.43	1	1	27	38ed3b2c-10f6-45c7-906a-30672feac569	False	False	False	
+c1ef3a35-3856-4e78-a328-496bcad73998	6 Beef Bully Sticks - bag of 6	D-BBS-6IN-6PK	ea	ea	19.31	1	0.25	1	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+5dfc8fae-14c8-4117-9b67-cbb0d9eb195c	6 Beef Bully Sticks - bag of 12	D-BBS-6IN-12PK	ea	ea	34.67	1	0.5	2	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+8ce4002b-4758-4b63-b54f-2c8c23535168	12 Beef Bully Sticks - bag of 6	D-BBS-12IN-6PK	ea	ea	31.31	1	0.5	3	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+b6d7425c-a477-4585-b6ab-513c3abc2f22	12 Beef Bully Sticks - bag of 12	D-BBS-12IN-12PK	ea	ea	58.67	1	1	4	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+2b55457c-ad2b-4ad3-bd4e-2d6737b30d6d	6 Beef Trachea - bag of 6	D-BT-6IN-6PK	ea	ea	14.51	1	0.5	5	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+6cf90b44-a4d5-43ef-9f8b-e518ba8d8757	6 Beef Trachea - bag of 12	D-BT-6IN-12PK	ea	ea	26.12	1	1	6	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+a7d40c69-f553-434d-9faf-ea4d75cc8fad	12 Beef Trachea - bag of 6	D-BT-12IN-6PK	ea	ea	25.12	1	1	7	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+f03d0fd7-2ff1-4958-99d3-4c01e6b8a8d6	12 Beef Trachea - bag of 12	D-BT-12IN-12PK	ea	ea	46.12	1	2	8	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+582034a8-7fe6-4cf0-95f5-3764c5c02186	4-6 Lamb Weasand Twists - bag of 6	D-LWT-4IN-6PK	ea	ea	7.17	1	0.25	9	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+872fc2e6-e4d4-40a1-aa26-4e6a1517db38	4-6 Lamb Weasand Twists - bag of 12	D-LWT-4IN-12PK	ea	ea	14.31	1	0.5	10	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+fe5a3cc2-28cd-476c-be12-c175f7b59871	9-11 Lamb Weasand Twists - bag of 6	D-LWT-9IN-6PK	ea	ea	14.31	1	0.5	11	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+3ebd36f9-c696-4757-bf6e-48eda52e6202	9-11 Lamb Weasand Twists - bag of 12	D-LWT-9IN-12PK	ea	ea	28.72	1	1	12	58b354d8-d0d3-4d6d-924d-db4af4298abc	False	False	False	
+dc93577f-2948-4bed-941f-d5f8981101c1	Advanced Mobility - 8 oz	D-AM-8OZ	ea	ea	19.64	1	0.5	1	c4804ef2-b2c0-4eef-9025-589b9a4efa45	False	False	False	For bone & joint support with glucosamine, botanicals, & green lipped mussel
+95a8627f-a84d-47fe-9c50-55d346992370	Advanced Mobility - 2 lb	D-AM-2	ea	ea	57.54	1	2	2	c4804ef2-b2c0-4eef-9025-589b9a4efa45	False	False	False	For bone & joint support with glucosamine, botanicals, & green lipped mussel
+1818cdbd-2498-48bd-a370-d0b123770701	Advanced Mobility - 5 lb	D-AM-5	ea	ea	128.61	1	5	3	c4804ef2-b2c0-4eef-9025-589b9a4efa45	False	False	False	For bone & joint support with glucosamine, botanicals, & green lipped mussel
+203bdf2f-3a95-4ced-9256-48e720532b11	Digestive Performance - 8 oz	D-DP-8OZ	ea	ea	19.52	1	0.5	4	c4804ef2-b2c0-4eef-9025-589b9a4efa45	False	False	False	For digestive support with prebiotics, probiotics, & digestive enzymes
+4127d560-5a6d-4a39-aaf8-f06305726d5c	Digestive Performance - 2 lb	D-DP-2	ea	ea	45.52	1	2	5	c4804ef2-b2c0-4eef-9025-589b9a4efa45	False	False	False	For digestive support with prebiotics, probiotics, & digestive enzymes
+df3f3bf6-8a1d-4f53-be92-37adfa3f5204	Electrolyte Replenisher Gel - 30 mg	D-ER-30G	ea	ea	14.48	1	0.1	6	c4804ef2-b2c0-4eef-9025-589b9a4efa45	False	False	False	For total hydratation with key water-soluble ectrolytes
+f722480e-410b-400e-b9ab-77e4dcb66d00	Electrolyte Replenisher Powder - 1 lb	D-ER-1	ea	ea	16.63	1	1	7	c4804ef2-b2c0-4eef-9025-589b9a4efa45	False	False	False	For total hydratation with key water-soluble ectrolytes
+2b48f601-1831-489d-93b8-0bcec9b0de65	Fundamental Vitality - 8 oz	D-FV-8OZ	ea	ea	18.29	1	0.5	8	c4804ef2-b2c0-4eef-9025-589b9a4efa45	False	False	False	For total body health with vitamins, minerals, amino acids, & probiotics
+4c38f703-8ce7-4fd4-8925-929b16cda055	Fundamental Vitality - 2 lb	D-FV-2	ea	ea	53.44	1	2	9	c4804ef2-b2c0-4eef-9025-589b9a4efa45	False	False	False	For total body health with vitamins, minerals, amino acids, & probiotics
+aa0dff33-24a4-417b-9f7f-e9abe5cd053e	Fundamental Vitality - 5 lb	D-FV-5	ea	ea	117.70	1	5	10	c4804ef2-b2c0-4eef-9025-589b9a4efa45	False	False	False	For total body health with vitamins, minerals, amino acids, & probiotics
+03d36f52-4aa0-4df4-900b-3186ebb07edd	Salmon Oil - 16 oz	D-SO-16.5OZ	ea	ea	22.76	1	1	11	c4804ef2-b2c0-4eef-9025-589b9a4efa45	False	False	False	From 100% wild Alaskan salmon

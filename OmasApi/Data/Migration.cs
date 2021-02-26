@@ -174,13 +174,6 @@ namespace OmasApi.Data
 
         public async Task<bool> Migrate()
         {
-            var throughput = new ProvisionedThroughput
-            {
-                ReadCapacityUnits = 5,
-                WriteCapacityUnits = 5
-            };
-
-            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
             foreach (var table in _tables)
             {
                 var req = new CreateTableRequest
@@ -192,20 +185,20 @@ namespace OmasApi.Data
                     {
                         IndexName = i.IndexName,
                         KeySchema = i.Keys.ToKeySchema(),
-                        ProvisionedThroughput = throughput,
                         Projection = new Projection {ProjectionType = ProjectionType.ALL}
                     }).ToList(),
-                    ProvisionedThroughput = throughput
+                    BillingMode = BillingMode.PAY_PER_REQUEST,
                 };
 
                 var result = await CreateTableAsync(req);
                 switch (result)
                 {
                     case CreateTableResult.Created:
+                    case CreateTableResult.ExistsEmpty:
                         await PopulateTable(req);
                         break;
 
-                    case CreateTableResult.Exists:
+                    case CreateTableResult.ExistsWithData:
                         break;
                     
                     case CreateTableResult.Error:
@@ -232,7 +225,17 @@ namespace OmasApi.Data
             _logger.LogInformation($"Creating a new table named '{request.TableName}'");
             if (await CheckTableExistenceAsync(request.TableName))
             {
-                return CreateTableResult.Exists;
+                try
+                {
+                    var res = await _client.DescribeTableAsync(request.TableName);
+                    return res.Table.ItemCount == 0
+                        ? CreateTableResult.ExistsEmpty
+                        : CreateTableResult.ExistsWithData;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"However, its description is not available ({ex.Message})");
+                }
             }
 
             return await CreateNewTableAsync(request);
@@ -244,16 +247,6 @@ namespace OmasApi.Data
             if (tableList.TableNames.Contains(tableName))
             {
                 _logger.LogInformation($"A table named '{tableName}' already exists in DynamoDB");
-
-                try
-                {
-                    await _client.DescribeTableAsync(tableName);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"However, its description is not available ({ex.Message})");
-                }
-
                 return true;
             }
 
@@ -407,7 +400,8 @@ namespace OmasApi.Data
     public enum CreateTableResult
     {
         Created,
-        Exists,
+        ExistsEmpty,
+        ExistsWithData,
         Error
     }
 }

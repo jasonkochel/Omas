@@ -45,10 +45,13 @@
                 <td colspan="5" align="right"><b>Subtotal:</b></td>
                 <td align="right">@FormatCurrency(Model.SubTotal)</td>
             </tr>
-            <tr>
-                <td colspan="5" align="right"><b>Tax:</b></td>
-                <td align="right">@FormatCurrency(Model.Tax)</td>
-            </tr>
+            @if (Model.Tax > 0.00M)
+            {
+                <tr>
+                    <td colspan="5" align="right"><b>Tax:</b></td>
+                    <td align="right">@FormatCurrency(Model.Tax)</td>
+                </tr>
+            }
             <tr>
                 <td colspan="5" align="right"><b>Shipping & Handling:</b></td>
                 <td colspan="1" align="right">@FormatCurrency(Model.Shipping)</td>

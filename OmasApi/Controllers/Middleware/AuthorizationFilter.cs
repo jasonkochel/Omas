@@ -12,7 +12,10 @@ using Newtonsoft.Json;
 namespace OmasApi.Controllers.Middleware
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class AdminOnlyAttribute : Attribute { }
+    public class AdminOnlyAttribute : Attribute
+    {
+
+    }
 
     public class AuthorizationFilter : IActionFilter
     {

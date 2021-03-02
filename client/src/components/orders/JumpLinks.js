@@ -27,7 +27,7 @@ const scrollWithOffset = el => {
 const JumpLinks = ({ catalog }) => {
   const classes = useStyles();
 
-  if (catalog === null) return;
+  if (catalog === null) return null;
 
   return (
     <Grid container spacing={3}>

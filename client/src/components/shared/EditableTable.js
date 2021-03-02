@@ -96,7 +96,7 @@ const EditableTable = ({
     icon: 'keyboard_arrow_down',
     tooltip: 'Move Down',
     onClick: (_, data) => handleMoveDown(data),
-    disabled: rowData.tableData.id === tableData.length - 1,
+    disabled: rowData.tableData.id === (tableData?.length ?? 0) - 1,
   }));
 
   return (

@@ -36,7 +36,6 @@ const App = () => {
 
   const handleSignIn = useCallback(async cognitoUser => {
     const idToken = cognitoUser?.signInUserSession?.idToken;
-    console.log(idToken);
 
     if (idToken) {
       await api.createUser(idToken);

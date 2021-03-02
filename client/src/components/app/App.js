@@ -67,7 +67,7 @@ const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const handleToggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-  if (!authData) return false;
+  if (!authData) return null;
 
   return (
     <QueryClientProvider client={queryClient}>

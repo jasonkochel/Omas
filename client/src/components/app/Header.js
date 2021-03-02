@@ -55,14 +55,16 @@ const Header = ({ authData, onImpersonate, onSignOut, onToggleSidebar }) => {
         <Typography variant="h6" className={classes.title}>
           Omas Pride Ordering
         </Typography>
-        <Hidden smDown>
-          {name && (
+
+        {name && (
+          <Hidden smDown>
             <Typography variant="h6" className={classes.title}>
               Welcome, {name}
               {impersonatingName && ` (On Behalf of ${impersonatingName})`}
             </Typography>
-          )}
-        </Hidden>
+          </Hidden>
+        )}
+
         <Typography variant="h6">
           {impersonatingName && (
             <Button

@@ -9,6 +9,7 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { convertToRaw } from 'draft-js';
 import MUIRichTextEditor from 'mui-rte';
 import React from 'react';
@@ -35,21 +36,36 @@ const editorControls = [
   'clear',
 ];
 
-const useStyles = makeStyles(theme => ({
+const defaultTheme = createMuiTheme();
+
+Object.assign(defaultTheme, {
+  overrides: {
+    MUIRichTextEditor: {
+      container: {
+        borderWidth: '1px',
+        borderColor: '#c4c4c4',
+        borderRadius: '4px',
+      },
+      editor: {
+        padding: '20px',
+        height: '200px',
+        maxHeight: '200px',
+        overflow: 'auto',
+      },
+      toolbar: {
+        borderBottom: '1px solid #c4c4c4',
+      },
+    },
+  },
+});
+
+const useStyles = makeStyles(() => ({
   paper: {
     padding: '20px',
     maxWidth: '1100px',
   },
   formLabel: {
     paddingTop: '15px',
-  },
-  editorContainer: {
-    paddingLeft: '20px',
-    paddingRight: '20px',
-    height: '250px',
-    borderWidth: '1px',
-    borderColor: '#c4c4c4',
-    borderRadius: '4px',
   },
 }));
 
@@ -144,7 +160,7 @@ const Settings = () => {
             </InputLabel>
           </Grid>
           <Grid item xs={10}>
-            <div className={classes.editorContainer}>
+            <MuiThemeProvider theme={defaultTheme}>
               <input type="hidden" name="loginMessage" ref={register} />
               <MUIRichTextEditor
                 id="loginEditor"
@@ -152,7 +168,7 @@ const Settings = () => {
                 onChange={handleLoginMessageChange}
                 controls={editorControls}
               />
-            </div>
+            </MuiThemeProvider>
           </Grid>
           <Grid item xs={2}>
             <InputLabel className={classes.formLabel} htmlFor="welcomePage">
@@ -160,7 +176,7 @@ const Settings = () => {
             </InputLabel>
           </Grid>
           <Grid item xs={10}>
-            <div className={classes.editorContainer}>
+            <MuiThemeProvider theme={defaultTheme}>
               <input type="hidden" name="welcomeMessage" ref={register} />
               <MUIRichTextEditor
                 id="welcomeEditor"
@@ -168,7 +184,7 @@ const Settings = () => {
                 onChange={handleWelcomeMessageChange}
                 controls={editorControls}
               />
-            </div>
+            </MuiThemeProvider>
           </Grid>
           <Grid item xs={12} style={{ textAlign: 'right' }}>
             <Button color="primary" variant="contained" onClick={handleSubmit(handleSave)}>

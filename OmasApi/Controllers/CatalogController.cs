@@ -50,6 +50,7 @@ namespace OmasApi.Controllers
             return item;
         }
 
+        [AdminOnly]
         [HttpPost]
         public async Task<CatalogItem> Post([FromBody] CatalogItem catalogItem)
         {
@@ -68,6 +69,7 @@ namespace OmasApi.Controllers
             return catalogItem;
         }
 
+        [AdminOnly]
         [HttpPut("{id}")]
         public async Task<CatalogItem> Put(string id, [FromBody] CatalogItem catalogItem)
         {
@@ -82,6 +84,7 @@ namespace OmasApi.Controllers
         }
 
 
+        [AdminOnly]
         [HttpDelete("{id}")]
         public async Task Delete(string id)
         {
@@ -104,18 +107,21 @@ namespace OmasApi.Controllers
             await _repo.BulkUpdateSequence(item.CategoryId, item.Sequence, -1);
         }
 
+        [AdminOnly]
         [HttpPatch("{id}/up")]
         public async Task MoveUp([FromRoute] string id)
         {
             await SwapSequence(id, SwapDirection.Up);
         }
 
+        [AdminOnly]
         [HttpPatch("{id}/down")]
         public async Task MoveDown([FromRoute] string id)
         {
             await SwapSequence(id, SwapDirection.Down);
         }
 
+        [AdminOnly]
         [HttpPatch("{id}/new")]
         public async Task<CatalogItem> MarkAsNew([FromRoute] string id, [FromQuery] bool isNew)
         {
@@ -125,6 +131,7 @@ namespace OmasApi.Controllers
             return item;
         }
 
+        [AdminOnly]
         [HttpPatch("{id}/featured")]
         public async Task<CatalogItem> MarkAsFeatured([FromRoute] string id, [FromQuery] bool isFeatured)
         {
@@ -134,6 +141,7 @@ namespace OmasApi.Controllers
             return item;
         }
 
+        [AdminOnly]
         [HttpPatch("{id}/discontinued")]
         public async Task<CatalogItem> MarkAsDiscontinued([FromRoute] string id, [FromQuery] bool isDiscontinued)
         {

@@ -10,7 +10,6 @@ using OmasApi.Data.Repositories;
 namespace OmasApi.Controllers
 {
     [ApiController]
-    [AdminOnly]
     [Route("[controller]")]
     public class CategoriesController : ControllerBase
     {
@@ -87,6 +86,7 @@ namespace OmasApi.Controllers
             return category;
         }
 
+        [AdminOnly]
         [HttpPost]
         public async Task<Category> Post([FromBody] Category category)
         {
@@ -105,6 +105,7 @@ namespace OmasApi.Controllers
             return category;
         }
 
+        [AdminOnly]
         [HttpPut("{id}")]
         public async Task<Category> Put(string id, [FromBody] Category category)
         {
@@ -118,6 +119,7 @@ namespace OmasApi.Controllers
             return category;
         }
 
+        [AdminOnly]
         [HttpDelete("{id}")]
         public async Task Delete(string id)
         {
@@ -134,12 +136,14 @@ namespace OmasApi.Controllers
             await _repo.BulkUpdateSequence(category.Sequence, -1);
         }
 
+        [AdminOnly]
         [HttpPatch("{id}/up")]
         public async Task MoveUp(string id)
         {
             await SwapSequence(id, SwapDirection.Up);
         }
 
+        [AdminOnly]
         [HttpPatch("{id}/down")]
         public async Task MoveDown(string id)
         {

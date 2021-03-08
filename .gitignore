@@ -161,3 +161,4 @@ $RECYCLE.BIN/
 appsettings.Development.json
 /_OmasApi
 /MySql
+data/shared-local-instance.db

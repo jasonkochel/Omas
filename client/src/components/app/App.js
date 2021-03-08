@@ -32,7 +32,7 @@ const queryClient = new QueryClient();
 const App = () => {
   const classes = useStyles();
 
-  const [authData, setAuthData] = useState({ authenticated: false });
+  const [authData, setAuthData] = useState();
 
   const handleSignIn = useCallback(async cognitoUser => {
     const idToken = cognitoUser?.signInUserSession?.idToken;
@@ -66,7 +66,7 @@ const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const handleToggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-  //if (!authData) return null;
+  if (!authData) return null;
 
   return (
     <QueryClientProvider client={queryClient}>

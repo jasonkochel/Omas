@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +11,6 @@ using OmasApi.Services;
 
 namespace OmasApi.Controllers
 {
-    [AdminOnly]
     [ApiController]
     [Route("[controller]")]
     public class OrderBatchesController : ControllerBase
@@ -39,6 +37,7 @@ namespace OmasApi.Controllers
             _settingsRepo = settingsRepo;
         }
 
+        [AdminOnly]
         [HttpGet]
         public async Task<List<OrderBatch>> GetAll()
         {
@@ -53,6 +52,7 @@ namespace OmasApi.Controllers
             return _orderBatchService.CurrentBatchId;
         }
 
+        [AdminOnly]
         [HttpGet("{batchId}")]
         public async Task<OrderBatchModel> GetOrderBatchSummary(string batchId)
         {
@@ -82,20 +82,22 @@ namespace OmasApi.Controllers
             return model;
         }
 
+        [AdminOnly]
         [HttpGet("{batchId}/orders")]
         public async Task<List<Order>> GetConfirmedOrderDetailsForBatch(string batchId)
         {
             return await GetAllOrderDetailsForBatch(batchId, OrderMode.Confirmed);
         }
 
+        [AdminOnly]
         [HttpGet("{batchId}/unconfirmedOrders")]
         public async Task<List<Order>> GetUnconfirmedOrderDetailsForBatch(string batchId)
         {
             return await GetAllOrderDetailsForBatch(batchId, OrderMode.Unconfirmed);
         }
 
+        [AdminOnly]
         [HttpGet("{batchId}/consolidated")]
-        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
         public async Task<List<OrderLine>> GetConsolidatedOrder(string batchId)
         {
             var newOrders = await GetAllOrderDetailsForBatch(batchId, OrderMode.Confirmed);
@@ -105,14 +107,17 @@ namespace OmasApi.Controllers
                 .GroupBy(
                     ol => ol.Sku,
                     (sku, lines) =>
-                        new OrderLine
+                    {
+                        var orderLines = lines.ToList();
+                        return new OrderLine
                         {
                             Sku = sku,
-                            Name = lines.First().Name,
-                            Quantity = lines.Sum(l => l.Quantity),
-                            Price = lines.Sum(l => l.Price * l.Quantity * l.Multiplier),
-                            Sequence = lines.First().Sequence,
-                        })
+                            Name = orderLines.First().Name,
+                            Quantity = orderLines.Sum(l => l.Quantity),
+                            Price = orderLines.Sum(l => l.Price * l.Quantity * l.Multiplier),
+                            Sequence = orderLines.First().Sequence,
+                        };
+                    })
                 .OrderBy(ol => ol.Sequence)
                 .ToList();
         }
@@ -132,6 +137,7 @@ namespace OmasApi.Controllers
                 }).ToList();
         }
 
+        [AdminOnly]
         [HttpPost]
         public async Task<OrderBatch> Post([FromBody] OrderBatch batch)
         {
@@ -148,6 +154,7 @@ namespace OmasApi.Controllers
             return batch;
         }
 
+        [AdminOnly]
         [HttpPut("{batchId}")]
         public async Task<OrderBatch> Put(string batchId, [FromBody] OrderBatch batch)
         {
@@ -161,6 +168,7 @@ namespace OmasApi.Controllers
             return batch;
         }
 
+        [AdminOnly]
         [HttpDelete("{batchId}")]
         public async Task Delete(string batchId)
         {
@@ -179,6 +187,7 @@ namespace OmasApi.Controllers
             await _repo.Delete(batchId);
         }
 
+        [AdminOnly]
         [HttpPost("{batchId}/email")]
         public async Task EmailOrders([FromRoute] string batchId)
         {

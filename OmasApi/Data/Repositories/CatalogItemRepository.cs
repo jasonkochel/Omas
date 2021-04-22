@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using OmasApi.Data.Entities;
 
 namespace OmasApi.Data.Repositories
@@ -19,7 +20,8 @@ namespace OmasApi.Data.Repositories
 
         public async Task<CatalogItem> GetBySequence(int sequence)
         {
-            var results = await QueryByIndex("Omas_CatalogItems_Idx_Sequence", "Sequence", sequence.ToString());
+            var attributeValue = new AttributeValue {N = sequence.ToString()};
+            var results = await QueryByIndex("Omas_CatalogItems_Idx_Sequence", "Sequence", attributeValue);
             return results.FirstOrDefault();
         }
 

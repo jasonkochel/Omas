@@ -20,7 +20,9 @@ namespace OmasApi.Services
         private readonly ViewRenderService _viewRenderService;
         private readonly EmailSettings _emailSettings;
 
-        public EmailService(IAmazonSimpleEmailService sesClient, OrderRepository orderRepo, OrderLineRepository lineRepo, UserRepository userRepo, ViewRenderService viewRenderService, IOptions<AppSettings> appSettings)
+        public EmailService(IAmazonSimpleEmailService sesClient, OrderRepository orderRepo,
+            OrderLineRepository lineRepo, UserRepository userRepo, ViewRenderService viewRenderService,
+            IOptions<AppSettings> appSettings)
         {
             _sesClient = sesClient;
             _orderRepo = orderRepo;
@@ -46,7 +48,7 @@ namespace OmasApi.Services
             await SendEmail(_emailSettings.MailFrom, order.User.Email, _emailSettings.Subject, orderHtml);
         }
 
-        public async Task SendEmail(string mailFrom, string mailTo, string subject, string htmlBody, string textBody = "")
+        private async Task SendEmail(string mailFrom, string mailTo, string subject, string htmlBody, string textBody = "")
         {
             var sendRequest = new SendEmailRequest
             {

@@ -33,7 +33,7 @@ const Login = ({ onSignIn }) => {
   return (
     <div>
       {settings?.loginMessage && (
-        <Container maxWidth="sm">
+        <Container maxWidth="md">
           <Card>
             <CardContent className={classes.helpText}>
               <MUIRichTextEditor

@@ -57,13 +57,13 @@ const CatalogItems = () => {
               field: 'name',
               render: rowData => (
                 <span>
-                  {rowData.name}{' '}
+                  {rowData.name}
                   {!!rowData.description && (
                     <InfoOutlined
                       color="primary"
                       fontSize="small"
                       style={{ marginLeft: '10px' }}
-                      titleAccess="Has Additional Description"
+                      titleAccess={rowData.description}
                     />
                   )}
                 </span>

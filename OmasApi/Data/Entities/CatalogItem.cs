@@ -18,7 +18,7 @@ namespace OmasApi.Data.Entities
 
         public string Description { get; set; }
 
-        [MaxLength(10)]
+        [MaxLength(20)]
         [Required]
         public string Sku { get; set; }
 

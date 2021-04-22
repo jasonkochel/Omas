@@ -11,7 +11,7 @@ import {
   Grid,
   TextField,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import fns from '../../fns';
@@ -19,7 +19,7 @@ import fns from '../../fns';
 yup.addMethod(yup.number, 'decimal', fns.validateDecimal);
 
 const schema = yup.object().shape({
-  sku: yup.string().max(10, 'Max 10 characters').required('Required'),
+  sku: yup.string().max(20, 'Max 20 characters').required('Required'),
   name: yup.string().max(200, 'Max 200 characters').required('Required'),
   price: yup.number().decimal(9, 2).typeError('Invalid Number').required('Required'),
   pricePer: yup.string().max(10, 'Max 10 characters').required('Required'),
@@ -44,7 +44,7 @@ const schema = yup.object().shape({
 });
 
 const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => {
-  const [open, setOpen] = useState(true);
+  //const [open, setOpen] = useState(true);
 
   const defaultValues = data
     ? { ...data, price: Number(data.price).toFixed(2), useMultiplier: data.multiplier !== 1.0 }
@@ -59,7 +59,7 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
   const watchUseMultiplier = watch('useMultiplier');
 
   const handleCancel = () => {
-    setOpen(false);
+    //setOpen(false);
     onEditingCanceled(mode, data);
   };
 
@@ -73,19 +73,19 @@ const EditItemModal = ({ data, mode, onEditingApproved, onEditingCanceled }) => 
       newData.orderPer = newData.pricePer;
     }
 
-    setOpen(false);
+    //setOpen(false);
     onEditingApproved(mode, newData, data);
   };
 
   const handleDelete = () => {
-    setOpen(false);
+    //setOpen(false);
     onEditingApproved(mode, null, data);
   };
 
   const dialogTitle = mode === 'delete' ? 'Delete Item?' : 'Enter Item Details';
 
   return (
-    <Dialog open={open} onClose={handleCancel} maxWidth="md">
+    <Dialog open={true} onClose={handleCancel} maxWidth="md">
       <DialogTitle>{dialogTitle}</DialogTitle>
       <DialogContent>
         {mode === 'delete' ? (

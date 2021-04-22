@@ -18,10 +18,22 @@ namespace OmasApi.Data.Repositories
             return await QueryByIndex("Omas_CatalogItems_Idx_Category", "CategoryId", categoryId);
         }
 
-        public async Task<CatalogItem> GetBySequence(int sequence)
+        public async Task<CatalogItem> GetBySequence(string categoryId, int sequence)
         {
-            var attributeValue = new AttributeValue {N = sequence.ToString()};
-            var results = await QueryByIndex("Omas_CatalogItems_Idx_Sequence", "Sequence", attributeValue);
+            var filter = new QueryFilter("Sequence", QueryOperator.Equal,
+                new List<AttributeValue> {new AttributeValue {N = sequence.ToString()}});
+
+            filter.AddCondition("CategoryId", QueryOperator.Equal,
+                new List<AttributeValue> {new AttributeValue {S = categoryId}});
+
+            var search = _db.FromQueryAsync<CatalogItem>(new QueryOperationConfig
+            {
+                IndexName = "Omas_CatalogItems_Idx_Sequence",
+                Select = SelectValues.AllAttributes,
+                Filter = filter
+            });
+
+            var results = await search.GetRemainingAsync();
             return results.FirstOrDefault();
         }
 

@@ -158,7 +158,8 @@ namespace OmasApi.Controllers
             if (item != null)
             {
                 // Find the record that was in the slot that "id" is being moved to...
-                var otherItem = await _repo.GetBySequence(item.Sequence + (int)direction);
+                // (NB: sequence is only guaranteed unique within a category, so must query by CategoryId+Sequence)
+                var otherItem = await _repo.GetBySequence(item.CategoryId, item.Sequence + (int)direction);
             
                 if (otherItem != null)
                 {

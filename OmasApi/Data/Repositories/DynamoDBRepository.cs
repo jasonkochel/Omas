@@ -53,18 +53,12 @@ namespace OmasApi.Data.Repositories
 
         protected async Task<List<T>> QueryByIndex(string indexName, string fieldName, string queryValue)
         {
-            var attributeValue = new AttributeValue {S = queryValue};
-            return await QueryByIndex(indexName, fieldName, attributeValue);
-        }
-
-        protected async Task<List<T>> QueryByIndex(string indexName, string fieldName, AttributeValue queryValue)
-        {
             var search = _db.FromQueryAsync<T>(new QueryOperationConfig
             {
                 IndexName = indexName,
                 Select = SelectValues.AllAttributes,
                 Filter = new QueryFilter(fieldName, QueryOperator.Equal,
-                    new List<AttributeValue> {queryValue})
+                    new List<AttributeValue> {new AttributeValue {S = queryValue}})
             });
 
             return await search.GetRemainingAsync();

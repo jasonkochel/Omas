@@ -1,5 +1,5 @@
 import Authenticator from '@jasonkochel/react-cognito-auth';
-import { Card, CardContent, Container, makeStyles } from '@material-ui/core';
+import { Card, CardContent, Container, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import { useQuery } from 'react-query';
 import api from '../../api';
@@ -22,6 +22,12 @@ const useStyles = makeStyles(theme => ({
   helpText: {
     textAlign: 'center',
   },
+  message: {
+    textAlign: 'left',
+    '& p': {
+      paddingBottom: '10px',
+    },
+  },
 }));
 
 const Login = ({ onSignIn }) => {
@@ -35,7 +41,12 @@ const Login = ({ onSignIn }) => {
         <Container maxWidth="md">
           <Card>
             <CardContent className={classes.helpText}>
-              <div dangerouslySetInnerHTML={{ __html: settings.loginMessageHtml }} />
+              <Typography variant="body1" component="p">
+                <div
+                  className={classes.message}
+                  dangerouslySetInnerHTML={{ __html: settings.loginMessageHtml }}
+                />
+              </Typography>
             </CardContent>
           </Card>
         </Container>

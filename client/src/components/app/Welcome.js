@@ -1,4 +1,4 @@
-import { Container, makeStyles, Paper } from '@material-ui/core';
+import { Container, makeStyles, Paper, Typography } from '@material-ui/core';
 import React from 'react';
 import { useQuery } from 'react-query';
 import api from '../../api';
@@ -6,6 +6,11 @@ import api from '../../api';
 const useStyles = makeStyles(theme => ({
   paper: {
     padding: '20px',
+  },
+  message: {
+    '& p': {
+      paddingBottom: '10px',
+    },
   },
 }));
 
@@ -19,7 +24,12 @@ const Welcome = () => {
   return (
     <Container>
       <Paper className={classes.paper}>
-        <div dangerouslySetInnerHTML={{ __html: data.welcomeMessageHtml }} />
+        <Typography variant="body1" component="p">
+          <div
+            className={classes.message}
+            dangerouslySetInnerHTML={{ __html: data.welcomeMessageHtml }}
+          />
+        </Typography>
       </Paper>
     </Container>
   );

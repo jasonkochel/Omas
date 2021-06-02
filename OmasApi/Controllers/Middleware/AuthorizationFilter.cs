@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using Amazon.Lambda.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -42,6 +44,8 @@ namespace OmasApi.Controllers.Middleware
         {*/
             var requestContext = (RequestContext)context.HttpContext.RequestServices.GetService(typeof(RequestContext));
             requestContext.HostHeader = context.HttpContext.Request.Host.Host;
+
+            LambdaLogger.Log($"Host Header: {requestContext.HostHeader}; Path: {context.HttpContext.Request.Path.Value}");
 
             var accessLevel = GetControllerAccessLevel(context);
 

@@ -14,8 +14,8 @@ const config = {
   oauth: {
     domain: process.env.REACT_APP_COGNITO_OAUTH_DOMAIN,
     scope: ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'],
-    redirectSignIn: process.env.REACT_APP_CLIENT_URL,
-    redirectSignOut: process.env.REACT_APP_CLIENT_URL,
+    redirectSignIn: window.location.origin,
+    redirectSignOut: window.location.origin,
     responseType: 'code',
   },
   federationTarget: 'COGNITO_USER_POOLS',

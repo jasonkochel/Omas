@@ -5,6 +5,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using Amazon.Lambda.Core;
 using Microsoft.Extensions.Options;
 using OmasApi.Models;
 
@@ -17,11 +18,16 @@ namespace OmasApi.Data.Repositories
 
         public DynamoDBRepository(IAmazonDynamoDB client, RequestContext requestContext, IOptions<AppSettings> appSettings)
         {
+            var tablePrefix = appSettings.Value.Sites.FirstOrDefault(s => s.HostHeader == requestContext.HostHeader)
+                ?.TablePrefix ?? "";
+
+            LambdaLogger.Log($"(DynamoDbRepository Constructor) Table Prefix: {tablePrefix}");
+
             _db = new DynamoDBContext(client, new DynamoDBContextConfig
             {
                 Conversion = DynamoDBEntryConversion.V2,
                 ConsistentRead = true,
-                TableNamePrefix = appSettings.Value.Sites.FirstOrDefault(s => s.HostHeader == requestContext.HostHeader)?.TablePrefix ?? ""
+                TableNamePrefix = tablePrefix
             });
         }
 

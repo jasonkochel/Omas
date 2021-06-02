@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,23 +30,27 @@ namespace OmasApi.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<string> RenderViewToStringAsync<TModel>(string viewName, TModel model)
+        public async Task<string> RenderViewToStringAsync<TModel>(string viewName, TModel model, IDictionary<string, object> additionalData)
         {
             var actionContext = GetActionContext();
             var view = FindView(actionContext, viewName);
 
-            using (var sw = new StringWriter())
-            {
-                var viewContext = new ViewContext(actionContext, view,
-                    new ViewDataDictionary<TModel>(metadataProvider: new EmptyModelMetadataProvider(),
+            var tempData = new TempDataDictionary(actionContext.HttpContext, _tempDataProvider);
+
+            foreach (var (key, value) in additionalData) tempData.Add(key, value);
+
+            await using var sw = new StringWriter();
+
+            var viewContext = new ViewContext(actionContext, view,
+                new ViewDataDictionary<TModel>(
+                        metadataProvider: new EmptyModelMetadataProvider(),
                         modelState: new ModelStateDictionary())
-                    { Model = model },
-                    new TempDataDictionary(actionContext.HttpContext, _tempDataProvider), sw, new HtmlHelperOptions());
+                    {Model = model},
+                tempData, sw, new HtmlHelperOptions());
 
-                await view.RenderAsync(viewContext);
+            await view.RenderAsync(viewContext);
 
-                return sw.ToString();
-            }
+            return sw.ToString();
         }
 
         private IView FindView(ActionContext actionContext, string viewName)

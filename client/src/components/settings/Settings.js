@@ -92,13 +92,8 @@ const Settings = () => {
 
   const { isLoading, data } = useQuery('Settings', api.getSettings);
 
-  const handleWelcomeMessageChange = editorState => {
-    setValue('welcomeMessage', JSON.stringify(convertToRaw(editorState.getCurrentContent())));
-  };
-
-  const handleLoginMessageChange = editorState => {
-    setValue('loginMessage', JSON.stringify(convertToRaw(editorState.getCurrentContent())));
-  };
+  const handleEditorChange = (formField, editorState) =>
+    setValue(formField, JSON.stringify(convertToRaw(editorState.getCurrentContent())));
 
   const handleSave = formData => {
     api.updateSettings(formData).then(() => history.push('/batches'));
@@ -155,7 +150,7 @@ const Settings = () => {
             />
           </Grid>
           <Grid item xs={2}>
-            <InputLabel className={classes.formLabel} htmlFor="welcomePage">
+            <InputLabel className={classes.formLabel} htmlFor="loginMessage">
               Login Page Text
             </InputLabel>
           </Grid>
@@ -165,7 +160,7 @@ const Settings = () => {
               <MUIRichTextEditor
                 id="loginEditor"
                 defaultValue={data.loginMessage}
-                onChange={handleLoginMessageChange}
+                onChange={editorState => handleEditorChange('loginMessage', editorState)}
                 controls={editorControls}
               />
             </MuiThemeProvider>
@@ -181,7 +176,25 @@ const Settings = () => {
               <MUIRichTextEditor
                 id="welcomeEditor"
                 defaultValue={data.welcomeMessage}
-                onChange={handleWelcomeMessageChange}
+                onChange={editorState => handleEditorChange('welcomeMessage', editorState)}
+                controls={editorControls}
+              />
+            </MuiThemeProvider>
+          </Grid>
+          <Grid item xs={2}>
+            <InputLabel className={classes.formLabel} htmlFor="emailMessage">
+              Confirmation Email Text
+            </InputLabel>
+          </Grid>
+          <Grid item xs={10}>
+            <MuiThemeProvider theme={defaultTheme}>
+              <input type="hidden" name="emailMessage" ref={register} />
+              This is to confirm the order you have placed at OmasOrders.com. You must pick up your
+              order on mm/dd/yyyy. You may modify your order through the website until mm/dd/yyyy.
+              <MUIRichTextEditor
+                id="emailEditor"
+                defaultValue={data.emailMessage}
+                onChange={editorState => handleEditorChange('emailMessage', editorState)}
                 controls={editorControls}
               />
             </MuiThemeProvider>

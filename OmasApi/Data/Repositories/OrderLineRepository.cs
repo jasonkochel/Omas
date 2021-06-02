@@ -3,13 +3,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
+using Microsoft.Extensions.Options;
 using OmasApi.Data.Entities;
+using OmasApi.Models;
 
 namespace OmasApi.Data.Repositories
 {
     public class OrderLineRepository : DynamoDBRepository<OrderLine>
     {
-        public OrderLineRepository(IAmazonDynamoDB client) : base(client) { }
+        public OrderLineRepository(IAmazonDynamoDB client, RequestContext requestContext,
+            IOptions<AppSettings> appSettings) : base(client, requestContext, appSettings)
+        {
+        }
 
         public async Task<OrderLine> Get(string batchId, string userId, string sku)
         {

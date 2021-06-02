@@ -1,4 +1,4 @@
-﻿namespace OmasApi
+﻿namespace OmasApi.Models
 {
     public class UserIdentity
     {

@@ -17,18 +17,20 @@ namespace OmasApi.Services
         private readonly OrderRepository _orderRepo;
         private readonly OrderLineRepository _lineRepo;
         private readonly UserRepository _userRepo;
+        private readonly SettingsRepository _settingsRepo;
         private readonly ViewRenderService _viewRenderService;
         private readonly EmailSettings _emailSettings;
 
         public EmailService(IAmazonSimpleEmailService sesClient, OrderRepository orderRepo,
             OrderLineRepository lineRepo, UserRepository userRepo, ViewRenderService viewRenderService,
-            IOptions<AppSettings> appSettings)
+            IOptions<AppSettings> appSettings, SettingsRepository settingsRepo)
         {
             _sesClient = sesClient;
             _orderRepo = orderRepo;
             _lineRepo = lineRepo;
             _userRepo = userRepo;
             _viewRenderService = viewRenderService;
+            _settingsRepo = settingsRepo;
             _emailSettings = appSettings.Value.EmailSettings;
         }
 
@@ -44,7 +46,11 @@ namespace OmasApi.Services
 
             order.User = await _userRepo.Get(userId);
 
-            var orderHtml = await _viewRenderService.RenderViewToStringAsync("~/Views/OrderHtml.cshtml", order);
+            var settings = await _settingsRepo.Get(_settingsRepo.SettingsId);
+
+            var additionalData = new Dictionary<string, object> {{"EmailMessage", settings.EmailMessageHtml}};
+
+            var orderHtml = await _viewRenderService.RenderViewToStringAsync("~/Views/OrderHtml.cshtml", order, additionalData);
             await SendEmail(_emailSettings.MailFrom, order.User.Email, _emailSettings.Subject, orderHtml);
         }
 

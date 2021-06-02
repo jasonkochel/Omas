@@ -1,8 +1,11 @@
-﻿namespace OmasApi
+﻿using System.Security.Policy;
+
+namespace OmasApi
 {
     public class AppSettings
     {
         public JwksWrapper Jwks { get; set; }
+        public Site[] Sites { get; set; }
         public EmailSettings EmailSettings { get; set; }
         public DynamoDb DynamoDb { get; set; }
     }
@@ -27,6 +30,12 @@
 
     #pragma warning restore IDE1006 // Naming Styles
     // ReSharper restore InconsistentNaming
+
+    public class Site
+    {
+        public string HostHeader { get; set; }
+        public string TablePrefix { get; set; }
+    }
 
     public class EmailSettings
     {

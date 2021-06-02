@@ -5,13 +5,18 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using Microsoft.Extensions.Options;
 using OmasApi.Data.Entities;
+using OmasApi.Models;
 
 namespace OmasApi.Data.Repositories
 {
     public class CategoryRepository : DynamoDBRepository<Category>
     {
-        public CategoryRepository(IAmazonDynamoDB client) : base(client) { }
+        public CategoryRepository(IAmazonDynamoDB client, RequestContext requestContext,
+            IOptions<AppSettings> appSettings) : base(client, requestContext, appSettings)
+        {
+        }
 
         public async Task<Category> GetBySequence(int sequence)
         {

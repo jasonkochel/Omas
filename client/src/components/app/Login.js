@@ -1,6 +1,5 @@
 import Authenticator from '@jasonkochel/react-cognito-auth';
 import { Card, CardContent, Container, makeStyles } from '@material-ui/core';
-import MUIRichTextEditor from 'mui-rte';
 import React from 'react';
 import { useQuery } from 'react-query';
 import api from '../../api';
@@ -36,12 +35,7 @@ const Login = ({ onSignIn }) => {
         <Container maxWidth="md">
           <Card>
             <CardContent className={classes.helpText}>
-              <MUIRichTextEditor
-                id="loginMessage"
-                defaultValue={settings.loginMessage}
-                readOnly={true}
-                toolbar={false}
-              />
+              <div dangerouslySetInnerHTML={{ __html: settings.loginMessageHtml }} />
             </CardContent>
           </Card>
         </Container>

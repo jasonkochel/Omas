@@ -8,6 +8,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OmasApi.Data.Entities;
 
 namespace OmasApi.Data
@@ -15,8 +16,8 @@ namespace OmasApi.Data
     public class Migration
     {
         private readonly IAmazonDynamoDB _client;
-        private readonly DynamoDBContext _db;
         private readonly ILogger<Migration> _logger;
+        private readonly IOptions<AppSettings> _appSettings;
 
         private readonly List<CreateTableDefinition> _tables = new List<CreateTableDefinition>
         {
@@ -162,50 +163,58 @@ namespace OmasApi.Data
             }
         };
 
-        public Migration(IAmazonDynamoDB client, ILogger<Migration> logger)
+        public Migration(IAmazonDynamoDB client, ILogger<Migration> logger, IOptions<AppSettings> appSettings)
         {
             _client = client;
             _logger = logger;
-            _db = new DynamoDBContext(client, new DynamoDBContextConfig
-            {
-                Conversion = DynamoDBEntryConversion.V2
-            });
+            _appSettings = appSettings;
         }
 
         public async Task<bool> Migrate()
         {
-            foreach (var table in _tables)
+            foreach (var site in _appSettings.Value.Sites)
             {
-                var req = new CreateTableRequest
+                var tablePrefix = site.TablePrefix;
+
+                var db = new DynamoDBContext(_client, new DynamoDBContextConfig
                 {
-                    TableName = table.TableName,
-                    AttributeDefinitions = table.GetAttributeDefinition(),
-                    KeySchema = table.Keys.ToKeySchema(),
-                    GlobalSecondaryIndexes = table.Indexes?.Select(i => new GlobalSecondaryIndex
+                    Conversion = DynamoDBEntryConversion.V2,
+                    TableNamePrefix = tablePrefix
+                });
+
+                foreach (var table in _tables)
+                {
+                    var req = new CreateTableRequest
                     {
-                        IndexName = i.IndexName,
-                        KeySchema = i.Keys.ToKeySchema(),
-                        Projection = new Projection {ProjectionType = ProjectionType.ALL}
-                    }).ToList(),
-                    BillingMode = BillingMode.PAY_PER_REQUEST,
-                };
+                        TableName = tablePrefix + table.TableName,
+                        AttributeDefinitions = table.GetAttributeDefinition(),
+                        KeySchema = table.Keys.ToKeySchema(),
+                        GlobalSecondaryIndexes = table.Indexes?.Select(i => new GlobalSecondaryIndex
+                        {
+                            IndexName = i.IndexName,
+                            KeySchema = i.Keys.ToKeySchema(),
+                            Projection = new Projection {ProjectionType = ProjectionType.ALL}
+                        }).ToList(),
+                        BillingMode = BillingMode.PAY_PER_REQUEST,
+                    };
 
-                var result = await CreateTableAsync(req);
-                switch (result)
-                {
-                    case CreateTableResult.Created:
-                    case CreateTableResult.ExistsEmpty:
-                        await PopulateTable(req);
-                        break;
+                    var result = await CreateTableAsync(req);
+                    switch (result)
+                    {
+                        case CreateTableResult.Created:
+                        case CreateTableResult.ExistsEmpty:
+                            await PopulateTable(req, tablePrefix, db);
+                            break;
 
-                    case CreateTableResult.ExistsWithData:
-                        break;
-                    
-                    case CreateTableResult.Error:
-                        return false;
-                        
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                        case CreateTableResult.ExistsWithData:
+                            break;
+
+                        case CreateTableResult.Error:
+                            return false;
+
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
             }
 
@@ -214,9 +223,12 @@ namespace OmasApi.Data
 
         public async Task Teardown()
         {
-            foreach (var table in _tables)
+            foreach (var site in _appSettings.Value.Sites)
             {
-                await _client.DeleteTableAsync(table.TableName);
+                foreach (var table in _tables)
+                {
+                    await _client.DeleteTableAsync(site.TablePrefix + table.TableName);
+                }
             }
         }
 
@@ -268,9 +280,9 @@ namespace OmasApi.Data
             }
         }
 
-        private async Task PopulateTable(CreateTableRequest request)
+        private async Task PopulateTable(CreateTableRequest request, string tablePrefix, IDynamoDBContext db)
         {
-            var def = _tables.Single(t => t.TableName == request.TableName);
+            var def = _tables.Single(t => tablePrefix + t.TableName == request.TableName);
             var entityType = def.EntityType;
 
             var fileName = Path.Join(
@@ -286,10 +298,14 @@ namespace OmasApi.Data
                 _logger.LogInformation($"Data file found; populating table '{request.TableName}'");
 
                 dynamic entityClass = Activator.CreateInstance(entityType);
-                var entities = entityClass.Import(File.ReadLines(fileName));
-                foreach (var entity in entities)
+
+                if (entityClass != null)
                 {
-                    await _db.SaveAsync(entity);
+                    var entities = entityClass.Import(File.ReadLines(fileName));
+                    foreach (var entity in entities)
+                    {
+                        await db.SaveAsync(entity);     // TODO use bulk action API
+                    }
                 }
             }
         }

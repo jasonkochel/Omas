@@ -42,6 +42,19 @@ namespace OmasApi.Controllers
         public async Task<List<OrderBatch>> GetAll()
         {
             var batches = await _repo.Scan();
+
+            if (!batches.Any())
+            {
+                var seedBatch = await Post(new OrderBatch
+                {
+                    OrderDate = DateTime.Today,
+                    DeliveryDate = DateTime.Today.AddDays(7),
+                    IsOpen = true
+                });
+
+                batches.Add(seedBatch);
+            }
+
             batches.Sort((a, b) => a.DeliveryDate.CompareTo(b.DeliveryDate) * -1);  // sort descending
             return batches;
         }

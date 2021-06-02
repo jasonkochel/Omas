@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using OmasApi.Models;
 
 namespace OmasApi.Controllers.Middleware
 {
@@ -17,7 +18,7 @@ namespace OmasApi.Controllers.Middleware
 
     }
 
-    public class AuthorizationFilter : IActionFilter
+    public class AuthorizationFilter : IAuthorizationFilter
     {
         private readonly JsonWebKeySet _jwks;
 
@@ -26,12 +27,22 @@ namespace OmasApi.Controllers.Middleware
             _jwks = new JsonWebKeySet(JsonConvert.SerializeObject(appSettings.Value.Jwks));
         }
 
+        /*
         public void OnActionExecuted(ActionExecutedContext context)
         {
         }
+        */
+
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+/*            throw new NotImplementedException();
+        }
 
         public void OnActionExecuting(ActionExecutingContext context)
-        {
+        {*/
+            var requestContext = (RequestContext)context.HttpContext.RequestServices.GetService(typeof(RequestContext));
+            requestContext.HostHeader = context.HttpContext.Request.Host.Host;
+
             var accessLevel = GetControllerAccessLevel(context);
 
             if (accessLevel == AccessLevel.Anonymous) return;
@@ -60,7 +71,7 @@ namespace OmasApi.Controllers.Middleware
                 throw new UnauthorizedException("Invalid Authorization Header");
             }
 
-            var jwt = authHeader.Substring(7);
+            var jwt = authHeader[7..];
             return jwt;
         }
 
@@ -123,5 +134,6 @@ namespace OmasApi.Controllers.Middleware
             User,
             Admin
         }
+
     }
 }

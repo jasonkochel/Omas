@@ -5,6 +5,7 @@ using OmasApi.Controllers;
 using OmasApi.Data;
 using OmasApi.Data.Entities;
 using OmasApi.Data.Repositories;
+using OmasApi.Models;
 using Xunit;
 
 namespace OmasApi.Tests
@@ -17,8 +18,8 @@ namespace OmasApi.Tests
 
         public CategoryTests(DatabaseFixture fixture)
         {
-            var categoryRepo = new CategoryRepository(fixture.Client);
-            var catalogItemRepo = new CatalogItemRepository(fixture.Client);
+            var categoryRepo = new CategoryRepository(fixture.Client, null, null);
+            var catalogItemRepo = new CatalogItemRepository(fixture.Client, null, null);
             _controller = new CategoriesController(categoryRepo, catalogItemRepo);
 
             _seedData = fixture.SeedData;

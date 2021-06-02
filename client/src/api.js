@@ -1,5 +1,6 @@
 import { Auth } from 'aws-amplify';
 import axios from 'axios';
+import draftToHtml from 'draftjs-to-html';
 import { toast } from 'react-toastify';
 
 const client = axios.create({
@@ -136,7 +137,13 @@ const emailBatch = id => client.post(`/orderBatches/${id}/email`);
 
 const getSettings = () => client.get('/settings').then(res => res.data);
 
-const updateSettings = data => client.post('/settings', data);
+const updateSettings = data => {
+  ['loginMessage', 'welcomeMessage', 'emailMessage'].forEach(
+    fieldName => (data[fieldName + 'Html'] = draftToHtml(JSON.parse(data[fieldName])))
+  );
+
+  return client.post('/settings', data);
+};
 
 const api = {
   addCategory,

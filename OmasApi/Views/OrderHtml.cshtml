@@ -1,9 +1,10 @@
-﻿@model OmasApi.Data.Entities.Order
+﻿@using System.Security.AccessControl
+@model OmasApi.Data.Entities.Order
 @* ReSharper disable Html.Obsolete *@
 @* ReSharper disable MissingHeadTag *@
 @{
-    string FormatNumber(decimal num, int precision = 2) => num.ToString($"F{precision}");
-    string FormatCurrency(decimal num) => num.ToString("C");
+    static string FormatNumber(decimal num, int precision = 2) => num.ToString($"F{precision}");
+    static string FormatCurrency(decimal num) => num.ToString("C");
 
     var oddRow = false;
 }
@@ -13,10 +14,11 @@
     <p>
         This is to confirm the order you have placed at OmasOrders.com. You must pick up your order on @Model.DeliveryDate.ToString("D").
         You may modify your order through the website until @Model.OrderDate.ToString("D").
-        If you have any questions, please contact Diane Mellon at goldiggers@comcast.net.
     </p>
     <p>
-        <b>MAKE CHECKS PAYABLE TO 'GOLDIGGERS'</b>
+        @Html.Raw(TempData["EmailMessage"])
+    </p>
+    <p>
         <table width="750" cellspacing="0" cellpadding="2">
             <tr>
                 <td width="80"><u>SKU</u></td>

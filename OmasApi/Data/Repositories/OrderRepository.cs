@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
+using Microsoft.Extensions.Options;
 using OmasApi.Data.Entities;
+using OmasApi.Models;
 
 namespace OmasApi.Data.Repositories
 {
@@ -12,7 +14,9 @@ namespace OmasApi.Data.Repositories
         private readonly OrderLineRepository _lineRepo;
         private readonly UserRepository _userRepo;
 
-        public OrderRepository(IAmazonDynamoDB client, OrderBatchRepository batchRepo, OrderLineRepository lineRepo, UserRepository userRepo) : base(client)
+        public OrderRepository(IAmazonDynamoDB client, RequestContext requestContext,
+            IOptions<AppSettings> appSettings, OrderBatchRepository batchRepo, OrderLineRepository lineRepo,
+            UserRepository userRepo) : base(client, requestContext, appSettings)
         {
             _batchRepo = batchRepo;
             _lineRepo = lineRepo;

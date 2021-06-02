@@ -10,6 +10,7 @@ using Newtonsoft.Json.Converters;
 using OmasApi.Controllers.Middleware;
 using OmasApi.Data;
 using OmasApi.Data.Repositories;
+using OmasApi.Models;
 using OmasApi.Services;
 
 namespace OmasApi
@@ -46,6 +47,8 @@ namespace OmasApi
             services.AddSingleton<Migration, Migration>();
 
             services.AddScoped<UserIdentity, UserIdentity>();
+            services.AddScoped<RequestContext, RequestContext>();
+
             services.AddScoped<OrderBatchService, OrderBatchService>();
             services.AddScoped<UserService, UserService>();
             services.AddScoped<EmailService, EmailService>();
@@ -117,6 +120,5 @@ namespace OmasApi
                 services.AddAWSService<IAmazonDynamoDB>();
             }
         }
-
     }
 }

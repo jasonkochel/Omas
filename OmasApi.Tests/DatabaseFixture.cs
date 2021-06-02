@@ -32,11 +32,13 @@ namespace OmasApi.Tests
 
             var nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory();
 
+            /*
             _migrator = new Migration(Client, new Logger<Migration>(nullLogger));
             if (!_migrator.Migrate().Result)
             {
                 throw new Exception("Database migration failed");
             }
+            */
 
             var db = new DynamoDBContext(Client, new DynamoDBContextConfig
             {

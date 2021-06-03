@@ -15,10 +15,7 @@ using OmasApi.Models;
 namespace OmasApi.Controllers.Middleware
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class AdminOnlyAttribute : Attribute
-    {
-
-    }
+    public class AdminOnlyAttribute : Attribute { }
 
     public class AuthorizationFilter : IAuthorizationFilter
     {
@@ -29,21 +26,14 @@ namespace OmasApi.Controllers.Middleware
             _jwks = new JsonWebKeySet(JsonConvert.SerializeObject(appSettings.Value.Jwks));
         }
 
-        /*
-        public void OnActionExecuted(ActionExecutedContext context)
-        {
-        }
-        */
-
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-/*            throw new NotImplementedException();
-        }
-
-        public void OnActionExecuting(ActionExecutingContext context)
-        {*/
             var requestContext = (RequestContext)context.HttpContext.RequestServices.GetService(typeof(RequestContext));
-            requestContext.HostHeader = context.HttpContext.Request.Host.Host;
+
+            var referrer = context.HttpContext.Request.Headers["Referer"].FirstOrDefault() ?? "";
+            var referrerUrl = new UriBuilder(referrer);
+
+            requestContext.HostHeader = referrerUrl.Host;
 
             LambdaLogger.Log($"Host Header: {requestContext.HostHeader}; Path: {context.HttpContext.Request.Path.Value}");
 
@@ -83,7 +73,7 @@ namespace OmasApi.Controllers.Middleware
         {
             var isValid = _jwks.Keys
                 .Select(key => new TokenValidationParameters
-                    {IssuerSigningKey = key, ValidateAudience = false, ValidateIssuer = false})
+                { IssuerSigningKey = key, ValidateAudience = false, ValidateIssuer = false })
                 .Any(validationParameters => ValidateToken(jwt, validationParameters));
 
             if (!isValid)

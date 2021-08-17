@@ -59,19 +59,19 @@ const Order = () => {
 
   const [cart, setCart] = useState({});
   const [savedCart, setSavedCart] = useState({});
-  const [batch, setBatch] = useState();
 
   const handleFetchedOrder = data => {
     const savedOrderObj = makeCart(fns.arrayToObject(data?.lineItems ?? [], 'sku'));
     setCart(savedOrderObj);
     setSavedCart(savedOrderObj);
-    setBatch({ ...data.orderBatch });
   };
 
   const { isSuccess: savedOrderLoaded } = useQuery('SavedOrder', api.getCurrentOrder, {
     ...queryConfig,
     onSuccess: handleFetchedOrder,
   });
+
+  const { data: batch } = useQuery('CurrentBatch', api.getCurrentBatch);
 
   const { isSuccess: categoriesLoaded, data: catalog } = useQuery(
     'Catalog',
@@ -109,20 +109,20 @@ const Order = () => {
       .catch(() => fns.noop);
   };
 
-  if (batch && !batch.isOpen) {
+  if (!batch || !categoriesLoaded)
+    return (
+      <div className={classes.centeredDiv}>
+        <CircularProgress disableShrink />
+      </div>
+    );
+
+  if (!batch.isOpen) {
     return (
       <div className={classes.centeredDiv}>
         <Typography variant="h3">Ordering is Closed</Typography>
       </div>
     );
   }
-
-  if (!categoriesLoaded)
-    return (
-      <div className={classes.centeredDiv}>
-        <CircularProgress disableShrink />
-      </div>
-    );
 
   return (
     categoriesLoaded &&

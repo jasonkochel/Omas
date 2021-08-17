@@ -33,7 +33,7 @@ const OrderView = ({ batchId }) => {
     api.getOrder(batchId)
   );
 
-  const { data: currentBatch } = useQuery('CurrentBatch', () => api.getCurrentBatch());
+  const { data: currentBatch } = useQuery('CurrentBatch', api.getCurrentBatch);
 
   const handleReOrder = () => {
     api.cloneOrder(batchId).then(() => history.push('/order'));

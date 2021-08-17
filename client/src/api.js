@@ -118,9 +118,9 @@ const emailOrder = batchId => client.post(`/orders/${batchId}/email`);
 
 const getBatches = () => client.get('/orderBatches').then(res => res.data);
 
-const getCurrentBatchId = () => client.get('/orderBatches/current').then(res => res.data);
+const getCurrentBatch = () => client.get('/orderBatches/current').then(res => res.data);
 
-const getBatch = id => client.get(`/orderBatches/${id}`).then(res => res.data);
+const getBatchSummary = id => client.get(`/orderBatches/${id}/summary`).then(res => res.data);
 
 const getConsolidatedOrder = id =>
   client.get(`/orderBatches/${id}/consolidated`).then(res => res.data);
@@ -156,13 +156,13 @@ const api = {
   deleteItem,
   emailBatch,
   emailOrder,
-  getBatch,
   getBatches,
   getBatchOrders,
+  getBatchSummary,
   getCategories,
   getConsolidatedOrder,
   getCurrentOrder,
-  getCurrentBatchId,
+  getCurrentBatch,
   getItemsByCategoryId,
   getOrder,
   getOrderHistory,

@@ -41,7 +41,7 @@ const Login = ({ onSignIn }) => {
         <Container maxWidth="md">
           <Card>
             <CardContent className={classes.helpText}>
-              <Typography variant="body1" component="p">
+              <Typography variant="body1" component="div">
                 <div
                   className={classes.message}
                   dangerouslySetInnerHTML={{ __html: settings.loginMessageHtml }}

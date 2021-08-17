@@ -1,4 +1,4 @@
-import { CircularProgress, Fab, makeStyles } from '@material-ui/core';
+import { CircularProgress, Fab, makeStyles, Typography } from '@material-ui/core';
 import { ShoppingCart } from '@material-ui/icons';
 import { useConfirm } from 'material-ui-confirm';
 import React, { useCallback, useState } from 'react';
@@ -58,21 +58,20 @@ const Order = () => {
   const confirm = useConfirm();
 
   const [cart, setCart] = useState({});
+  const [savedCart, setSavedCart] = useState({});
+  const [batch, setBatch] = useState();
 
-  const getSavedOrder = async () => {
-    const data = await api.getCurrentOrder();
+  const handleFetchedOrder = data => {
     const savedOrderObj = makeCart(fns.arrayToObject(data?.lineItems ?? [], 'sku'));
     setCart(savedOrderObj);
-    return savedOrderObj;
+    setSavedCart(savedOrderObj);
+    setBatch({ ...data.orderBatch });
   };
 
-  const { data: batchId } = useQuery('CurrentBatchId', () => api.getCurrentBatchId(), queryConfig);
-
-  const { isSuccess: savedOrderLoaded, data: savedCart } = useQuery(
-    'SavedOrder',
-    getSavedOrder,
-    queryConfig
-  );
+  const { isSuccess: savedOrderLoaded } = useQuery('SavedOrder', api.getCurrentOrder, {
+    ...queryConfig,
+    onSuccess: handleFetchedOrder,
+  });
 
   const { isSuccess: categoriesLoaded, data: catalog } = useQuery(
     'Catalog',
@@ -105,10 +104,18 @@ const Order = () => {
         api
           .replaceOrderLines(cartToArray(cart))
           .then(() => api.confirmOrder())
-          .then(() => history.push(`/order/${batchId}`));
+          .then(() => history.push(`/order/${batch.batchId}`));
       })
       .catch(() => fns.noop);
   };
+
+  if (batch && !batch.isOpen) {
+    return (
+      <div className={classes.centeredDiv}>
+        <Typography variant="h3">Ordering is Closed</Typography>
+      </div>
+    );
+  }
 
   if (!categoriesLoaded)
     return (

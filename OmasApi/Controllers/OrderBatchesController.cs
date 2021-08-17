@@ -59,14 +59,27 @@ namespace OmasApi.Controllers
             return batches;
         }
 
-        [HttpGet("current")]
-        public string GetCurrentBatch()
+        [HttpGet("{batchId}")]
+        public async Task<OrderBatch> GetOrderBatch(string batchId)
         {
-            return _orderBatchService.CurrentBatchId;
+            var batch = await _repo.Get(batchId);
+
+            if (batch == null)
+            {
+                throw new NotFoundException($"Batch '{batchId}' does not exist");
+            }
+
+            return batch;
+        }
+
+        [HttpGet("current")]
+        public async Task<OrderBatch> GetCurrentBatch()
+        {
+            return await GetOrderBatch(_orderBatchService.CurrentBatchId);
         }
 
         [AdminOnly]
-        [HttpGet("{batchId}")]
+        [HttpGet("{batchId}/summary")]
         public async Task<OrderBatchModel> GetOrderBatchSummary(string batchId)
         {
             var batch = await _repo.Get(batchId);

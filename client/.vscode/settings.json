@@ -1,5 +1,21 @@
 {
   "files.exclude": {
     "**/node_modules": true
-  }
+  },
+  "serverlessConsole.services": [
+    {
+      "type": "dynamodb",
+      "title": "Dev_Omas_OrderBatches",
+      "tableName": "Dev_Omas_OrderBatches",
+      "region": "local",
+      "endpoint": "http://localhost:8000"
+    },
+    {
+      "type": "dynamodb",
+      "title": "Dev_Omas_Users",
+      "tableName": "Dev_Omas_Users",
+      "region": "local",
+      "endpoint": "http://localhost:8000"
+    }
+  ]
 }

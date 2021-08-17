@@ -24,7 +24,7 @@ const Welcome = () => {
   return (
     <Container>
       <Paper className={classes.paper}>
-        <Typography variant="body1" component="p">
+        <Typography variant="body1" component="div">
           <div
             className={classes.message}
             dangerouslySetInnerHTML={{ __html: data.welcomeMessageHtml }}

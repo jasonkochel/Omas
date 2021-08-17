@@ -33,6 +33,8 @@ const OrderView = ({ batchId }) => {
     api.getOrder(batchId)
   );
 
+  const { data: currentBatch } = useQuery('CurrentBatch', () => api.getCurrentBatch());
+
   const handleReOrder = () => {
     api.cloneOrder(batchId).then(() => history.push('/order'));
   };
@@ -40,6 +42,8 @@ const OrderView = ({ batchId }) => {
   if (isLoading) return null;
 
   const { isOpen, deliveryDate } = order?.orderBatch ?? {};
+
+  const canReorder = currentBatch?.isOpen ?? false;
 
   return (
     <Grid container spacing={1}>
@@ -85,9 +89,11 @@ const OrderView = ({ batchId }) => {
             Modify Order
           </Button>
         ) : (
-          <Button variant="contained" color="primary" onClick={handleReOrder}>
-            Re-Order These Items
-          </Button>
+          canReorder && (
+            <Button variant="contained" color="primary" onClick={handleReOrder}>
+              Re-Order These Items
+            </Button>
+          )
         )}
       </Grid>
       <Grid item xs={6} className={classes.rightAlign}>

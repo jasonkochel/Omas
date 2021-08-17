@@ -37,7 +37,7 @@ const BatchAdmin = () => {
 
   const { data: selectedBatch } = useQuery(
     ['BatchHistory', selectedBatchId],
-    () => api.getBatch(selectedBatchId),
+    () => api.getBatchSummary(selectedBatchId),
     {
       enabled: !!selectedBatchId,
     }

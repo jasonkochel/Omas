@@ -21,8 +21,6 @@ namespace OmasApi.Data.Repositories
             var tablePrefix = appSettings.Value.Sites.FirstOrDefault(s => s.HostHeader == requestContext.HostHeader)
                 ?.TablePrefix ?? "";
 
-            LambdaLogger.Log($"(DynamoDbRepository Constructor) Table Prefix: {tablePrefix}");
-
             _db = new DynamoDBContext(client, new DynamoDBContextConfig
             {
                 Conversion = DynamoDBEntryConversion.V2,
